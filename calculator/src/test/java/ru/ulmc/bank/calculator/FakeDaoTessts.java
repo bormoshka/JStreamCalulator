@@ -4,17 +4,20 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.ulmc.bank.calculator.service.impl.PanicCalcService;
+import ru.ulmc.bank.calculator.dao.QuotesDao;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class PanicCalcServiceTests {
+@ComponentScan("ru.ulmc")
+public class FakeDaoTessts {
     @Autowired
-    PanicCalcService calcService;
+    QuotesDao dao;
 
     @Test
-    public void testCalculation() {
-        //todo: test code
+    public void contextLoads() {
+        //nothing to do
+        dao.getLastBaseQuote(null);
     }
 }

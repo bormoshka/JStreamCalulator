@@ -6,6 +6,7 @@ import ru.ulmc.bank.calculator.entity.BaseQuote;
 import ru.ulmc.bank.calculator.entity.Price;
 import ru.ulmc.bank.calculator.entity.Quote;
 
+import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -15,24 +16,35 @@ import java.util.*;
 public class FakeQuotesDao implements QuotesDao {
     private static final double spread = 0.2;
     private static final int secondsToMinus = 5;
-    private LocalDateTime date = LocalDateTime.now();
     private final String symbol = "RUB/USD";
-    private final HashMap<String, BaseQuote> baseQuotesBySymbol = new HashMap<>();
+    private final HashMap<String, List<BaseQuote>> baseQuotesBySymbol = new HashMap<>();
     private final HashMap<String, Quote> calcQuotesBySymbol = new HashMap<>();
+    private LocalDateTime date = LocalDateTime.now();
 
     public FakeQuotesDao() {
-        new Random().doubles(10, 2).limit(10000)
-                .forEach(value -> baseQuotesBySymbol.put(symbol, createBaseQuote(value)));
+
     }
 
-    private BaseQuote createBaseQuote(double value) {
+    @PostConstruct
+    private void postConstruct() {
+        baseQuotesBySymbol.put(symbol, new ArrayList<>());
+        new Random().doubles(40, 55).limit(10000)
+                .forEach(this::createFakeBaseQuote);
+    }
+
+    private void createFakeBaseQuote(double value) {
+        date = date.minus(secondsToMinus, ChronoUnit.SECONDS);
+        baseQuotesBySymbol.get(symbol).add(createBaseQuote(value, date));
+    }
+
+    private BaseQuote createBaseQuote(double value, LocalDateTime date) {
         Set<Price> prices = new HashSet<>();
 
-        prices.add(new Price(0, BigDecimal.valueOf(value), BigDecimal.valueOf(value - spread)));
-        prices.add(new Price(100, BigDecimal.valueOf(value), BigDecimal.valueOf(value - spread)));
-        prices.add(new Price(300, BigDecimal.valueOf(value), BigDecimal.valueOf(value - spread)));
-        prices.add(new Price(500, BigDecimal.valueOf(value), BigDecimal.valueOf(value - spread)));
-        date = date.minus(secondsToMinus, ChronoUnit.SECONDS);
+        prices.add(new Price(000, BigDecimal.valueOf(value - spread), BigDecimal.valueOf(value + spread)));
+        prices.add(new Price(100, BigDecimal.valueOf(value - spread), BigDecimal.valueOf(value + spread)));
+        prices.add(new Price(300, BigDecimal.valueOf(value - spread), BigDecimal.valueOf(value + spread)));
+        prices.add(new Price(500, BigDecimal.valueOf(value - spread), BigDecimal.valueOf(value + spread)));
+
         return new BaseQuote(UUID.randomUUID().toString(), date, symbol, prices);
     }
 

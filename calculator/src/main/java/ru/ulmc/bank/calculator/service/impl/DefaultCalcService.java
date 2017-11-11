@@ -18,7 +18,8 @@ public class DefaultCalcService implements CalcService {
     private final TrendCalculator trendCalculator;
 
     @Autowired
-    public DefaultCalcService(DynamicCalculator dynamicCalculator, TrendCalculator trendCalculator) {
+    public DefaultCalcService(DynamicCalculator dynamicCalculator,
+                              TrendCalculator trendCalculator) {
         this.dynamicCalculator = dynamicCalculator;
         this.trendCalculator = trendCalculator;
     }

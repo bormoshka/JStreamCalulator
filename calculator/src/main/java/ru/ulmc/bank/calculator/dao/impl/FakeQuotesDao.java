@@ -15,7 +15,7 @@ import java.util.*;
 public class FakeQuotesDao implements QuotesDao {
     private static final double spread = 0.2;
     private static final int secondsToMinus = 5;
-    private final LocalDateTime date = LocalDateTime.now();
+    private LocalDateTime date = LocalDateTime.now();
     private final String symbol = "RUB/USD";
     private final HashMap<String, BaseQuote> baseQuotesBySymbol = new HashMap<>();
     private final HashMap<String, Quote> calcQuotesBySymbol = new HashMap<>();
@@ -32,8 +32,8 @@ public class FakeQuotesDao implements QuotesDao {
         prices.add(new Price(100, BigDecimal.valueOf(value), BigDecimal.valueOf(value - spread)));
         prices.add(new Price(300, BigDecimal.valueOf(value), BigDecimal.valueOf(value - spread)));
         prices.add(new Price(500, BigDecimal.valueOf(value), BigDecimal.valueOf(value - spread)));
-
-        return new BaseQuote(UUID.randomUUID().toString(), date.minus(secondsToMinus, ChronoUnit.SECONDS), symbol, prices);
+        date = date.minus(secondsToMinus, ChronoUnit.SECONDS);
+        return new BaseQuote(UUID.randomUUID().toString(), date, symbol, prices);
     }
 
     @Override

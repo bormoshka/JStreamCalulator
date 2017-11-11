@@ -2,10 +2,7 @@ package ru.ulmc.bank.calculator.dao.impl;
 
 import org.springframework.stereotype.Component;
 import ru.ulmc.bank.calculator.dao.QuotesDao;
-import ru.ulmc.bank.calculator.entity.BaseQuote;
-import ru.ulmc.bank.calculator.entity.AverageQuote;
-import ru.ulmc.bank.calculator.entity.Price;
-import ru.ulmc.bank.calculator.entity.Quote;
+import ru.ulmc.bank.calculator.entity.*;
 
 import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
@@ -25,7 +22,10 @@ public class FakeQuotesDao implements QuotesDao {
     private LocalDateTime date = LocalDateTime.now();
 
     public FakeQuotesDao() {
+    }
 
+    public FakeQuotesDao(String symbol, List<BaseQuote> baseQuotes) {
+        baseQuotesBySymbol.put(symbol, baseQuotes);
     }
 
     @PostConstruct
@@ -37,10 +37,10 @@ public class FakeQuotesDao implements QuotesDao {
 
     private void createFakeBaseQuote(double value) {
         date = date.minus(secondsToMinus, ChronoUnit.SECONDS);
-        baseQuotesBySymbol.get(symbol).add(createBaseQuote(value, date));
+        baseQuotesBySymbol.get(symbol).add(createBaseQuote(symbol, value, date));
     }
 
-    private BaseQuote createBaseQuote(double value, LocalDateTime date) {
+    public static BaseQuote createBaseQuote(String symbol, double value, LocalDateTime date) {
         Set<Price> prices = new HashSet<>();
 
         prices.add(new Price(000, BigDecimal.valueOf(value - spread), BigDecimal.valueOf(value + spread)));
@@ -97,8 +97,8 @@ public class FakeQuotesDao implements QuotesDao {
 
         for (Map.Entry<LocalDate, List<BaseQuote>> pair : groupBaseQuotes.entrySet()) {
             baseAverageQuotesThisSymbolForDatePeriod.add(
-                    new AverageQuote(pair.getKey().atStartOfDay(), symbol, null));
-            //сделать нормальное добавление объекта со средней котировкой в мапу
+                    new AverageQuote(pair.getKey().atStartOfDay(), symbol, getAvgBid(pair.getValue()), getAvgOffer(pair.getValue())));
+
         }
         return baseAverageQuotesThisSymbolForDatePeriod;
     }
@@ -108,10 +108,33 @@ public class FakeQuotesDao implements QuotesDao {
         return fits && (startDateTime == null || check.isAfter(startDateTime));
     }
 
-    private BigDecimal getAvg(List<BaseQuote> quotes){
-        for(BaseQuote quote : quotes){
-            //написать вычисление среднего
+    private Double getAvgBid(List<BaseQuote> quotes) {
+        Set<Price> prices = getPricesForZeroVolume(quotes);
+        double result = 0;
+        for (Price p : prices) {
+            result += p.getBid().doubleValue();
         }
-        return null;
+        return result / prices.size();
+    }
+
+    private Double getAvgOffer(List<BaseQuote> quotes) {
+        Set<Price> prices = getPricesForZeroVolume(quotes);
+        double result = 0;
+        for (Price p : prices) {
+            result += p.getOffer().doubleValue();
+        }
+        return result / prices.size();
+    }
+
+    private Set<Price> getPricesForZeroVolume(List<BaseQuote> quotes) {
+        Set<Price> prices = new HashSet<>();
+        for (BaseQuote quote : quotes) {
+            for (Price p : quote.getPrices()) {
+                if (p.getVolume().equals(Volume.zeroVolume)) {
+                    prices.add(p);
+                }
+            }
+        }
+        return prices;
     }
 }

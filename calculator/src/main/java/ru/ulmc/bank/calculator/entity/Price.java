@@ -8,9 +8,8 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Data
-@EqualsAndHashCode(of = "volume")
+@EqualsAndHashCode
 public final class Price implements Serializable {
-    private static final long serialVersionUID = -3590160516021564546L;
     private final Volume volume;
     private final BigDecimal bid;
     private final BigDecimal offer;

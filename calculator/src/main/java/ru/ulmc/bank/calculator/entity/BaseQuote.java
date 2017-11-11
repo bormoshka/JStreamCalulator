@@ -24,6 +24,4 @@ public class BaseQuote implements Serializable {
         this.symbol = symbol;
         this.prices = new HashSet<>(price);
     }
-
-
 }

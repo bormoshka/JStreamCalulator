@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 @Data
 public final class Volume implements Comparable<Volume>, Serializable {
+    public final static Volume zeroVolume = new Volume(0);
     private int size;
 
     public Volume(int size) {

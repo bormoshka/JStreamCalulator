@@ -12,6 +12,7 @@ import ru.ulmc.bank.calculator.service.calculators.Calculator;
 public class TrendCalculator implements Calculator {
     private final QuotesDao quotesDao;
     private final SymbolDao symbolDao;
+    private int timeSeries = 90;
 
     @Autowired
     public TrendCalculator(QuotesDao dao, SymbolDao symbolDao) {
@@ -19,9 +20,16 @@ public class TrendCalculator implements Calculator {
         this.symbolDao = symbolDao;
     }
 
+    //расчет прогнозной котировки методом наименьших квадратов
     @Override
     public double calc(SymbolConfig symbolConfig, BaseQuote newQuote) {
-        //todo: Реализовать вычисление тренда
+
+
+
+
+
+
+
         return 0;
     }
 }

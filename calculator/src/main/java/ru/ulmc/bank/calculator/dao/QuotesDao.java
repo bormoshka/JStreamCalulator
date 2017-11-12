@@ -1,10 +1,11 @@
 package ru.ulmc.bank.calculator.dao;
 
-import ru.ulmc.bank.calculator.entity.BaseQuote;
 import ru.ulmc.bank.calculator.entity.AverageQuote;
+import ru.ulmc.bank.calculator.entity.BaseQuote;
 import ru.ulmc.bank.calculator.entity.Quote;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,9 +21,10 @@ public interface QuotesDao {
 
     List<BaseQuote> getLastBaseQuotes(String symbol, LocalDateTime startDateTime, LocalDateTime endDateTime);
 
-    List<AverageQuote> getDailyAverageBaseQuotes(String symbol, LocalDateTime startDateTime, LocalDateTime endDateTime);
+    ArrayList<AverageQuote> getDailyAverageBaseQuotes(String symbol, LocalDateTime startDateTime, LocalDateTime endDateTime);
 
     Quote getLastCalcQuote(String symbol);
 
     Quote getLastCalcQuote(String symbol, int count);
+
 }

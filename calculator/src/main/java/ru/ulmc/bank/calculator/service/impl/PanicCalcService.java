@@ -7,7 +7,7 @@ import ru.ulmc.bank.calculator.entity.Quote;
 import ru.ulmc.bank.calculator.entity.SymbolConfig;
 import ru.ulmc.bank.calculator.service.CalcService;
 import ru.ulmc.bank.calculator.service.calculators.impl.DynamicCalculator;
-import ru.ulmc.bank.calculator.service.calculators.impl.TrendCalculator;
+import ru.ulmc.bank.calculator.service.calculators.impl.MnkTrendCalculator;
 
 /**
  * Сервис, отвечающий за вычисление котировок при критических отклонениях.
@@ -15,12 +15,12 @@ import ru.ulmc.bank.calculator.service.calculators.impl.TrendCalculator;
 @Component
 public class PanicCalcService implements CalcService {
     private final DynamicCalculator dynamicCalculator;
-    private final TrendCalculator trendCalculator;
+    private final MnkTrendCalculator mnkTrendCalculator;
 
     @Autowired
-    public PanicCalcService(DynamicCalculator dynamicCalculator, TrendCalculator trendCalculator) {
+    public PanicCalcService(DynamicCalculator dynamicCalculator, MnkTrendCalculator mnkTrendCalculator) {
         this.dynamicCalculator = dynamicCalculator;
-        this.trendCalculator = trendCalculator;
+        this.mnkTrendCalculator = mnkTrendCalculator;
     }
 
     @Override

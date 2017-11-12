@@ -25,6 +25,18 @@ public class FakeQuotesDao implements QuotesDao {
     }
 
     public FakeQuotesDao(String symbol, List<BaseQuote> baseQuotes) {
+        baseQuotes.sort(new Comparator<BaseQuote>() {
+            @Override
+            public int compare(BaseQuote o1, BaseQuote o2) {
+                if (o1.getDatetime().isAfter(o2.getDatetime())) {
+                    return 1;
+                } else if (o1.getDatetime().isBefore(o2.getDatetime())) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            }
+        });
         baseQuotesBySymbol.put(symbol, baseQuotes);
     }
 
@@ -33,6 +45,21 @@ public class FakeQuotesDao implements QuotesDao {
         baseQuotesBySymbol.put(symbol, new ArrayList<>());
         new Random().doubles(40, 55).limit(10000)
                 .forEach(this::createFakeBaseQuote);
+
+        for (Map.Entry<String, List<BaseQuote>> pair : baseQuotesBySymbol.entrySet()) {
+            pair.getValue().sort(new Comparator<BaseQuote>() {
+                @Override
+                public int compare(BaseQuote o1, BaseQuote o2) {
+                    if (o1.getDatetime().isAfter(o2.getDatetime())) {
+                        return 1;
+                    } else if (o1.getDatetime().isBefore(o2.getDatetime())) {
+                        return -1;
+                    } else {
+                        return 0;
+                    }
+                }
+            });
+        }
     }
 
     private void createFakeBaseQuote(double value) {
@@ -89,18 +116,31 @@ public class FakeQuotesDao implements QuotesDao {
     }
 
     @Override
-    public List<AverageQuote> getDailyAverageBaseQuotes(String symbol, LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        List<BaseQuote> baseQuotesThisSymbolForDatePeriod = getLastBaseQuotes(symbol, startDateTime, endDateTime);
-        List<AverageQuote> baseAverageQuotesThisSymbolForDatePeriod = new ArrayList<>();
-        Map<LocalDate, List<BaseQuote>> groupBaseQuotes = baseQuotesThisSymbolForDatePeriod.stream()
+    public ArrayList<AverageQuote> getDailyAverageBaseQuotes(String symbol, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        List<BaseQuote> lastQuotes = getLastBaseQuotes(symbol, startDateTime, endDateTime);
+        ArrayList<AverageQuote> avgQuotes = new ArrayList<>();
+        Map<LocalDate, List<BaseQuote>> groupBaseQuotes = lastQuotes.stream()
                 .collect(Collectors.groupingBy(o -> o.getDatetime().toLocalDate()));
 
         for (Map.Entry<LocalDate, List<BaseQuote>> pair : groupBaseQuotes.entrySet()) {
-            baseAverageQuotesThisSymbolForDatePeriod.add(
-                    new AverageQuote(pair.getKey().atStartOfDay(), symbol, getAvgBid(pair.getValue()), getAvgOffer(pair.getValue())));
-
+            avgQuotes.add(new AverageQuote(pair.getKey().atStartOfDay(), symbol,
+                    getAvgBid(pair.getValue()), getAvgOffer(pair.getValue())));
         }
-        return baseAverageQuotesThisSymbolForDatePeriod;
+        avgQuotes.sort(new Comparator<AverageQuote>() {
+            @Override
+            public int compare(AverageQuote o1, AverageQuote o2) {
+                if (o1.getDatetime().isAfter(o2.getDatetime())) {
+                    return 1;
+                } else if (o1.getDatetime().isBefore(o2.getDatetime())) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            }
+        });
+
+
+        return avgQuotes;
     }
 
     private boolean isDateInRange(LocalDateTime check, LocalDateTime startDateTime, LocalDateTime endDateTime) {

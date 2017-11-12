@@ -7,7 +7,7 @@ import ru.ulmc.bank.calculator.entity.Quote;
 import ru.ulmc.bank.calculator.entity.SymbolConfig;
 import ru.ulmc.bank.calculator.service.CalcService;
 import ru.ulmc.bank.calculator.service.calculators.impl.DynamicCalculator;
-import ru.ulmc.bank.calculator.service.calculators.impl.TrendCalculator;
+import ru.ulmc.bank.calculator.service.calculators.impl.MnkTrendCalculator;
 
 /**
  * Сервис, отвечающий за вычисление котировок при нормальных отклонениях.
@@ -15,13 +15,13 @@ import ru.ulmc.bank.calculator.service.calculators.impl.TrendCalculator;
 @Component
 public class DefaultCalcService implements CalcService {
     private final DynamicCalculator dynamicCalculator;
-    private final TrendCalculator trendCalculator;
+    private final MnkTrendCalculator mnkTrendCalculator;
 
     @Autowired
     public DefaultCalcService(DynamicCalculator dynamicCalculator,
-                              TrendCalculator trendCalculator) {
+                              MnkTrendCalculator mnkTrendCalculator) {
         this.dynamicCalculator = dynamicCalculator;
-        this.trendCalculator = trendCalculator;
+        this.mnkTrendCalculator = mnkTrendCalculator;
     }
 
     @Override

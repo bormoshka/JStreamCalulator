@@ -1,7 +1,7 @@
 package ru.ulmc.bank.calculator.service.calculators;
 
 import ru.ulmc.bank.calculator.entity.BaseQuote;
-import ru.ulmc.bank.calculator.entity.SymbolConfig;
+import ru.ulmc.bank.calculator.entity.CalculatorResult;
 
 public interface Calculator {
     /**
@@ -9,5 +9,5 @@ public interface Calculator {
      * @param newQuote
      * @return
      */
-    double calc(SymbolConfig symbolConfig, BaseQuote newQuote);
+    CalculatorResult calc(BaseQuote newQuote);
 }

@@ -47,6 +47,8 @@ public class MnkCalculatorTests {
 
         Assert.assertEquals(1.41667, result.getResultForBid(), 0.0001);
         Assert.assertEquals(1.69667, result.getResultForOffer(), 0.0001);
+        Assert.assertEquals(1.77218, result.getInaccuracyForBid(), 0.0001);
+        Assert.assertEquals(1.72892, result.getInaccuracyForOffer(), 0.0001);
     }
 
 }

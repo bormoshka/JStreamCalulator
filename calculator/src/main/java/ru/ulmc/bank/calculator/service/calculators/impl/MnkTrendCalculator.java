@@ -35,7 +35,10 @@ public class MnkTrendCalculator implements Calculator {
         double forecastBid = ratioAForBid * (statisticAvgQuotes.size() + 1) + ratioBForBid;
         double forecastOffer = ratioAForOffer * (statisticAvgQuotes.size() + 1) + ratioBForOffer;
 
-        return new CalculatorResult(forecastBid, forecastOffer);
+        double inaccuracyForBid = calcInaccuracyBid(statisticAvgQuotes, ratioAForBid, ratioBForBid);
+        double inaccuracyForOffer = calcInaccuracyOffer(statisticAvgQuotes, ratioAForOffer, ratioBForOffer);
+
+        return new CalculatorResult(forecastBid, forecastOffer, inaccuracyForBid, inaccuracyForOffer);
     }
 
     private AverageQuote convertToAverageQuote(BaseQuote newQuote) {
@@ -74,7 +77,6 @@ public class MnkTrendCalculator implements Calculator {
     }
 
     private double calcSumMultiplyQuotesBidAndPeriod(ArrayList<AverageQuote> averageQuotes) {
-
         double sumMultiplyQuotesAndPeriod = 0.0;
         for (int i = 0; i < averageQuotes.size(); i++) {
             sumMultiplyQuotesAndPeriod += averageQuotes.get(i).getAverageQuoteBid() * (i + 1);
@@ -132,5 +134,21 @@ public class MnkTrendCalculator implements Calculator {
         return sumQuotesOffer / averageQuotes.size() - ratioA * sumPeriods / averageQuotes.size();
     }
 
+    private double calcInaccuracyBid(ArrayList<AverageQuote> averageQuotes, double ratioAForBid, double ratioBForBid) {
+        double sumDeviations = 0.0;
+        for (int i = 0; i < averageQuotes.size(); i++) {
+            double factValue = averageQuotes.get(i).getAverageQuoteBid();
+            sumDeviations += ((ratioAForBid * (i + 1) + ratioBForBid) - factValue) / factValue * 100;
+        }
+        return sumDeviations / averageQuotes.size();
+    }
 
+    private double calcInaccuracyOffer(ArrayList<AverageQuote> averageQuotes, double ratioAForOffer, double ratioBForOffer) {
+        double sumDeviations = 0.0;
+        for (int i = 0; i < averageQuotes.size(); i++) {
+            double factValue = averageQuotes.get(i).getAverageQuoteOffer();
+            sumDeviations += ((ratioAForOffer * (i + 1) + ratioBForOffer) - factValue) / factValue * 100;
+        }
+        return sumDeviations / averageQuotes.size();
+    }
 }

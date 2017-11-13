@@ -29,18 +29,6 @@ public class FakeQuotesDao implements QuotesDao {
     }
 
     public FakeQuotesDao(String symbol, List<BaseQuote> baseQuotes) {
-        baseQuotes.sort(new Comparator<BaseQuote>() {
-            @Override
-            public int compare(BaseQuote o1, BaseQuote o2) {
-                if (o1.getDatetime().isAfter(o2.getDatetime())) {
-                    return 1;
-                } else if (o1.getDatetime().isBefore(o2.getDatetime())) {
-                    return -1;
-                } else {
-                    return 0;
-                }
-            }
-        });
         baseQuotesBySymbol.put(symbol, baseQuotes);
     }
 
@@ -60,17 +48,6 @@ public class FakeQuotesDao implements QuotesDao {
         baseQuotesBySymbol.put(symbol, new ArrayList<>());
         new Random().doubles(40, 55).limit(10000)
                 .forEach(this::createFakeBaseQuote);
-
-        for (Map.Entry<String, List<BaseQuote>> pair : baseQuotesBySymbol.entrySet()) {
-            pair.getValue().sort((o1, o2) -> {
-                if (o1.getDatetime().isAfter(o2.getDatetime())) {
-                    return 1;
-                } else if (o1.getDatetime().isBefore(o2.getDatetime())) {
-                    return -1;
-                }
-                return 0;
-            });
-        }
     }
 
     private void createFakeBaseQuote(double value) {
@@ -134,8 +111,6 @@ public class FakeQuotesDao implements QuotesDao {
             }
             return 0;
         });
-
-
         return avgQuotes;
     }
 

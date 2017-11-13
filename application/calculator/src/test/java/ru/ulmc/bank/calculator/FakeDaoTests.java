@@ -2,11 +2,8 @@ package ru.ulmc.bank.calculator;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.test.context.junit4.SpringRunner;
 import ru.ulmc.bank.dao.QuotesDao;
 import ru.ulmc.bank.dao.impl.FakeQuotesDao;
 import ru.ulmc.bank.entities.inner.AverageQuote;
@@ -38,10 +35,10 @@ public class FakeDaoTests {
         Assert.assertNotNull(baseQuotes);
         Assert.assertNotNull(dao);
         Assert.assertEquals(4, avgs.size());
-        Assert.assertEquals(56.3, avgs.get(2).getAverageQuoteBid(), 0.0001);
-        Assert.assertEquals(44.8, avgs.get(0).getAverageQuoteBid(), 0.0001);
-        Assert.assertEquals(52.7, avgs.get(1).getAverageQuoteOffer(), 0.0001);
-        Assert.assertEquals(59.7, avgs.get(3).getAverageQuoteOffer(), 0.0001);
+        Assert.assertEquals(56.3, avgs.get(1).getAverageQuoteBid(), 0.0001);
+        Assert.assertEquals(44.8, avgs.get(3).getAverageQuoteBid(), 0.0001);
+        Assert.assertEquals(52.7, avgs.get(2).getAverageQuoteOffer(), 0.0001);
+        Assert.assertEquals(59.7, avgs.get(0).getAverageQuoteOffer(), 0.0001);
     }
 
 }

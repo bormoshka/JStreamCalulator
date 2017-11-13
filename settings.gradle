@@ -1,0 +1,9 @@
+//include 'database-filler'
+include 'application'
+include 'application:core'
+include 'application:model'
+include 'application:client'
+include 'application:api'
+include 'application:calculator'
+include 'consumers:dashboard'
+

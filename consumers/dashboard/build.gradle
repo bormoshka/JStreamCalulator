@@ -1,0 +1,30 @@
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'maven'
+
+dependencies {
+    compile libs.springBoot,
+            libs.springBootMQ,
+            libs.vaadin,
+            libs.guava,
+            mods.api
+    compileOnly libs.lombok,
+            libs.vaadinProvided
+    testCompile libs.test
+}
+
+springBoot {
+    mainClass = 'ru.ulmc.bank.CourseDashboardApp'
+}
+
+jar {
+    baseName = 'consumer-dashboard'
+    version = '1.0'
+   // from 'src/main/webapp'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "com.vaadin:vaadin-bom:8.0.5"
+    }
+}

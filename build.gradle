@@ -1,0 +1,79 @@
+group = 'ru.ulmc.bank'
+version = '1.0'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'maven'
+apply from: 'repositories.gradle', to: allprojects
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+        outputDir file('build/classes/main')
+        testOutputDir file('build/classes/test')
+    }
+}
+if (project.convention.findPlugin(JavaPluginConvention)) {
+    // Change the output directory for the main and test source sets back to the old path
+    sourceSets.main.output.classesDir = new File(buildDir, "classes/main")
+    sourceSets.test.output.classesDir = new File(buildDir, "classes/test")
+}
+allprojects {
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+    javadoc {
+        options.charSet = 'UTF-8'
+    }
+}
+
+buildscript {
+    ext {
+        springBootVersion = '1.5.4.RELEASE'
+        libs = [
+                springBoot        : ["org.springframework.boot:spring-boot-starter-aop:${springBootVersion}",
+                                     "org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}"],
+                springBootMQ      : ["org.springframework.boot:spring-boot-starter-amqp:${springBootVersion}"],
+                springBootSecurity: ["org.springframework.boot:spring-boot-starter-security:${springBootVersion}",
+                                     "org.springframework.security:spring-security-ldap:+"],
+                springBootWeb     : ["org.springframework.boot:spring-boot-starter-web:${springBootVersion}",
+                                     "org.springframework.boot:spring-boot-starter-tomcat:${springBootVersion}"],
+                springBootJpa     : ["org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}",
+                                     "org.hibernate:hibernate-java8:+"],
+                sql               : "org.postgresql:postgresql:+",
+                sqlDev            : "org.hsqldb:hsqldb:+",
+                gson              : "com.google.code.gson:gson:2.7",
+                guava             : 'com.google.guava:guava:21.0',
+                javax             : ["javax.servlet:javax.servlet-api:+"],
+                test              : "org.springframework.boot:spring-boot-starter-test:${springBootVersion}",
+                lombok            : "org.projectlombok:lombok:1.16.16",
+                vaadin            : ["com.vaadin:vaadin-server:8.1.0",
+                                     "com.vaadin:vaadin-shared:8.1.0",
+                                     "com.vaadin:vaadin-spring-boot:2.0.0",
+                                     "com.vaadin:vaadin-themes:8.1.0",
+                                     "com.vaadin:vaadin-client-compiled:8.1.0",
+                                     "com.vaadin:vaadin-push:8.1.0",
+                                     "com.vaadin.external.atmosphere:atmosphere-runtime:+",
+                                     "org.vaadin.spring.extensions:vaadin-spring-ext-boot:2.0.0.RELEASE",
+                                     "org.vaadin.spring.extensions:vaadin-spring-ext-core:2.0.0.RELEASE",
+                                     "org.vaadin.spring.extensions:vaadin-spring-ext-security:2.0.0.RELEASE"
+                ],
+                vaadinProvided    : ["com.vaadin:vaadin-client:+"]
+        ]
+        mods = [model     : project(':application:model'),
+                core      : project(":application:core"),
+                client    : project(":application:client"),
+                calculator: project(":application:calculator"),
+                api       : project(":application:api")
+        ]
+    }
+
+    apply from: 'repositories.gradle', to: buildscript
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+        classpath "fi.jasoft.plugin:gradle-vaadin-plugin:1.1.9"
+    }
+}

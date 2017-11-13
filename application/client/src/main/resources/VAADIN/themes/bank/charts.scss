@@ -1,0 +1,103 @@
+.chart {
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+ // overflow: hidden;
+
+  div {
+    display: inline-block;
+  }
+  .axis path,
+  .axis line {
+    fill: none;
+    font: 10px sans-serif;
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
+
+  .grid line {
+    fill: none;
+    stroke-width: 1px;
+    stroke: #000000;
+    opacity: 0.1;
+
+    shape-rendering: crispEdges;
+    stroke-dasharray: 5, 8;
+  }
+
+  .bar {
+    display: none;
+  }
+
+  .bar.visible {
+    display: block;
+    stroke: #7b7b7b;
+    stroke-opacity: 1;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+  }
+
+  .legend {
+    padding: 5px;
+    font: 10px sans-serif;
+    background: yellow;
+    box-shadow: 2px 2px 1px #888;
+  }
+
+  .tier-name {
+    display: block;
+    max-width: 200px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .hover .bar {
+
+  }
+}
+
+.tooltipVolumes table,
+.tooltip table {
+  width: 100%;
+  font-size: 14px;
+  margin: 0;
+}
+
+.tooltipVolumes table td,
+.tooltip table td {
+  margin: 0;
+  padding: 1px 3px;
+}
+
+.tooltipVolumes .selected-volume,
+.tooltip .selected-volume {
+  background-color: rgba(47, 219, 30, 0.3);
+}
+
+.tooltip .hidden-volume {
+  font-style: italic;
+  color: #656565;
+}
+
+.volume-name {
+  display: none;
+}
+
+.tooltipVolumes,
+.tooltip {
+  font-family: 'Istok Web', sans-serif;
+  background: #fff;
+  box-shadow: 0 0 5px #999999;
+  border-radius: 2px;
+  color: #333;
+  font-size: 14px;
+  left: 130px;
+  padding: 10px;
+  position: absolute;
+  text-align: center;
+  top: 95px;
+  z-index: 1000;
+  display: inline-block;
+  opacity: 0;
+}

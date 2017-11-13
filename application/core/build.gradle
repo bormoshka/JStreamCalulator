@@ -1,0 +1,16 @@
+group 'ru.ulmc.bank'
+version rootProject.version
+
+apply plugin: 'java'
+apply plugin: 'maven'
+
+dependencies {
+    compile libs.springBoot,
+            libs.springBootMQ,
+            libs.springBootSecurity,
+            libs.sql,
+            mods.model
+    compileOnly libs.lombok
+    runtime libs.sqlDev
+    testCompile libs.test
+}

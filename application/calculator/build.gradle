@@ -1,0 +1,19 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+
+group = 'ru.ulmc.bank'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+dependencies {
+    compile libs.springBootWeb,
+            mods.model,
+            libs.guava
+    compileOnly libs.lombok
+    testCompile libs.test
+}
+
+springBoot {
+    mainClass = 'ru.ulmc.bank.calculator.CalculatorApplication'
+}

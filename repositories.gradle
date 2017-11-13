@@ -1,0 +1,10 @@
+repositories {
+    //mavenLocal()
+    mavenCentral()
+    maven { url "http://repo.maven.apache.org/maven2" }
+    maven { url "http://maven.vaadin.com/vaadin-addons" }
+    maven {
+        url "https://plugins.gradle.org/m2/"
+    }
+
+}

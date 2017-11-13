@@ -1,0 +1,12 @@
+group 'ru.ulmc.bank'
+version rootProject.version
+
+apply plugin: 'java'
+apply plugin: 'maven'
+
+dependencies {
+    compile libs.springBootJpa,
+            mods.api
+    compileOnly libs.lombok
+    testCompile libs.test
+}

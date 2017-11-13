@@ -1,0 +1,270 @@
+// If you edit this file you need to compile the theme. See README.md for details.
+// Global variable overrides. Must be declared before importing Valo.
+// Defines the plaintext font size, weight and family. Font size affects general component sizing.
+//$v-font-size: 16px;
+//$v-font-weight: 300;
+//$v-font-family: "Open Sans", sans-serif;
+// Defines the border used by all components.
+//$v-border: 1px solid (v-shade 0.7);
+//$v-border-radius: 4px;
+// Affects the color of some component elements, e.g Button, Panel title, etc
+//$v-background-color: hsl(210, 0%, 98%);
+// Affects the color of content areas, e.g  Panel and Window content, TextField input etc
+//$v-app-background-color: $v-background-color;
+// Affects the visual appearance of all components
+//$v-gradient: v-linear 8%;
+//$v-bevel-depth: 30%;
+//$v-shadow-opacity: 5%;
+// Defines colors for indicating status (focus, success, failure)
+//$v-focus-color: valo-focus-color(); // Calculates a suitable color automatically
+//$v-friendly-color: #2c9720;
+//$v-error-indicator-color: #ed473b;
+// For more information, see: https://vaadin.com/book/-/page/themes.valo.html
+// Example variants can be copy/pasted from https://vaadin.com/wiki/-/wiki/Main/Valo+Examples
+@import "../valo/valo.scss";
+@import "./charts.scss";
+
+@include font-face('IstokWeb',
+        '../../../../bank/fonts/IstokWeb-Regular', 400, normal);
+
+@include font-face('IstokWeb',
+        '../../../../bank/fonts/IstokWeb-Italic', 400, italic);
+
+@include font-face('IstokWeb',
+        '../../../../bank/fonts/IstokWeb-Bold', 700, normal);
+
+@include font-face('IstokWeb',
+        '../../../../bank/fonts/IstokWeb-BoldItalic', 700, italic);
+
+@keyframes newQuotAnimation {
+  0% {
+    background-color: rgba(33, 150, 243, 0.5);;
+  }
+  100% {
+    background-color: #ffffff;
+  }
+}
+
+@keyframes newQuotAnimationStriped {
+  0% {
+    background-color: rgba(33, 150, 243, 0.5);;
+  }
+  100% {
+    background-color: #f5f5f5;
+  }
+}
+
+@mixin bank {
+  $v-font-family: 'IstokWeb';
+
+  //$v-friendly-color: #03a9f4;
+
+  //$v-background-color: hsl(200, 15%, 73%);
+
+  //$v-font-color: valo-font-color($v-background-color) !default;
+
+  .hidden {
+    display: none;
+  }
+  @include valo;
+
+  .upload-info .v-progressbar-wrapper {
+    height: 25px;
+  }
+  .new-row {
+    font-style: italic;
+    color: #558b2f;
+  }
+  .changed-row {
+    color: #558b2f;
+  }
+  .deletion-row td {
+    font-style: italic;
+    text-decoration: line-through;
+  }
+  .invalid-row,
+  .changed-row.invalid-row {
+    color: #b71c1c;
+  }
+  .no-stripes .v-grid-row-stripe > td {
+    // background: inherit;
+  }
+
+  .error-grid-cell {
+    color: #000;
+    background-color: rgb(255, 238, 238) !important;
+  }
+  .pseudo-rowspan-hidden > div {
+    display: none;
+  }
+  .toggle-on {
+    background: #4CAF50;
+    color: #ffffff;
+  }
+  .toggle-subscribing {
+    background: #FFA726;
+    color: #ffffff;
+  }
+  .toggle-off {
+    background: #ef5350;
+    color: #ffffff;
+  }
+  .v-menubar-menuitem-brand.v-menubar-menuitem-disabled {
+    opacity: 1;
+  }
+  .v-margin-top.no-top-padding {
+    padding-top: 0;
+  }
+  .no-padding > .v-grid-cell {
+    text-align: center;
+    margin: 0 auto;
+  }
+  .no-padding > .v-grid-cell,
+  .no-padding {
+    padding: 0;
+  }
+  .main-menu {
+    position: fixed;
+  }
+  .content-padding {
+    padding: 15px;
+  }
+  .square-and-flat {
+    border-radius: 0;
+  }
+  .square-and-flat:after {
+    display: none;
+  }
+  .recent-menu {
+    font-size: $v-font-size - 4px;
+    line-height: $v-font-size + 6px;
+    height: 26px;
+    @extend .square-and-flat;
+  }
+  .recent-menu:after {
+    display: none;
+  }
+  .v-panel-caption {
+    font-size: $v-font-size + 2px;
+    font-weight: 700;
+  }
+  .v-loading-indicator:before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    //background-color: transparent;
+    background-color: rgba(0, 0, 0, 0.1);
+    pointer-events: auto; // force disable of mouse
+  }
+
+  .v-loading-indicator[style*="none"]:before { // search for display: none
+    display: none;
+  }
+
+  .new-quote,
+  .new-quote > td,
+  .v-grid-row.new-quote > td {
+    -webkit-animation: newQuotAnimation 750ms ease-out;
+    -moz-animation: newQuotAnimation 750ms ease-out;
+    -o-animation: newQuotAnimation 750ms ease-out;
+    animation: newQuotAnimation 750ms ease-out;
+  }
+  .v-grid-row-stripe.new-quote > td {
+    -webkit-animation: newQuotAnimation 750ms ease-out;
+    -moz-animation: newQuotAnimation 750ms ease-out;
+    -o-animation: newQuotAnimation 750ms ease-out;
+    animation: newQuotAnimationStriped 750ms ease-out;
+  }
+  .h3-padding {
+    margin-left: 20px;
+  }
+  .t1 {
+    margin-top: 10px;
+    font-size: $v-font-size + 4px;
+    font-weight: $v-font-weight + 400;
+  }
+  .t2 {
+    margin-top: 8px;
+    font-size: $v-font-size - 2px;
+   // margin-left: 10px;
+    font-weight: $v-font-weight;
+  }
+  .t3 {
+    margin-top: 5px;
+   // margin-left: 20px;
+  }
+  .v1 {
+    font-weight: $v-font-weight;
+    //margin-left: 25px;
+  }
+  .t4 {
+    font-size: $v-font-size - 4px;
+    color: #999999;
+    font-style: italic;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: keep-all;
+  }
+  .t2.constant,
+  .v2.constant {
+    color: #999999;
+  }
+  .half-margin-true {
+    margin: $v-layout-margin-top/2 $v-layout-margin-right/2 $v-layout-margin-bottom/2 $v-layout-margin-left/2;
+  }
+  .half-padding-true {
+    padding: $v-layout-margin-top/2 $v-layout-margin-right/2 $v-layout-margin-bottom/2 $v-layout-margin-left/2;
+  }
+  .v-label-deviation {
+    padding-top: 2px;
+  }
+  .deviation {
+    .exceeds {
+      color: #b71c1c;
+    }
+    .fine {
+      color: #4CAF50;
+    }
+    .convergence {
+      color: #609aed;
+    }
+  }
+  .version {
+    margin-right: 5px;
+    font-size: 12px;
+    color: #7b7b7b;
+  }
+  .wrapped-text {
+    max-width: 500px;
+    overflow: hidden;
+    word-wrap: normal;
+    word-break: keep-all;
+    text-overflow: ellipsis;
+    display: inline-block;
+    vertical-align: bottom;
+  }
+  .overflow-auto {
+    overflow: auto;
+  }
+
+  .v-tooltip {
+    background-color: $v-background-color;
+    color: $v-font-color;
+  }
+
+  .fixed-min-icon-size .v-icon {
+    min-width: 20px;
+  }
+
+  .trigger-timer-1,
+  .trigger-timer-2,
+  .trigger-timer-3 {
+    min-width: 55px;
+  }
+}

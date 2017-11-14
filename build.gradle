@@ -34,6 +34,12 @@ buildscript {
     ext {
         springBootVersion = '1.5.4.RELEASE'
         libs = [
+                jackson           : ["com.fasterxml.jackson.core:jackson-databind:+"],
+                zookeeper         : ["org.apache.curator:curator-x-discovery:+",
+                                     "org.apache.curator:curator-x-async:+",
+                                     "org.apache.curator:curator-recipes:+",
+                                     "org.apache.curator:curator-framework:+"],
+                zookeeperTest     : ["org.apache.curator:curator-test:+"],
                 springBoot        : ["org.springframework.boot:spring-boot-starter-aop:${springBootVersion}",
                                      "org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}"],
                 springBootMQ      : ["org.springframework.boot:spring-boot-starter-amqp:${springBootVersion}"],
@@ -48,7 +54,6 @@ buildscript {
                 gson              : "com.google.code.gson:gson:2.7",
                 guava             : 'com.google.guava:guava:21.0',
                 javax             : ["javax.servlet:javax.servlet-api:+"],
-                test              : "org.springframework.boot:spring-boot-starter-test:${springBootVersion}",
                 lombok            : "org.projectlombok:lombok:1.16.16",
                 vaadin            : ["com.vaadin:vaadin-server:8.1.0",
                                      "com.vaadin:vaadin-shared:8.1.0",
@@ -61,7 +66,9 @@ buildscript {
                                      "org.vaadin.spring.extensions:vaadin-spring-ext-core:2.0.0.RELEASE",
                                      "org.vaadin.spring.extensions:vaadin-spring-ext-security:2.0.0.RELEASE"
                 ],
-                vaadinProvided    : ["com.vaadin:vaadin-client:+"]
+                vaadinProvided    : ["com.vaadin:vaadin-client:+"],
+                test              : "org.springframework.boot:spring-boot-starter-test:${springBootVersion}",
+                junit             : "junit:junit:+",
         ]
         mods = [model     : project(':application:model'),
                 core      : project(":application:core"),

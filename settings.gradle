@@ -5,5 +5,6 @@ include 'application:model'
 include 'application:client'
 include 'application:api'
 include 'application:calculator'
+include 'application:configuration'
 include 'consumers:dashboard'
 

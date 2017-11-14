@@ -1,0 +1,20 @@
+apply plugin: 'java'
+
+dependencies {
+    compile libs.jackson,
+            mods.model,
+            mods.core,
+            libs.zookeeper //exclude group: 'org.apache.zookeeper', module: 'zookeeper';
+
+    compileOnly libs.lombok
+
+    testCompile libs.lombok
+    testCompile libs.zookeeperTest
+    testCompile libs.junit
+
+    testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.1'
+    testCompile 'org.junit.jupiter:junit-jupiter-engine:5.0.1'
+    testCompile 'org.junit.vintage:junit-vintage-engine:4.12.1'
+    testCompile 'org.junit.platform:junit-platform-launcher:1.0.1'
+    testCompile 'org.junit.platform:junit-platform-runner:1.0.1'
+}

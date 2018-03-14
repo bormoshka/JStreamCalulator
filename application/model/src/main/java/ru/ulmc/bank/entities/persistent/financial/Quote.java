@@ -2,6 +2,7 @@ package ru.ulmc.bank.entities.persistent.financial;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 import javax.persistence.*;
@@ -10,8 +11,11 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Data
+@Entity
+@NoArgsConstructor
 @EqualsAndHashCode(of = {"id", "symbol", "datetime"})
 @Table(name = "FIN_CALC_QUOTE",
         indexes = {@Index(name = "CALC_QUOTE_DATETIME_INDEX", columnList = "datetime"),
@@ -34,9 +38,9 @@ public class Quote implements Serializable {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, targetEntity = BaseQuote.class)
     private BaseQuote sourceQuote;
 
-    protected Quote(@NonNull String id, @NonNull LocalDateTime date,
+    public Quote(@NonNull LocalDateTime date,
                     @NonNull String symbol, @NonNull Collection<CalcPrice> prices, @NonNull BaseQuote sourceQuote) {
-        this.id = id;
+        this.id = UUID.randomUUID().toString();
         this.datetime = date;
         this.symbol = symbol;
         this.prices = new HashSet<>(prices);

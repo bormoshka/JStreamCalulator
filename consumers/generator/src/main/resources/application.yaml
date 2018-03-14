@@ -1,0 +1,13 @@
+spring:
+    jmx:
+        enabled: false
+    rabbitmq:
+       host: 192.168.2.8
+       username: rabbit
+       password: rabbit
+       port: 5672
+javafx:
+  title: Генератор котировок
+  stage:
+    resizable: true
+

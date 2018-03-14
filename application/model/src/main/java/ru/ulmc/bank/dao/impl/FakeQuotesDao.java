@@ -16,7 +16,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Component
 public class FakeQuotesDao implements QuotesDao {
     private static final double spread = 0.2;
     private static final int secondsToMinus = 5;
@@ -35,10 +34,10 @@ public class FakeQuotesDao implements QuotesDao {
     public static BaseQuote createBaseQuote(String symbol, double value, LocalDateTime date) {
         Set<BasePrice> prices = new HashSet<>();
 
-        prices.add(new BasePrice(000, BigDecimal.valueOf(value - spread), BigDecimal.valueOf(value + spread)));
-        prices.add(new BasePrice(100, BigDecimal.valueOf(value - spread), BigDecimal.valueOf(value + spread)));
-        prices.add(new BasePrice(300, BigDecimal.valueOf(value - spread), BigDecimal.valueOf(value + spread)));
-        prices.add(new BasePrice(500, BigDecimal.valueOf(value - spread), BigDecimal.valueOf(value + spread)));
+        prices.add(new BasePrice(000, value - spread, value + spread));
+        prices.add(new BasePrice(100, value - spread, value + spread));
+        prices.add(new BasePrice(300, value - spread, value + spread));
+        prices.add(new BasePrice(500, value - spread, value + spread));
 
         return new BaseQuote(UUID.randomUUID().toString(), date, symbol, prices);
     }

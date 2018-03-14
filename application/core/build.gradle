@@ -9,6 +9,7 @@ dependencies {
             libs.springBootMQ,
             libs.springBootSecurity,
             libs.sql,
+            libs.jackson,
             mods.model
     compileOnly libs.lombok
     runtime libs.sqlDev

@@ -7,7 +7,7 @@ import com.vaadin.ui.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import ru.ulmc.bank.ui.MainUI;
 import ru.ulmc.bank.ui.views.HomeView;
-import ru.ulmc.bank.ui.views.settings.FxSymbolsView;;
+import ru.ulmc.bank.ui.views.settings.SymbolsView;;
 import ru.ulmc.bank.ui.widgets.util.MenuSupport;
 
 import java.util.HashMap;
@@ -143,7 +143,7 @@ public class MainMenuBarBuilder {
 
     private void setupReferenceMenu() {
         MenuBar.MenuItem refMenu = mainMenu.addItem("Справочники", VaadinIcons.BOOK, null);
-        createSubmenuItem(refMenu, FxSymbolsView.MENU_SUPPORT);
+        createSubmenuItem(refMenu, SymbolsView.MENU_SUPPORT);
 
         refMenu = mainMenu.addItem("Отчеты", VaadinIcons.CLIPBOARD_TEXT, null);
 

@@ -32,16 +32,13 @@ public class MovingAverageTrendCalculator implements Calculator {
         LocalDateTime endPeriod = LocalDateTime.now();
         List<BaseQuote> statisticQuotes = quotesDao.getLastBaseQuotes(newQuote.getSymbol(), endPeriod.minusDays(timeSeries), endPeriod);
         statisticQuotes.add(newQuote);
-        statisticQuotes.sort(new Comparator<BaseQuote>() {
-            @Override
-            public int compare(BaseQuote o1, BaseQuote o2) {
-                if (o1.getDatetime().isAfter(o2.getDatetime())) {
-                    return 1;
-                } else if (o1.getDatetime().isBefore(o2.getDatetime())) {
-                    return -1;
-                }
-                return 0;
+        statisticQuotes.sort((o1, o2) -> {
+            if (o1.getDatetime().isAfter(o2.getDatetime())) {
+                return 1;
+            } else if (o1.getDatetime().isBefore(o2.getDatetime())) {
+                return -1;
             }
+            return 0;
         });
 
         ArrayList<AverageQuote> smoothingAvgQuotes = getSmoothingAvgQuotes(getAvgQuotes(statisticQuotes));

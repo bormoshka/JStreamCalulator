@@ -41,8 +41,8 @@ public class LoginForm extends VerticalLayout {
         vl.addComponent(buildFields());
 
         Panel panel = new Panel(vl);
-        panel.setWidth("400px");
-        panel.setCaption("Fx Pricing. Расчётный модуль");
+        panel.setWidth("500px");
+        panel.setCaption("[АС АДиУК] Модуль настройки и мониторинга");
         Responsive.makeResponsive(panel);
         return panel;
     }

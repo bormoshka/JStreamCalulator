@@ -13,13 +13,16 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Ordinary Least Squares
+ */
 @Component
-public class MnkTrendCalculator implements Calculator {
+public class OlsTrendCalculator implements Calculator {
     private final QuotesDao quotesDao;
     private int timeSeries = 90;
 
     @Autowired
-    public MnkTrendCalculator(QuotesDao dao) {
+    public OlsTrendCalculator(QuotesDao dao) {
         this.quotesDao = dao;
     }
 
@@ -52,7 +55,7 @@ public class MnkTrendCalculator implements Calculator {
             }
         }
         return new AverageQuote(newQuote.getDatetime(), newQuote.getSymbol(),
-                newPrice.getBid().doubleValue(), newPrice.getOffer().doubleValue());
+                newPrice.getBid(), newPrice.getOffer());
     }
 
     private double calcSumQuotesBid(List<AverageQuote> averageQuotes) {

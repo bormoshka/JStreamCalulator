@@ -2,29 +2,23 @@ package ru.ulmc.bank.calculator;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
-import ru.ulmc.bank.calculator.service.calculators.impl.MnkTrendCalculator;
+import ru.ulmc.bank.calculator.service.calculators.impl.OlsTrendCalculator;
 import ru.ulmc.bank.dao.QuotesDao;
 import ru.ulmc.bank.dao.impl.FakeQuotesDao;
 import ru.ulmc.bank.entities.inner.CalculatorResult;
 import ru.ulmc.bank.entities.persistent.financial.BasePrice;
 import ru.ulmc.bank.entities.persistent.financial.BaseQuote;
-import ru.ulmc.bank.entities.persistent.financial.Price;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.*;
 
-@SpringBootTest
 public class MnkCalculatorTests {
 
     @Test
     public void mnkTest() {
         Set<BasePrice> prices = new HashSet<>();
-        prices.add(new BasePrice(0, BigDecimal.valueOf(1.42), BigDecimal.valueOf(1.52)));
+        prices.add(new BasePrice(0, 1.42, 1.52));
         BaseQuote newQuote = new BaseQuote(UUID.randomUUID().toString(), LocalDateTime.now(), "RUB/USD", prices);
 
         List<BaseQuote> baseQuotes = new ArrayList<>();
@@ -42,7 +36,7 @@ public class MnkCalculatorTests {
 
 
         QuotesDao dao = new FakeQuotesDao("RUB/USD", baseQuotes);
-        MnkTrendCalculator mnkCalc = new MnkTrendCalculator(dao);
+        OlsTrendCalculator mnkCalc = new OlsTrendCalculator(dao);
         CalculatorResult result = mnkCalc.calc(newQuote);
 
         Assert.assertEquals(1.41667, result.getResultForBid(), 0.0001);

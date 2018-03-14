@@ -66,7 +66,7 @@ public class ZooTests {
             assertTrue(strg.getCurrency("TST").isActive());
 
             System.out.println("Save currencies OK");
-            SymbolConfig sc = new SymbolConfig("TST/TST1");
+            SymbolConfig sc = new SymbolConfig("TST/TST1", 0.5,0.5);
             strg.saveSymbolConfigs(Collections.singletonList(sc));
 
             assertEquals("TST/TST1", strg.getSymbolConfig("TST/TST1").getSymbol());

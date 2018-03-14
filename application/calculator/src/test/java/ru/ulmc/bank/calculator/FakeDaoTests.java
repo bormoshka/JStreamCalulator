@@ -2,8 +2,6 @@ package ru.ulmc.bank.calculator;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
 import ru.ulmc.bank.dao.QuotesDao;
 import ru.ulmc.bank.dao.impl.FakeQuotesDao;
 import ru.ulmc.bank.entities.inner.AverageQuote;
@@ -15,8 +13,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
-@SpringBootTest
-@ComponentScan("ru.ulmc")
 public class FakeDaoTests {
 
     @Test

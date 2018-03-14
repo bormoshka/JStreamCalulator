@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.ulmc.bank.core.common.Perms;
-import ru.ulmc.bank.core.service.impl.ConfigurationService;
+import ru.ulmc.bank.config.zookeeper.service.ConfigurationService;
 import ru.ulmc.bank.entities.configuration.Currency;
 import ru.ulmc.bank.entities.configuration.SymbolConfig;
 import ru.ulmc.bank.ui.common.SymbolUtil;
@@ -32,18 +32,16 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
  * Представление справочника валютных пар
  */
-@SpringView(name = FxSymbolsView.NAME)
-public class FxSymbolsView extends CommonView implements View {
+@SpringView(name = SymbolsView.NAME)
+public class SymbolsView extends CommonView implements View {
     static final String NAME = "fxSymbols";
     public static final MenuSupport MENU_SUPPORT = new MenuSupport(NAME, "Настройка валютных пар");
-    private static final Logger LOG = LoggerFactory.getLogger(FxSymbolsView.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SymbolsView.class);
     private final Grid<SymbolConfigModel> grid = new Grid<>();
     private final transient ConfigurationService service;
     private boolean updatePermission;
@@ -55,13 +53,7 @@ public class FxSymbolsView extends CommonView implements View {
     private Button btnCancel;
     private ComboBox<String> iso1Editor;
     private ComboBox<String> iso2Editor;
-    private ComboBox<Boolean> yesNoEditor;
-    private TextField firstRelationEditor;
-    private TextField secondRelationEditor;
-    private TextField thirdRelationEditor;
     private DecimalFormat decFormat = new DecimalFormat("###.###");
-    private Pattern simpleCoefficientRegex = Pattern.compile("\\d+(\\.\\d{1,5})?");
-    private Pattern complexCoefficientRegex = Pattern.compile("\\d+(\\.\\d{1,5})?/\\d+(\\.\\d{1,5})?");
     private Map<String, Grid.Column> columnsByName = new HashMap<>();
     private Button btnAdd;
     private Map<String, String> currencies;
@@ -79,7 +71,7 @@ public class FxSymbolsView extends CommonView implements View {
     }
 
     @Autowired
-    public FxSymbolsView(ConfigurationService service) {
+    public SymbolsView(ConfigurationService service) {
         this.service = service;
     }
 
@@ -124,11 +116,6 @@ public class FxSymbolsView extends CommonView implements View {
         iso1Editor = createIsoComboBox();
         iso2Editor = createIsoComboBox();
 
-        yesNoEditor = createBooleanComboBox();
-
-        firstRelationEditor = createFieldEditor();
-        secondRelationEditor = createFieldEditor();
-        thirdRelationEditor = createFieldEditor();
     }
 
     private void initGrid() {
@@ -203,34 +190,22 @@ public class FxSymbolsView extends CommonView implements View {
         ComboBox<String> base = createIsoComboBox();
         ComboBox<String> quoted = createIsoComboBox();
         ComboBox<Boolean> yesNo = createBooleanComboBox();
-        TextField b1s1 = createFieldEditor();
-        TextField b2s2 = createFieldEditor();
-        TextField b3s3 = createFieldEditor();
         functionClearEditor = () -> {
             base.clear();
             quoted.clear();
             yesNo.clear();
-            b1s1.clear();
-            b2s2.clear();
-            b3s3.clear();
             base.setComponentError(null);
             quoted.setComponentError(null);
-            b1s1.setComponentError(null);
-            b2s2.setComponentError(null);
-            b3s3.setComponentError(null);
             yesNo.setComponentError(null);
         };
 
         yesNo.setSelectedItem(true);
         base.setEmptySelectionAllowed(true);
         quoted.setEmptySelectionAllowed(true);
-        String defWidth = "120px";
+        String defWidth = "220px";
         base.setWidth(defWidth);
         quoted.setWidth(defWidth);
         yesNo.setWidth("80px");
-        b1s1.setWidth(defWidth);
-        b2s2.setWidth(defWidth);
-        b3s3.setWidth(defWidth);
 
         String reqStr = "Обязательное поле";
         binder = new Binder<>(SymbolConfigModel.class);
@@ -302,27 +277,6 @@ public class FxSymbolsView extends CommonView implements View {
         editor.setEmptySelectionAllowed(false);
         editor.setWidth(100.0f, Sizeable.Unit.PERCENTAGE);
         editor.setPopupWidth("400px");
-        return editor;
-    }
-
-
-    private TextField createFieldEditor() {
-        TextField editor = new TextField();
-        editor.addValueChangeListener((HasValue.ValueChangeListener<String>) event -> {
-            String val = event.getValue();
-            if (val == null || val.isEmpty()) {
-                return;
-            }
-            Matcher complexMatcher = complexCoefficientRegex.matcher(val);
-            Matcher simpleMatcher = simpleCoefficientRegex.matcher(val);
-            if (!complexMatcher.matches() && !simpleMatcher.matches()) {
-                editor.addStyleName("error-grid-cell");
-                editor.setDescription("Введены неверные данные"); //todo: change error description
-            } else {
-                editor.removeStyleName("error-grid-cell");
-                editor.setDescription(null);
-            }
-        });
         return editor;
     }
 

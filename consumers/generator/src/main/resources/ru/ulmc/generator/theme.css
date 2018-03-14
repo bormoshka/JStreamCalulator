@@ -1,0 +1,58 @@
+.toggle-button,
+.button {
+    -fx-background-color: #1976d2;
+    -fx-background-radius: 0;
+    -fx-text-fill: #ffffff;
+    -fx-margin: 0;
+}
+.text-area .content,
+.text-area {
+    -fx-text-fill: #ffffff;
+    -fx-background-color: #333333;
+}
+.text-field {
+    -fx-background-color: #ffffff,  #333333 ,  #333333;
+    -fx-background-insets: 0 0 -1 0, 0 0 0 0, 0 -1 3 -1;
+    -fx-background-radius: 0;
+    -fx-text-fill: #ffffff;
+    -fx-margin: 0;
+}
+.text-area:focused,
+.text-field:focused {
+    -fx-background-color: #1976d2 ,  #333333 ,  #333333;
+    -fx-background-insets: 0 0 -2 0, 0 0 0 0, 0 -1 3 -1;
+    -fx-text-fill: #ffffff;
+}
+
+.root{
+    -fx-background: #333333;
+    -fx-text-fill: -text-dark;
+    -fx-prompt-text-fill: rgba(255,255,255,.3);
+
+    -text-disabled: -text-disabled-dark;
+    -background-disabled:rgba(255,255,255,.12);
+    -background-fill: -text-dark;
+
+    -flat-button-hover-background: rgba(#CCCCCC,.15);
+    -flat-button-pressed-background: rgba(#CCCCCC,.25);
+    -flat-button-disabled-fill: rgba(#FFFFFF,.3);
+}
+.toggle-button:selected {
+    -fx-background-color: #184a95;
+}
+.toggle-button,
+.button {
+    -fx-background-color: #1976d2;
+}
+
+.toggle-button {
+    -fx-background-color: #1976d2;
+}
+
+.button:hover {
+    -fx-background-color: #198ced;
+}
+
+.button:hover {
+    -fx-background-color: #198ced;
+}

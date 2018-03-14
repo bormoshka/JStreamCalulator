@@ -2,7 +2,6 @@ package ru.ulmc.bank.calculator;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import ru.ulmc.bank.calculator.service.calculators.impl.MovingAverageTrendCalculator;
 import ru.ulmc.bank.dao.QuotesDao;
 import ru.ulmc.bank.dao.impl.FakeQuotesDao;
@@ -14,13 +13,12 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 
-@SpringBootTest
 public class MovingAvgCalculatorTests {
 
     @Test
     public void movingAvgTest() {
         Set<BasePrice> prices = new HashSet<>();
-        prices.add(new BasePrice(0, BigDecimal.valueOf(1.42), BigDecimal.valueOf(1.52)));
+        prices.add(new BasePrice(0, 1.42, 1.52));
         LocalDateTime now = LocalDateTime.now();
         BaseQuote newQuote = new BaseQuote(UUID.randomUUID().toString(), now, "RUB/USD", prices);
 

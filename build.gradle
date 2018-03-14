@@ -17,11 +17,7 @@ idea {
         testOutputDir file('build/classes/test')
     }
 }
-if (project.convention.findPlugin(JavaPluginConvention)) {
-    // Change the output directory for the main and test source sets back to the old path
-    sourceSets.main.output.classesDir = new File(buildDir, "classes/main")
-    sourceSets.test.output.classesDir = new File(buildDir, "classes/test")
-}
+
 allprojects {
     sourceCompatibility = '1.8'
     targetCompatibility = '1.8'
@@ -33,19 +29,36 @@ allprojects {
 buildscript {
     ext {
         springBootVersion = '1.5.4.RELEASE'
+        flinkVersion = '1.3.2'
+        vaadinMainVersion = '8.1.0'
+        scalaBinaryVersion = '2.10'
+        lombokVersion = '1.16.16'
         libs = [
-                jackson           : ["com.fasterxml.jackson.core:jackson-databind:+"],
+                cli               : 'commons-cli:commons-cli:1.4',
+                logging           : ["org.slf4j:slf4j-api:1.7.25",
+                                     "ch.qos.logback:logback-classic:1.1.11",
+                                     "org.slf4j:jcl-over-slf4j:1.7.25"],
+                flink             : ["org.apache.flink:flink-java:${flinkVersion}",
+                                     "org.apache.flink:flink-streaming-java_2.10:${flinkVersion}",
+                                     "org.apache.flink:flink-clients_2.10:${flinkVersion}",
+                                     "org.apache.flink:flink-connector-rabbitmq_2.10:1.3.2"],
+                jackson           : ["com.fasterxml.jackson.core:jackson-databind:+",
+                                     "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:+",
+                                     "com.fasterxml.jackson.module:jackson-module-parameter-names:+",
+                                     "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:+",
+                ],
+                commonsIo         : 'commons-io:commons-io:2.6',
                 zookeeper         : ["org.apache.curator:curator-x-discovery:+",
                                      "org.apache.curator:curator-x-async:+",
                                      "org.apache.curator:curator-recipes:+",
                                      "org.apache.curator:curator-framework:+"],
                 zookeeperTest     : ["org.apache.curator:curator-test:+"],
-                springBoot        : ["org.springframework.boot:spring-boot-starter-aop:${springBootVersion}",
-                                     "org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}"],
+                springBoot        : ["org.springframework.boot:spring-boot-starter-aop:${springBootVersion}"],
                 springBootMQ      : ["org.springframework.boot:spring-boot-starter-amqp:${springBootVersion}"],
                 springBootSecurity: ["org.springframework.boot:spring-boot-starter-security:${springBootVersion}",
                                      "org.springframework.security:spring-security-ldap:+"],
                 springBootWeb     : ["org.springframework.boot:spring-boot-starter-web:${springBootVersion}",
+                                     "org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}",
                                      "org.springframework.boot:spring-boot-starter-tomcat:${springBootVersion}"],
                 springBootJpa     : ["org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}",
                                      "org.hibernate:hibernate-java8:+"],
@@ -54,13 +67,13 @@ buildscript {
                 gson              : "com.google.code.gson:gson:2.7",
                 guava             : 'com.google.guava:guava:21.0',
                 javax             : ["javax.servlet:javax.servlet-api:+"],
-                lombok            : "org.projectlombok:lombok:1.16.16",
-                vaadin            : ["com.vaadin:vaadin-server:8.1.0",
-                                     "com.vaadin:vaadin-shared:8.1.0",
+                lombok            : "org.projectlombok:lombok:${lombokVersion}",
+                vaadin            : ["com.vaadin:vaadin-server:${vaadinMainVersion}",
+                                     "com.vaadin:vaadin-shared:${vaadinMainVersion}",
                                      "com.vaadin:vaadin-spring-boot:2.0.0",
-                                     "com.vaadin:vaadin-themes:8.1.0",
-                                     "com.vaadin:vaadin-client-compiled:8.1.0",
-                                     "com.vaadin:vaadin-push:8.1.0",
+                                     "com.vaadin:vaadin-themes:${vaadinMainVersion}",
+                                     "com.vaadin:vaadin-client-compiled:${vaadinMainVersion}",
+                                     "com.vaadin:vaadin-push:${vaadinMainVersion}",
                                      "com.vaadin.external.atmosphere:atmosphere-runtime:+",
                                      "org.vaadin.spring.extensions:vaadin-spring-ext-boot:2.0.0.RELEASE",
                                      "org.vaadin.spring.extensions:vaadin-spring-ext-core:2.0.0.RELEASE",
@@ -70,11 +83,12 @@ buildscript {
                 test              : "org.springframework.boot:spring-boot-starter-test:${springBootVersion}",
                 junit             : "junit:junit:+",
         ]
-        mods = [model     : project(':application:model'),
-                core      : project(":application:core"),
-                client    : project(":application:client"),
-                calculator: project(":application:calculator"),
-                api       : project(":application:api")
+        mods = [model        : project(':application:model'),
+                core         : project(":application:core"),
+                client       : project(":application:client"),
+                calculator   : project(":application:calculator"),
+                configuration: project(":application:configuration"),
+                api          : project(":application:api")
         ]
     }
 
@@ -82,5 +96,6 @@ buildscript {
     dependencies {
         classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
         classpath "fi.jasoft.plugin:gradle-vaadin-plugin:1.1.9"
+        classpath 'org.javafxports:jfxmobile-plugin:1.0.0-b10'
     }
 }

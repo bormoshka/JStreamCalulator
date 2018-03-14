@@ -99,7 +99,7 @@ public class InitialRolesAndPermissionSetup implements ApplicationListener<Conte
     }
 
     @Transactional
-    private Permission createPermissionIfNotFound(String name) {
+    protected Permission createPermissionIfNotFound(String name) {
         Permission permission = permissionRepository.findByName(name);
         if (permission == null) {
             permission = new Permission(name);
@@ -109,7 +109,7 @@ public class InitialRolesAndPermissionSetup implements ApplicationListener<Conte
     }
 
     @Transactional
-    private UserRole createRoleIfNotFound(String name, Set<Permission> permissions) {
+    protected UserRole createRoleIfNotFound(String name, Set<Permission> permissions) {
         UserRole role = roleRepository.findByName(name);
         if (role == null) {
             role = new UserRole(name);

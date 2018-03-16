@@ -7,15 +7,11 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.rabbitmq.RMQSource;
 import org.apache.flink.streaming.connectors.rabbitmq.common.RMQConnectionConfig;
-import org.codehaus.jackson.map.Serializers;
 import ru.ulmc.bank.bean.IBaseQuote;
 import ru.ulmc.bank.calculator.environment.EnvironmentHolder;
-import ru.ulmc.bank.calculator.environment.ResourcesEnvironment;
-import ru.ulmc.bank.calculator.environment.impl.DefaultResourcesEnvironment;
 import ru.ulmc.bank.calculator.serialization.QuoteJsonSerializationSchema;
 import ru.ulmc.bank.calculator.service.processors.DefaultProcessor;
 import ru.ulmc.bank.constants.Queues;
-import ru.ulmc.bank.entities.persistent.financial.BaseQuote;
 
 @Slf4j
 public class CalculatorApplication {
@@ -48,10 +44,10 @@ public class CalculatorApplication {
         stream.addSink(baseQuote -> log.info("Got a quote {}", baseQuote));
         stream.process(processor)
                 .addSink(quote -> log.info("CalculatedQuote: {}", quote));
-       // stream.addSink(new RMQSink<>(
-       //         connectionConfig,
-       //         Queues.BASE_QUOTES_REPLY,
-       //         new TypeInformationSerializationSchema<>(TypeInformation.of(IBaseQuote.class), env.getConfig())));
+        // stream.addSink(new RMQSink<>(
+        //         connectionConfig,
+        //         Queues.BASE_QUOTES_REPLY,
+        //         new TypeInformationSerializationSchema<>(TypeInformation.of(IBaseQuote.class), env.getConfig())));
         env.execute("Rabbit MQ CalculatorApplication");
     }
 }

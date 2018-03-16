@@ -23,9 +23,9 @@ import org.vaadin.spring.security.VaadinSecurity;
 import org.vaadin.spring.security.util.SecurityExceptionUtils;
 import ru.ulmc.bank.ui.views.ErrorView;
 import ru.ulmc.bank.ui.views.HomeView;
+import ru.ulmc.bank.ui.views.LoginForm;
 import ru.ulmc.bank.ui.widgets.MainMenuBarBuilder;
 import ru.ulmc.bank.ui.widgets.Notifier;
-import ru.ulmc.bank.ui.views.LoginForm;
 
 import javax.servlet.ServletException;
 

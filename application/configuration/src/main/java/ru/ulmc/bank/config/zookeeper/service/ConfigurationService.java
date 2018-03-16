@@ -31,4 +31,8 @@ public class ConfigurationService {
     public Collection<SymbolConfig> getSymbols() {
         return symbolConfigStorage.getSymbolConfigs();
     }
+
+    public void saveSymbols(Collection<SymbolConfig> symbolConfigs) {
+        symbolConfigStorage.saveSymbolConfigs(symbolConfigs);
+    }
 }

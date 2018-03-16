@@ -1,8 +1,8 @@
 package ru.ulmc.bank.dao;
 
+import ru.ulmc.bank.entities.inner.AverageQuote;
 import ru.ulmc.bank.entities.persistent.financial.BaseQuote;
 import ru.ulmc.bank.entities.persistent.financial.Quote;
-import ru.ulmc.bank.entities.inner.AverageQuote;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

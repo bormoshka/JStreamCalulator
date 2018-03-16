@@ -12,10 +12,7 @@ import ru.ulmc.bank.entities.configuration.SymbolConfig;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -121,7 +118,7 @@ public class SymbolConfigStorage implements Closeable {
         return result.getData();
     }
 
-    public List<SymbolConfig> saveSymbolConfigs(@NonNull List<SymbolConfig> symbolConfigs) {
+    public List<SymbolConfig> saveSymbolConfigs(@NonNull Collection<SymbolConfig> symbolConfigs) {
         Map<String, SymbolConfig> savedCurrencies = symbolConfigs.stream().collect(Collectors.toMap(o -> convertSymbolKey(o.getSymbol()), k -> k));
         Result<List<SymbolConfig>> listResult = symbolMonitor.saveAll(savedCurrencies);
         if (listResult.getErrorMessage() != null) {

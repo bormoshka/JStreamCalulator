@@ -288,11 +288,10 @@ public class SymbolsView extends CommonView implements View {
             try {
                 removeFantomPairs();
                 preDeletedSymbols.forEach(service::deleteSymbol);
-                Set<String> currentSymbols = allData.stream()
-                        .map(SymbolConfigModel::getSymbol)
+                Set<SymbolConfig> currentSymbols = allData.stream()
+                        .map(SymbolConfigModel::getSymbolEntity)
                         .collect(Collectors.toSet());
-                // Удалим неактуальные символы, которые остались от изменения
-
+                service.saveSymbols(currentSymbols);
 
                 preDeletedSymbols.clear();
                 preSavedEntities.clear();
@@ -339,7 +338,7 @@ public class SymbolsView extends CommonView implements View {
     private void onAdd(Button.ClickEvent event) {
         try {
             if (binder.isValid()) {
-                SymbolConfigModel bean = new SymbolConfigModel();
+                SymbolConfigModel bean = new SymbolConfigModel(iso1Editor.getValue() + "/" + iso2Editor.getValue());
                 binder.writeBean(bean);
                 SymbolConfigModel ce = validateBean(processBean(bean));
                 if (isSymbolAlreadyExists(ce.getSymbol())) {

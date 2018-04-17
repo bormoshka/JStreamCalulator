@@ -1,14 +1,16 @@
-package ru.ulmc.bank.calculator.service.calculators.impl;
+package ru.ulmc.bank.calculators.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import lombok.NoArgsConstructor;
+import ru.ulmc.bank.calculators.Calculator;
+import ru.ulmc.bank.calculators.ResourcesEnvironment;
+import ru.ulmc.bank.calculators.util.CalcPlugin;
 import ru.ulmc.bank.dao.QuotesDao;
-import ru.ulmc.bank.calculator.service.calculators.Calculator;
 import ru.ulmc.bank.entities.inner.AverageQuote;
 import ru.ulmc.bank.entities.inner.CalculatorResult;
 import ru.ulmc.bank.entities.persistent.financial.BaseQuote;
 import ru.ulmc.bank.entities.persistent.financial.Price;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,14 +18,18 @@ import java.util.List;
 /**
  * Ordinary Least Squares
  */
-@Component
+@CalcPlugin(name = "Вычислитель МНК",
+        description = "Математический метод, применяемый для решения различных задач, основанный на минимизации суммы" +
+                " квадратов отклонений некоторых функций от искомых переменных")
+@NoArgsConstructor
 public class OlsTrendCalculator implements Calculator {
-    private final QuotesDao quotesDao;
+    private QuotesDao quotesDao;
     private int timeSeries = 90;
 
-    @Autowired
-    public OlsTrendCalculator(QuotesDao dao) {
-        this.quotesDao = dao;
+    @Override
+    public Calculator initialize(ResourcesEnvironment environment) {
+        quotesDao = environment.getQuotesDao();
+        return this;
     }
 
     //расчет прогнозной котировки методом наименьших квадратов
@@ -38,8 +44,8 @@ public class OlsTrendCalculator implements Calculator {
         double ratioAForOffer = calcRatioAForOffer(statisticAvgQuotes);
         double ratioBForOffer = calcRatioBForOffer(statisticAvgQuotes);
 
-        double forecastBid = ratioAForBid * (statisticAvgQuotes.size() + 1) + ratioBForBid;
-        double forecastOffer = ratioAForOffer * (statisticAvgQuotes.size() + 1) + ratioBForOffer;
+        BigDecimal forecastBid = new BigDecimal(ratioAForBid * (statisticAvgQuotes.size() + 1) + ratioBForBid); //todo: расчеты в bigDecimal
+        BigDecimal forecastOffer = BigDecimal.valueOf(ratioAForOffer * (statisticAvgQuotes.size() + 1) + ratioBForOffer);
 
         double inaccuracyForBid = calcInaccuracyBid(statisticAvgQuotes, ratioAForBid, ratioBForBid);
         double inaccuracyForOffer = calcInaccuracyOffer(statisticAvgQuotes, ratioAForOffer, ratioBForOffer);
@@ -61,7 +67,7 @@ public class OlsTrendCalculator implements Calculator {
     private double calcSumQuotesBid(List<AverageQuote> averageQuotes) {
         double sumQuotesBid = 0.0;
         for (AverageQuote quote : averageQuotes) {
-            sumQuotesBid += quote.getAverageQuoteBid();
+            sumQuotesBid += quote.getAverageQuoteBid().doubleValue();
         }
         return sumQuotesBid;
     }
@@ -69,7 +75,7 @@ public class OlsTrendCalculator implements Calculator {
     private double calcSumQuotesOffer(List<AverageQuote> averageQuotes) {
         double sumQuotesBid = 0.0;
         for (AverageQuote quote : averageQuotes) {
-            sumQuotesBid += quote.getAverageQuoteOffer();
+            sumQuotesBid += quote.getAverageQuoteOffer().doubleValue();
         }
         return sumQuotesBid;
     }
@@ -82,18 +88,20 @@ public class OlsTrendCalculator implements Calculator {
         return sumPeriods;
     }
 
-    private double calcSumMultiplyQuotesBidAndPeriod(ArrayList<AverageQuote> averageQuotes) {
-        double sumMultiplyQuotesAndPeriod = 0.0;
+    private BigDecimal calcSumMultiplyQuotesBidAndPeriod(ArrayList<AverageQuote> averageQuotes) {
+        BigDecimal sumMultiplyQuotesAndPeriod = BigDecimal.ZERO;
         for (int i = 0; i < averageQuotes.size(); i++) {
-            sumMultiplyQuotesAndPeriod += averageQuotes.get(i).getAverageQuoteBid() * (i + 1);
+            sumMultiplyQuotesAndPeriod = sumMultiplyQuotesAndPeriod.add(
+                    averageQuotes.get(i).getAverageQuoteBid().multiply(BigDecimal.valueOf(i + 1)));
         }
         return sumMultiplyQuotesAndPeriod;
     }
 
-    private double calcSumMultiplyQuotesOfferAndPeriod(ArrayList<AverageQuote> averageQuotes) {
-        double sumMultiplyQuotesAndPeriod = 0.0;
+    private BigDecimal calcSumMultiplyQuotesOfferAndPeriod(ArrayList<AverageQuote> averageQuotes) {
+        BigDecimal sumMultiplyQuotesAndPeriod = BigDecimal.ZERO;
         for (int i = 0; i < averageQuotes.size(); i++) {
-            sumMultiplyQuotesAndPeriod += averageQuotes.get(i).getAverageQuoteOffer() * (i + 1);
+            sumMultiplyQuotesAndPeriod = sumMultiplyQuotesAndPeriod.add(
+                    averageQuotes.get(i).getAverageQuoteOffer().multiply(BigDecimal.valueOf(i + 1)));
         }
         return sumMultiplyQuotesAndPeriod;
     }
@@ -109,7 +117,7 @@ public class OlsTrendCalculator implements Calculator {
     private double calcRatioAForBid(ArrayList<AverageQuote> averageQuotes) {
         double sumQuotesBid = calcSumQuotesBid(averageQuotes);
         double sumPeriods = calcSumPeriod(averageQuotes);
-        double sumMultiplyQuotesAndPeriod = calcSumMultiplyQuotesBidAndPeriod(averageQuotes);
+        double sumMultiplyQuotesAndPeriod = calcSumMultiplyQuotesBidAndPeriod(averageQuotes).doubleValue(); // todo: fix
         double sumSqrtPeriod = calcSumSquarePeriod(averageQuotes);
 
         return ((sumMultiplyQuotesAndPeriod) - (sumQuotesBid * sumPeriods) / averageQuotes.size()) / (sumSqrtPeriod - sumPeriods * sumPeriods / averageQuotes.size());
@@ -118,7 +126,7 @@ public class OlsTrendCalculator implements Calculator {
     private double calcRatioAForOffer(ArrayList<AverageQuote> averageQuotes) {
         double sumQuotesOffer = calcSumQuotesOffer(averageQuotes);
         double sumPeriods = calcSumPeriod(averageQuotes);
-        double sumMultiplyQuotesAndPeriod = calcSumMultiplyQuotesOfferAndPeriod(averageQuotes);
+        double sumMultiplyQuotesAndPeriod = calcSumMultiplyQuotesOfferAndPeriod(averageQuotes).doubleValue(); // todo: fix
         double sumSqrtQuotesOffer = calcSumSquarePeriod(averageQuotes);
 
         return ((sumMultiplyQuotesAndPeriod) - (sumQuotesOffer * sumPeriods) / averageQuotes.size()) / (sumSqrtQuotesOffer - sumPeriods * sumPeriods / averageQuotes.size());
@@ -143,7 +151,7 @@ public class OlsTrendCalculator implements Calculator {
     private double calcInaccuracyBid(ArrayList<AverageQuote> averageQuotes, double ratioAForBid, double ratioBForBid) {
         double sumDeviations = 0.0;
         for (int i = 0; i < averageQuotes.size(); i++) {
-            double factValue = averageQuotes.get(i).getAverageQuoteBid();
+            double factValue = averageQuotes.get(i).getAverageQuoteBid().doubleValue(); // todo: fix
             sumDeviations += ((ratioAForBid * (i + 1) + ratioBForBid) - factValue) / factValue * 100;
         }
         return sumDeviations / averageQuotes.size();
@@ -152,7 +160,7 @@ public class OlsTrendCalculator implements Calculator {
     private double calcInaccuracyOffer(ArrayList<AverageQuote> averageQuotes, double ratioAForOffer, double ratioBForOffer) {
         double sumDeviations = 0.0;
         for (int i = 0; i < averageQuotes.size(); i++) {
-            double factValue = averageQuotes.get(i).getAverageQuoteOffer();
+            double factValue = averageQuotes.get(i).getAverageQuoteOffer().doubleValue(); // todo: fix
             sumDeviations += ((ratioAForOffer * (i + 1) + ratioBForOffer) - factValue) / factValue * 100;
         }
         return sumDeviations / averageQuotes.size();

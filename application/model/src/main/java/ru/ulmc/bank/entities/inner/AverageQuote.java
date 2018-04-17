@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -14,7 +15,7 @@ public class AverageQuote implements Serializable {
     //private final String id;
     private final LocalDateTime datetime;
     private final String symbol;
-    private double averageQuoteBid;
-    private double averageQuoteOffer;
+    private BigDecimal averageQuoteBid;
+    private BigDecimal averageQuoteOffer;
 
 }

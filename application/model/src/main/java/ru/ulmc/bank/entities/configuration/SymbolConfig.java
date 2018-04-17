@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NonNull;
 
 import java.io.Serializable;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -15,7 +16,7 @@ public class SymbolConfig implements Serializable {
     private Boolean active;
     private Double bidBaseModifier;
     private Double offerBaseModifier;
-    private Set<String> calculators;
+    private Map<String, SymbolCalculatorConfig> calculators;
 
     private SymbolConfig() {
     }

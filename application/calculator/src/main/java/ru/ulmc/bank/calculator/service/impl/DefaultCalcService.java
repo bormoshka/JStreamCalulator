@@ -1,50 +1,55 @@
 package ru.ulmc.bank.calculator.service.impl;
 
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import ru.ulmc.bank.bean.IBaseQuote;
 import ru.ulmc.bank.calculator.service.CalcService;
-import ru.ulmc.bank.calculator.service.calculators.impl.DynamicCalculator;
-import ru.ulmc.bank.calculator.service.calculators.impl.OlsTrendCalculator;
+import ru.ulmc.bank.calculator.service.transfer.CalculationOutput;
+import ru.ulmc.bank.calculators.Calculator;
 import ru.ulmc.bank.entities.configuration.SymbolConfig;
 import ru.ulmc.bank.entities.persistent.financial.BaseQuote;
 import ru.ulmc.bank.entities.persistent.financial.CalcPrice;
-import ru.ulmc.bank.entities.persistent.financial.Price;
 import ru.ulmc.bank.entities.persistent.financial.Quote;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
  * Сервис, отвечающий за вычисление котировок при нормальных отклонениях.
  */
 @Slf4j
-@Component
+@RequiredArgsConstructor
 public class DefaultCalcService implements CalcService {
-    private final DynamicCalculator dynamicCalculator;
-    private final OlsTrendCalculator olsTrendCalculator;
-
-    @Autowired
-    public DefaultCalcService(DynamicCalculator dynamicCalculator,
-                              OlsTrendCalculator olsTrendCalculator) {
-        this.dynamicCalculator = dynamicCalculator;
-        this.olsTrendCalculator = olsTrendCalculator;
-    }
 
     @Override
-    public Quote calculateQuoteForSymbol(@NonNull SymbolConfig symbolConfig,@NonNull BaseQuote newQuote) {
+    public Quote calculateQuoteForSymbol(@NonNull SymbolConfig symbolConfig, @NonNull CalculationOutput quotePreResult) {
         //todo: Реализовать вычисление по формуле
         Set<CalcPrice> prices = new HashSet<>();
-        newQuote.getPrices().forEach(bp -> prices.add(calc(bp.getVolume(), bp.getBid(), bp.getOffer(),
-                symbolConfig.getBidBaseModifier(), symbolConfig.getOfferBaseModifier())));
-        return new Quote(LocalDateTime.now(), symbolConfig.getSymbol(), prices, newQuote);
+        IBaseQuote quote = quotePreResult.getQuote();
+        quote.getPrices().forEach(bp ->
+                prices.add(calc(symbolConfig, bp.getVolume(), bp.getBid(), bp.getOffer())));
+        return new Quote(LocalDateTime.now(), symbolConfig.getSymbol(), prices, (BaseQuote) quote);
     }
 
-    private CalcPrice calc(int volume, double bidBase, double offerBase, double b, double o) {
-        double bid = bidBase - bidBase * b;
-        double offer = offerBase + bidBase * o;
-        return new CalcPrice(volume, bid, offer);
+    private CalcPrice calc(SymbolConfig symbolConfig, int volume, BigDecimal bidBase, BigDecimal offerBase) {
+        BigDecimal modBid = calcModifiedBid(bidBase, symbolConfig.getBidBaseModifier());
+        BigDecimal modOffer = calcModifiedOffer(offerBase, symbolConfig.getOfferBaseModifier());
+
+        //BigDecimal olsBid = symbolConfig.getCalculators()
+
+        return new CalcPrice(volume, modBid, modOffer);
+    }
+
+
+    private BigDecimal calcModifiedBid(BigDecimal base, double modifier) {
+        return base.subtract(base.multiply(BigDecimal.valueOf(modifier)));
+    }
+
+    private BigDecimal calcModifiedOffer(BigDecimal base, double modifier) {
+        return base.add(base.multiply(BigDecimal.valueOf(modifier)));
     }
 }

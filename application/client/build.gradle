@@ -6,7 +6,9 @@ apply plugin: 'maven'
 dependencies {
     compile libs.springBootWeb,
             libs.vaadin,
+            mods.api,
             mods.core,
+            mods.dynCalc,
             mods.configuration,
             libs.guava
     compileOnly libs.lombok,

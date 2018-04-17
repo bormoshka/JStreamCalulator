@@ -1,6 +1,5 @@
 package ru.ulmc.bank.dao.impl;
 
-import org.springframework.stereotype.Component;
 import ru.ulmc.bank.dao.QuotesDao;
 import ru.ulmc.bank.entities.inner.AverageQuote;
 import ru.ulmc.bank.entities.persistent.financial.BasePrice;
@@ -8,7 +7,6 @@ import ru.ulmc.bank.entities.persistent.financial.BaseQuote;
 import ru.ulmc.bank.entities.persistent.financial.Price;
 import ru.ulmc.bank.entities.persistent.financial.Quote;
 
-import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,24 +23,25 @@ public class FakeQuotesDao implements QuotesDao {
     private LocalDateTime date = LocalDateTime.now();
 
     public FakeQuotesDao() {
+        postConstruct();
     }
 
     public FakeQuotesDao(String symbol, List<BaseQuote> baseQuotes) {
+        this();
         baseQuotesBySymbol.put(symbol, baseQuotes);
     }
 
     public static BaseQuote createBaseQuote(String symbol, double value, LocalDateTime date) {
         Set<BasePrice> prices = new HashSet<>();
 
-        prices.add(new BasePrice(000, value - spread, value + spread));
-        prices.add(new BasePrice(100, value - spread, value + spread));
-        prices.add(new BasePrice(300, value - spread, value + spread));
-        prices.add(new BasePrice(500, value - spread, value + spread));
+        prices.add(new BasePrice(0, BigDecimal.valueOf(value - spread), BigDecimal.valueOf(value + spread)));
+        prices.add(new BasePrice(100, BigDecimal.valueOf(value - spread), BigDecimal.valueOf(value + spread)));
+        prices.add(new BasePrice(300, BigDecimal.valueOf(value - spread), BigDecimal.valueOf(value + spread)));
+        prices.add(new BasePrice(500, BigDecimal.valueOf(value - spread), BigDecimal.valueOf(value + spread)));
 
         return new BaseQuote(UUID.randomUUID().toString(), date, symbol, prices);
     }
 
-    @PostConstruct
     private void postConstruct() {
         baseQuotesBySymbol.put(symbol, new ArrayList<>());
         new Random().doubles(40, 55).limit(10000)
@@ -52,6 +51,11 @@ public class FakeQuotesDao implements QuotesDao {
     private void createFakeBaseQuote(double value) {
         date = date.minus(secondsToMinus, ChronoUnit.SECONDS);
         baseQuotesBySymbol.get(symbol).add(createBaseQuote(symbol, value, date));
+    }
+
+    @Override
+    public void save(BaseQuote quote) {
+
     }
 
     @Override
@@ -118,22 +122,22 @@ public class FakeQuotesDao implements QuotesDao {
         return fits && (startDateTime == null || check.isAfter(startDateTime));
     }
 
-    private Double getAvgBid(List<BaseQuote> quotes) {
+    private BigDecimal getAvgBid(List<BaseQuote> quotes) {
         Set<Price> prices = getPricesForZeroVolume(quotes);
         double result = 0;
         for (Price p : prices) {
             result += p.getBid().doubleValue();
         }
-        return result / prices.size();
+        return BigDecimal.valueOf(result / prices.size());
     }
 
-    private Double getAvgOffer(List<BaseQuote> quotes) {
+    private BigDecimal getAvgOffer(List<BaseQuote> quotes) {
         Set<Price> prices = getPricesForZeroVolume(quotes);
         double result = 0;
         for (Price p : prices) {
             result += p.getOffer().doubleValue();
         }
-        return result / prices.size();
+        return BigDecimal.valueOf(result / prices.size());
     }
 
     private Set<Price> getPricesForZeroVolume(List<BaseQuote> quotes) {

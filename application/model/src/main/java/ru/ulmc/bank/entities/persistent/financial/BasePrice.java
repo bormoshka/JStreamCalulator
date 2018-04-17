@@ -18,7 +18,7 @@ public final class BasePrice extends Price {
     @JoinColumn(name = "quote_id", nullable = false)
     private BaseQuote quote;
 
-    public BasePrice(int volume, Double bid, Double offer) {
+    public BasePrice(int volume, BigDecimal bid, BigDecimal offer) {
         super(volume, bid, offer);
     }
 }

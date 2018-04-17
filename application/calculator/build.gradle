@@ -2,7 +2,11 @@ apply plugin: 'java'
 apply plugin: 'idea'
 
 dependencies {
-    compile mods.model, mods.configuration, mods.api, libs.guava, libs.logging, libs.cli, libs.flink
+    compile mods.model,
+            mods.configuration,
+            mods.api,
+            mods.dynCalc,
+            libs.guava, libs.logging, libs.cli, libs.flink
     compileOnly libs.lombok, libs.flink
     testCompile libs.junit
 }

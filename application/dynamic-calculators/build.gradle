@@ -1,0 +1,11 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+
+dependencies {
+    compile libs.reflection
+    compileOnly libs.lombok,
+            mods.model,
+            mods.configuration,
+            mods.api
+    testCompile libs.junit
+}

@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import ru.ulmc.bank.bean.IBaseQuote;
 import ru.ulmc.bank.bean.IPrice;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -18,7 +19,7 @@ public class QuoteEntity implements IBaseQuote {
     private LocalDateTime datetime = LocalDateTime.now();
     private String id = UUID.randomUUID().toString();
 
-    public QuoteEntity(String symbol, Double bid, Double offer) {
+    public QuoteEntity(String symbol, BigDecimal bid, BigDecimal offer) {
         this.symbol = symbol;
         prices.add(new IPrice() {
             @Override
@@ -27,12 +28,12 @@ public class QuoteEntity implements IBaseQuote {
             }
 
             @Override
-            public Double getBid() {
+            public BigDecimal getBid() {
                 return bid;
             }
 
             @Override
-            public Double getOffer() {
+            public BigDecimal getOffer() {
                 return offer;
             }
         });
@@ -43,12 +44,12 @@ public class QuoteEntity implements IBaseQuote {
             }
 
             @Override
-            public Double getBid() {
+            public BigDecimal getBid() {
                 return bid;
             }
 
             @Override
-            public Double getOffer() {
+            public BigDecimal getOffer() {
                 return offer;
             }
         });

@@ -30,7 +30,7 @@ import ru.ulmc.bank.core.service.impl.UserServiceImpl;
 @Profile("db-auth")
 public class WebSecurityConfigDb extends WebSecurityConfigCommon {
 
-    @Value("${auth.provider}")
+    @Value("${auth.provider:db}")
     private String authProvider;
 
     @Autowired

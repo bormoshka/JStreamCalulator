@@ -16,19 +16,6 @@ import javax.servlet.Filter;
 @ComponentScan({"ru.ulmc.bank"})
 public class SpringMvcConfig extends WebMvcConfigurerAdapter {
 
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        //registry.addResourceHandler("/VAADIN/**").addResourceLocations("/resources/");
-    }
-
-    /*@Bean
-    public InternalResourceViewResolver viewResolver() {
-        InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
-        viewResolver.setPrefix("/templates/");
-        viewResolver.setSuffix(".html");
-        return viewResolver;
-    }*/
-
     @Bean
     public Filter getCharsetFilter() {
         return new CharsetFilter();

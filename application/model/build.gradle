@@ -4,9 +4,40 @@ version rootProject.version
 apply plugin: 'java'
 apply plugin: 'maven'
 
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+        outputDir = file('build/classes/java/main')
+        testOutputDir = file('build/classes/java/test')
+    }
+}
+
+sourceSets {
+    main {
+        output.resourcesDir = "build/classes/java/main"
+    }
+    test {
+        output.resourcesDir = "build/classes/java/test"
+    }
+}
+
+
+jar {
+    from {
+        configurations.extraLibs
+    }
+}
+configurations {
+    // configuration that holds jars to copy into lib
+    extraLibs
+}
+
 dependencies {
-    compile libs.springBootJpa,
-            mods.api
+    compile libs.springBootJpa, mods.api, libs.ignite
+    extraLibs    'org.hibernate.ogm:hibernate-ogm-core:5.3.1.Final',
+            'org.hibernate.ogm:hibernate-ogm-ignite:5.3.1.Final',
+            'org.jboss.jbossts:jbossjta:4.16.4.Final'
     compileOnly libs.lombok
     testCompile libs.test
 }

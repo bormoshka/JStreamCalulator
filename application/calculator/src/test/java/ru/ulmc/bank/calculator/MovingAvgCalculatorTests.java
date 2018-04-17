@@ -2,22 +2,27 @@ package ru.ulmc.bank.calculator;
 
 import org.junit.Assert;
 import org.junit.Test;
-import ru.ulmc.bank.calculator.service.calculators.impl.MovingAverageTrendCalculator;
+import ru.ulmc.bank.calculators.ResourcesEnvironment;
+import ru.ulmc.bank.calculators.impl.MovingAverageTrendCalculator;
+import ru.ulmc.bank.config.zookeeper.storage.SymbolConfigStorage;
 import ru.ulmc.bank.dao.QuotesDao;
 import ru.ulmc.bank.dao.impl.FakeQuotesDao;
 import ru.ulmc.bank.entities.inner.CalculatorResult;
 import ru.ulmc.bank.entities.persistent.financial.BasePrice;
 import ru.ulmc.bank.entities.persistent.financial.BaseQuote;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
+
+import static java.math.BigDecimal.valueOf;
 
 public class MovingAvgCalculatorTests {
 
     @Test
     public void movingAvgTest() {
         Set<BasePrice> prices = new HashSet<>();
-        prices.add(new BasePrice(0, 1.42, 1.52));
+        prices.add(new BasePrice(0, valueOf(1.42), valueOf(1.52)));
         LocalDateTime now = LocalDateTime.now();
         BaseQuote newQuote = new BaseQuote(UUID.randomUUID().toString(), now, "RUB/USD", prices);
 
@@ -36,10 +41,21 @@ public class MovingAvgCalculatorTests {
 
 
         QuotesDao dao = new FakeQuotesDao("RUB/USD", baseQuotes);
-        MovingAverageTrendCalculator calc = new MovingAverageTrendCalculator(dao);
+        MovingAverageTrendCalculator calc = new MovingAverageTrendCalculator();
+        calc.initialize(new ResourcesEnvironment() {
+            @Override
+            public QuotesDao getQuotesDao() {
+                return dao;
+            }
+
+            @Override
+            public SymbolConfigStorage getSymbolConfigStorage() {
+                return null;
+            }
+        });
         CalculatorResult result = calc.calc(newQuote);
 
-        Assert.assertEquals(1.86875, result.getResultForBid(), 0.0001);
+        Assert.assertEquals(1.86875, result.getResultForBid().doubleValue(), 0.0001);
         Assert.assertEquals(18.702, result.getInaccuracyForBid(), 0.001);
     }
 }

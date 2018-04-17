@@ -3,6 +3,7 @@ package ru.ulmc.bank.entities.persistent.financial;
 import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -15,7 +16,7 @@ public final class CalcPrice extends Price {
     @JoinColumn(name = "quote_id", nullable = false)
     private Quote quote;
 
-    public CalcPrice(int volume, Double bid, Double offer) {
+    public CalcPrice(int volume, BigDecimal bid, BigDecimal offer) {
         super(volume, bid, offer);
     }
 }

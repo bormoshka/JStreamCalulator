@@ -2,7 +2,9 @@ package ru.ulmc.bank.calculator;
 
 import org.junit.Assert;
 import org.junit.Test;
-import ru.ulmc.bank.calculator.service.calculators.impl.OlsTrendCalculator;
+import ru.ulmc.bank.calculators.ResourcesEnvironment;
+import ru.ulmc.bank.calculators.impl.OlsTrendCalculator;
+import ru.ulmc.bank.config.zookeeper.storage.SymbolConfigStorage;
 import ru.ulmc.bank.dao.QuotesDao;
 import ru.ulmc.bank.dao.impl.FakeQuotesDao;
 import ru.ulmc.bank.entities.inner.CalculatorResult;
@@ -13,12 +15,14 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.*;
 
+import static java.math.BigDecimal.valueOf;
+
 public class MnkCalculatorTests {
 
     @Test
     public void mnkTest() {
         Set<BasePrice> prices = new HashSet<>();
-        prices.add(new BasePrice(0, 1.42, 1.52));
+        prices.add(new BasePrice(0, valueOf(1.42), valueOf(1.52)));
         BaseQuote newQuote = new BaseQuote(UUID.randomUUID().toString(), LocalDateTime.now(), "RUB/USD", prices);
 
         List<BaseQuote> baseQuotes = new ArrayList<>();
@@ -36,11 +40,22 @@ public class MnkCalculatorTests {
 
 
         QuotesDao dao = new FakeQuotesDao("RUB/USD", baseQuotes);
-        OlsTrendCalculator mnkCalc = new OlsTrendCalculator(dao);
+        OlsTrendCalculator mnkCalc = new OlsTrendCalculator();
+        mnkCalc.initialize(new ResourcesEnvironment() {
+            @Override
+            public QuotesDao getQuotesDao() {
+                return dao;
+            }
+
+            @Override
+            public SymbolConfigStorage getSymbolConfigStorage() {
+                return null;
+            }
+        });
         CalculatorResult result = mnkCalc.calc(newQuote);
 
-        Assert.assertEquals(1.41667, result.getResultForBid(), 0.0001);
-        Assert.assertEquals(1.69667, result.getResultForOffer(), 0.0001);
+        Assert.assertEquals(1.41667, result.getResultForBid().doubleValue(), 0.0001);
+        Assert.assertEquals(1.69667, result.getResultForOffer().doubleValue(), 0.0001);
         Assert.assertEquals(1.77218, result.getInaccuracyForBid(), 0.0001);
         Assert.assertEquals(1.72892, result.getInaccuracyForOffer(), 0.0001);
     }

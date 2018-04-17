@@ -6,6 +6,7 @@ import javafx.scene.control.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
@@ -60,7 +61,7 @@ public class Controller {
             return;
         }
         try {
-            QuoteEntity entity = new QuoteEntity(symbol, bid, offer);
+            QuoteEntity entity = new QuoteEntity(symbol, BigDecimal.valueOf(bid), BigDecimal.valueOf(offer));
             log("Отправка на публикацию: " + entity);
             publishingController.publish(entity);
             log("Отправлено");

@@ -8,4 +8,6 @@ include 'application:calculator'
 include 'application:configuration'
 include 'consumers:dashboard'
 include 'consumers:generator'
+include 'application:dynamic-calculators'
+findProject(':application:dynamic-calculators')?.name = 'dynamic-calculators'
 

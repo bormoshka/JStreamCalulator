@@ -24,12 +24,12 @@ public abstract class Price implements IPrice {
     @Column(name = "VOL")
     protected int volume;
     @Column(name = "BID")
-    protected Double bid;
+    protected BigDecimal bid;
     @Column(name = "OFFER")
-    protected Double offer;
+    protected BigDecimal offer;
 
-    public Price(int volume, Double bid, Double offer) {
-        if (volume < 0 || bid == null || offer == null || bid > offer) {
+    public Price(int volume, BigDecimal bid, BigDecimal offer) {
+        if (volume < 0 || bid == null || offer == null || bid.compareTo(offer) > 0) {
             throw new IllegalArgumentException("Illegal arguments: volume = " + volume + " bid=" + bid + " offer=" + offer + ". " +
                     "Some of them are null or bid is greater than offer!");
         }

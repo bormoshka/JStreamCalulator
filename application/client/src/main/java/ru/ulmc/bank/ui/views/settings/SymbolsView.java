@@ -16,13 +16,12 @@ import com.vaadin.ui.components.grid.MultiSelectionModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.ulmc.bank.core.common.Perms;
 import ru.ulmc.bank.config.zookeeper.service.ConfigurationService;
+import ru.ulmc.bank.core.common.Perms;
 import ru.ulmc.bank.entities.configuration.Currency;
 import ru.ulmc.bank.entities.configuration.SymbolConfig;
-import ru.ulmc.bank.ui.common.SymbolUtil;
-import ru.ulmc.bank.ui.entity.SymbolConfigModel;
 import ru.ulmc.bank.ui.entity.RowStatus;
+import ru.ulmc.bank.ui.entity.SymbolConfigModel;
 import ru.ulmc.bank.ui.views.CommonView;
 import ru.ulmc.bank.ui.widgets.Notifier;
 import ru.ulmc.bank.ui.widgets.util.MenuSupport;
@@ -53,6 +52,8 @@ public class SymbolsView extends CommonView implements View {
     private Button btnCancel;
     private ComboBox<String> iso1Editor;
     private ComboBox<String> iso2Editor;
+    private TextField bidEditor;
+    private TextField offerEditor;
     private DecimalFormat decFormat = new DecimalFormat("###.###");
     private Map<String, Grid.Column> columnsByName = new HashMap<>();
     private Button btnAdd;
@@ -113,8 +114,10 @@ public class SymbolsView extends CommonView implements View {
     }
 
     private void initEditors() {
-        iso1Editor = createIsoComboBox();
-        iso2Editor = createIsoComboBox();
+        iso1Editor = createIsoComboBox("");
+        iso2Editor = createIsoComboBox("");
+        bidEditor = createTextField();
+        offerEditor = createTextField();
 
     }
 
@@ -135,7 +138,7 @@ public class SymbolsView extends CommonView implements View {
         fetchData();
     }
 
-    private Grid.Column<SymbolConfigModel, String> createColumn(ValueProvider<SymbolConfigModel, String> valueProvider,
+    private <T> Grid.Column<SymbolConfigModel, T> createColumn(ValueProvider<SymbolConfigModel, T> valueProvider,
                                                                 String caption) {
         return grid.addColumn(valueProvider)
                 .setMinimumWidth(80)
@@ -144,18 +147,17 @@ public class SymbolsView extends CommonView implements View {
     }
 
     private void initHeader() {
-        HeaderRow header = grid.prependHeaderRow();
-        Grid.Column<SymbolConfigModel, String> fxsColumn = createColumn(SymbolConfigModel::getBase, "ISO1");
-        Grid.Column<SymbolConfigModel, String> quotedCol = createColumn(SymbolConfigModel::getQuoted, "ISO2");
-        Grid.Column<SymbolConfigModel, String> s1Col = createColumn(fxs ->
-                SymbolUtil.formatCoefficient(decFormat, 0.1, 0.2), "B1/S1");
+        Grid.Column<SymbolConfigModel, String> fxsColumn = storeColumn("base", createColumn(SymbolConfigModel::getBase, "ISO1"));
+        Grid.Column<SymbolConfigModel, String> quotedCol = storeColumn("quoted", createColumn(SymbolConfigModel::getQuoted, "ISO2"));
+        Grid.Column<SymbolConfigModel, String> bidBaseModifier = storeColumn("bidModifier", createColumn(SymbolConfigModel::getBidModifier, "Bid mod"));
+        Grid.Column<SymbolConfigModel, String> offerBaseModifier = storeColumn("offerModifier", createColumn(SymbolConfigModel::getOfferModifier, "Offer mod"));
 
         if (hasUpdatePermission()) {
             fxsColumn.setEditorComponent(iso1Editor, SymbolConfigModel::setBase);
             quotedCol.setEditorComponent(iso2Editor, SymbolConfigModel::setQuoted);
+            bidBaseModifier.setEditorComponent(bidEditor, SymbolConfigModel::setBidModifier);
+            offerBaseModifier.setEditorComponent(offerEditor, SymbolConfigModel::setOfferModifier);
         }
-
-        header.join(storeColumn("base", fxsColumn), storeColumn("quoted", quotedCol)).setText("Валютная пара (ISO1/ISO2)");
     }
 
     private boolean hasCreatePermission() {
@@ -185,10 +187,9 @@ public class SymbolsView extends CommonView implements View {
         readPermission = true;
     }
 
-
     private void initFooter() {
-        ComboBox<String> base = createIsoComboBox();
-        ComboBox<String> quoted = createIsoComboBox();
+        ComboBox<String> base = createIsoComboBox("Base currency");
+        ComboBox<String> quoted = createIsoComboBox("Quoted currency");
         ComboBox<Boolean> yesNo = createBooleanComboBox();
         functionClearEditor = () -> {
             base.clear();
@@ -231,7 +232,7 @@ public class SymbolsView extends CommonView implements View {
         footer.getCell(columnsByName.get("quoted")).setComponent(quoted);
     }
 
-    private Grid.Column storeColumn(String name, Grid.Column column) {
+    private <T> Grid.Column<SymbolConfigModel, T> storeColumn(String name, Grid.Column<SymbolConfigModel, T> column) {
         columnsByName.put(name, column);
         return column;
     }
@@ -269,14 +270,21 @@ public class SymbolsView extends CommonView implements View {
         }
     }
 
-    private ComboBox<String> createIsoComboBox() {
+    private ComboBox<String> createIsoComboBox(String caption) {
         ComboBox<String> editor = new ComboBox<>("", currencies.keySet());
         editor.setItemCaptionGenerator(item -> item + " (" + currencies.get(item) + ")");
         editor.setScrollToSelectedItem(true);
         editor.setTextInputAllowed(true);
+        editor.setPlaceholder(caption);
         editor.setEmptySelectionAllowed(false);
         editor.setWidth(100.0f, Sizeable.Unit.PERCENTAGE);
         editor.setPopupWidth("400px");
+        return editor;
+    }
+
+    private TextField createTextField() {
+        TextField editor = new TextField();
+        editor.setWidth(100.0f, Sizeable.Unit.PERCENTAGE);
         return editor;
     }
 

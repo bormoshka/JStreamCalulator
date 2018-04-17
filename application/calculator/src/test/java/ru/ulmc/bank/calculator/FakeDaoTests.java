@@ -31,10 +31,10 @@ public class FakeDaoTests {
         Assert.assertNotNull(baseQuotes);
         Assert.assertNotNull(dao);
         Assert.assertEquals(4, avgs.size());
-        Assert.assertEquals(56.3, avgs.get(1).getAverageQuoteBid(), 0.0001);
-        Assert.assertEquals(44.8, avgs.get(3).getAverageQuoteBid(), 0.0001);
-        Assert.assertEquals(52.7, avgs.get(2).getAverageQuoteOffer(), 0.0001);
-        Assert.assertEquals(59.7, avgs.get(0).getAverageQuoteOffer(), 0.0001);
+        Assert.assertEquals(56.3, avgs.get(1).getAverageQuoteBid().doubleValue(), 0.0001);
+        Assert.assertEquals(44.8, avgs.get(3).getAverageQuoteBid().doubleValue(), 0.0001);
+        Assert.assertEquals(52.7, avgs.get(2).getAverageQuoteOffer().doubleValue(), 0.0001);
+        Assert.assertEquals(59.7, avgs.get(0).getAverageQuoteOffer().doubleValue(), 0.0001);
     }
 
 }

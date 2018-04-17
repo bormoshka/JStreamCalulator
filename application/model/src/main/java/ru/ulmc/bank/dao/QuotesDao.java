@@ -13,6 +13,8 @@ import java.util.List;
  */
 public interface QuotesDao {
 
+    void save(BaseQuote quote);
+
     BaseQuote getLastBaseQuote(String symbol);
 
     List<BaseQuote> getLastBaseQuotes(String symbol, int count);

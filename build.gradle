@@ -24,6 +24,10 @@ allprojects {
     javadoc {
         options.charSet = 'UTF-8'
     }
+
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
 }
 
 buildscript {
@@ -34,6 +38,13 @@ buildscript {
         scalaBinaryVersion = '2.10'
         lombokVersion = '1.16.16'
         libs = [
+                ignite            : ['org.hibernate.ogm:hibernate-ogm-core:5.3.1.Final',
+                                     'org.hibernate.ogm:hibernate-ogm-ignite:5.3.1.Final',
+                                     'org.jboss.jbossts:jbossjta:4.16.4.Final',
+                                     'org.apache.ignite:ignite-core:2.4.0',
+                                     'org.apache.ignite:ignite-zookeeper:2.4.0',
+                                     'org.apache.ignite:ignite-indexing:2.4.0'],
+                reflection        : "io.github.lukehutch:fast-classpath-scanner:+",
                 cli               : 'commons-cli:commons-cli:1.4',
                 logging           : ["org.slf4j:slf4j-api:1.7.25",
                                      "ch.qos.logback:logback-classic:1.1.11",
@@ -88,12 +99,14 @@ buildscript {
                 client       : project(":application:client"),
                 calculator   : project(":application:calculator"),
                 configuration: project(":application:configuration"),
+                dynCalc      : project(":application:dynamic-calculators"),
                 api          : project(":application:api")
         ]
     }
 
     apply from: 'repositories.gradle', to: buildscript
     dependencies {
+
         classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
         classpath "fi.jasoft.plugin:gradle-vaadin-plugin:1.1.9"
         classpath 'org.javafxports:jfxmobile-plugin:1.0.0-b10'

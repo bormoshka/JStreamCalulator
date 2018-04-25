@@ -2,8 +2,8 @@ apply plugin: 'java'
 
 dependencies {
     compile libs.jackson,
-            mods.model,
-            mods.core,
+            project(':application:model'),
+            project(":application:core"),
             libs.zookeeper //exclude group: 'org.apache.zookeeper', module: 'zookeeper';
 
     compileOnly libs.lombok

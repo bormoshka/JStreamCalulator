@@ -7,11 +7,11 @@ import ru.ulmc.bank.entities.persistent.financial.BaseQuote;
 
 import java.io.IOException;
 
-public class QuoteJsonSerializationSchema extends AbstractDeserializationSchema<IBaseQuote> {
-    private static CommonJsonSerializer<BaseQuote> serializer = new CommonJsonSerializer<>(BaseQuote.class);
+public class QuoteJsonSerializationSchema extends AbstractDeserializationSchema<BaseQuoteDto> {
+    private static CommonJsonSerializer<BaseQuoteDto> serializer = new CommonJsonSerializer<>(BaseQuoteDto.class);
 
     @Override
-    public IBaseQuote deserialize(byte[] message) throws IOException {
+    public BaseQuoteDto deserialize(byte[] message) throws IOException {
         return serializer.deserialize(message);
     }
 

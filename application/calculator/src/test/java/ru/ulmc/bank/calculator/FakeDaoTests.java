@@ -27,7 +27,7 @@ public class FakeDaoTests {
 
         QuotesDao dao = new FakeQuotesDao("RUB/USD", baseQuotes);
 
-        List<AverageQuote> avgs = dao.getDailyAverageBaseQuotes("RUB/USD", LocalDateTime.of(2017, Month.SEPTEMBER, 10, 0, 0, 1), LocalDateTime.now());
+        List<AverageQuote> avgs = dao.getDailyAverageBaseQuotesOnZeroVolume("RUB/USD", LocalDateTime.of(2017, Month.SEPTEMBER, 10, 0, 0, 1), LocalDateTime.now());
         Assert.assertNotNull(baseQuotes);
         Assert.assertNotNull(dao);
         Assert.assertEquals(4, avgs.size());

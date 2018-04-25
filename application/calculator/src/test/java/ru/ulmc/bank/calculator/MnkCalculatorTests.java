@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import ru.ulmc.bank.calculators.ResourcesEnvironment;
 import ru.ulmc.bank.calculators.impl.OlsTrendCalculator;
+import ru.ulmc.bank.config.zookeeper.storage.AppConfigStorage;
 import ru.ulmc.bank.config.zookeeper.storage.SymbolConfigStorage;
 import ru.ulmc.bank.dao.QuotesDao;
 import ru.ulmc.bank.dao.impl.FakeQuotesDao;
@@ -49,6 +50,11 @@ public class MnkCalculatorTests {
 
             @Override
             public SymbolConfigStorage getSymbolConfigStorage() {
+                return null;
+            }
+
+            @Override
+            public AppConfigStorage getAppConfigStorage() {
                 return null;
             }
         });

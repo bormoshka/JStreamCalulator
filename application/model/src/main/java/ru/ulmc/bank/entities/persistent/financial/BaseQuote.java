@@ -27,21 +27,26 @@ public class BaseQuote implements IBaseQuote {
     @Column(name = "DATETIME")
     private LocalDateTime datetime;
 
+    @Column(name = "DATETIME_RECIVE")
+    private LocalDateTime receiveTime;
+
     @Column(name = "symbol")
     private String symbol;
 
-    @OneToMany(mappedBy="quote")
-    private Set<BasePrice> prices;
+    @OneToMany(mappedBy="quote", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Set<BasePrice> prices = new HashSet<>();
 
     public BaseQuote(@NonNull String quoteId, @NonNull LocalDateTime datetime,
                      @NonNull String symbol, @NonNull Set<BasePrice> price) {
         id = quoteId;
         this.datetime = datetime;
         this.symbol = symbol;
-        this.prices = new HashSet<>(price);
+        this.prices.addAll(price);
+        prices.forEach(p -> p.setQuote(this));
     }
 
-    public Set<BasePrice> getPrices() {
-        return prices;
+    public void addPrice(BasePrice bp) {
+        bp.setQuote(this);
+        prices.add(bp);
     }
 }

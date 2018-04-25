@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class Generator extends AbstractJavaFxApplicationSupport {
 
     public static void main(String[] args) {
-        launchApp(Generator.class, MainView.class, new SplashScreen() {
+        launch(Generator.class, MainView.class, new SplashScreen() {
             @Override
             public boolean visible() {
                 return false;

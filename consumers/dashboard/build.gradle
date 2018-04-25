@@ -7,15 +7,15 @@ dependencies {
             libs.springBootMQ,
             libs.vaadin,
             libs.guava,
-            mods.api
+            project(":application:api")
     compileOnly libs.lombok,
             libs.vaadinProvided
     testCompile libs.test
 }
 
-springBoot {
-    mainClass = 'ru.ulmc.bank.CourseDashboardApp'
-}
+//springBoot {
+//    mainClass = 'ru.ulmc.bank.CourseDashboardApp'
+//}
 
 jar {
     baseName = 'consumer-dashboard'
@@ -23,8 +23,8 @@ jar {
    // from 'src/main/webapp'
 }
 
-dependencyManagement {
-    imports {
-        mavenBom "com.vaadin:vaadin-bom:8.0.5"
-    }
-}
+//dependencyManagement {
+//    imports {
+//        mavenBom "com.vaadin:vaadin-bom:8.0.5"
+//    }
+//}

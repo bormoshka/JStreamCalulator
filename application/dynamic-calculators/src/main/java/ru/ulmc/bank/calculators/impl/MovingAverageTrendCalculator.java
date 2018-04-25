@@ -13,6 +13,7 @@ import ru.ulmc.bank.entities.persistent.financial.BaseQuote;
 import ru.ulmc.bank.entities.persistent.financial.Price;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -109,7 +110,7 @@ public class MovingAverageTrendCalculator implements Calculator {
             }
 
             BaseQuote baseQuote = statisticQuotes.get(i + smLevels - 1);
-            statisticAvgQuotes.add(new AverageQuote(baseQuote.getDatetime(), baseQuote.getSymbol(),
+            statisticAvgQuotes.add(new AverageQuote(LocalDate.from(baseQuote.getDatetime()), baseQuote.getSymbol(),
                     sumQuoteBid.divide(smoothingLevels, ROUNDING_MODE), sumQuoteOffer.divide(smoothingLevels, ROUNDING_MODE)));
         }
         return statisticAvgQuotes;
@@ -121,7 +122,7 @@ public class MovingAverageTrendCalculator implements Calculator {
         for (int i = 0; i < i1; i++) {
             AverageQuote current = statisticAvgQuotes.get(i);
             AverageQuote next = statisticAvgQuotes.get(i + 1);
-            output.add(new AverageQuote(next.getDatetime(), next.getSymbol(),
+            output.add(new AverageQuote(next.getDate(), next.getSymbol(),
                     getAverageOfTwo(current.getAverageQuoteBid(), next.getAverageQuoteBid()),
                     getAverageOfTwo(current.getAverageQuoteOffer(), next.getAverageQuoteOffer())));
         }
@@ -145,7 +146,7 @@ public class MovingAverageTrendCalculator implements Calculator {
     private double calcInaccuracyOffer(List<BaseQuote> statisticQuotes, ArrayList<AverageQuote> smoothingAvgQuotes) {
         double sumDeviations = 0.0;
         for (int i = smoothingAvgQuotes.size() - 1; i > -1; i--) {
-            BigDecimal factValue = getBidForZeroVolume(statisticQuotes.get(statisticQuotes.size() + i - 4 - 2));
+            BigDecimal factValue = getOfferForZeroVolume(statisticQuotes.get(statisticQuotes.size() + i - 4 - 2));
             sumDeviations += smoothingAvgQuotes.get(i).getAverageQuoteOffer().subtract(factValue)
                     .divide(factValue, ROUNDING_MODE).doubleValue() * 100;
         }

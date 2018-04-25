@@ -13,7 +13,7 @@ public class SymbolConfig implements Serializable {
     private String symbol;
     private String base;
     private String quoted;
-    private Boolean active;
+    private Boolean active = false;
     private Double bidBaseModifier;
     private Double offerBaseModifier;
     private Map<String, SymbolCalculatorConfig> calculators;

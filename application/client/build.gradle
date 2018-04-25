@@ -6,19 +6,19 @@ apply plugin: 'maven'
 dependencies {
     compile libs.springBootWeb,
             libs.vaadin,
-            mods.api,
-            mods.core,
-            mods.dynCalc,
-            mods.configuration,
+            project(":application:api"),
+            project(":application:core"),
+            project(":application:dynamic-calculators"),
+            project(":application:configuration"),
             libs.guava
     compileOnly libs.lombok,
             libs.vaadinProvided
     testCompile libs.test
 }
 
-springBoot {
-    mainClass = 'ru.ulmc.bank.BankApplication'
-}
+//springBoot {
+//    mainClass = 'ru.ulmc.bank.BankApplication'
+//}
 
 jar {
     baseName = 'bank'
@@ -26,8 +26,8 @@ jar {
     from 'src/main/webapp'
 }
 
-dependencyManagement {
-    imports {
-        mavenBom "com.vaadin:vaadin-bom:8.0.5"
-    }
-}
+//dependencyManagement {
+//    imports {
+//        mavenBom "com.vaadin:vaadin-bom:8.0.5"
+//    }
+//}

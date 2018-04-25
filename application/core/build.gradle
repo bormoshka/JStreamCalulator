@@ -10,7 +10,7 @@ dependencies {
             libs.springBootSecurity,
             libs.sql,
             libs.jackson,
-            mods.model
+            project(':application:model')
     compileOnly libs.lombok
     runtime libs.sqlDev
     testCompile libs.test

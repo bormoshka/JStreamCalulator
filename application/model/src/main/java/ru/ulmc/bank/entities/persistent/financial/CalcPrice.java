@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @Table(name = "FIN_CALC_PRICE",
         indexes = {@Index(name = "CALC_PRICE_VOLUME_INDEX", columnList = "VOL")})
 @SequenceGenerator(name = "SEQ_CALC_PRICE", allocationSize = 1)
-public final class CalcPrice extends Price {
+public class CalcPrice extends Price {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "quote_id", nullable = false)

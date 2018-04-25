@@ -23,21 +23,9 @@ sourceSets {
 }
 
 
-jar {
-    from {
-        configurations.extraLibs
-    }
-}
-configurations {
-    // configuration that holds jars to copy into lib
-    extraLibs
-}
-
 dependencies {
-    compile libs.springBootJpa, mods.api, libs.ignite
-    extraLibs    'org.hibernate.ogm:hibernate-ogm-core:5.3.1.Final',
-            'org.hibernate.ogm:hibernate-ogm-ignite:5.3.1.Final',
-            'org.jboss.jbossts:jbossjta:4.16.4.Final'
+    compile libs.springBootJpa,
+            project(":application:api")
     compileOnly libs.lombok
     testCompile libs.test
 }

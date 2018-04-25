@@ -1,5 +1,6 @@
 package ru.ulmc.bank.dao;
 
+import org.springframework.data.repository.Repository;
 import ru.ulmc.bank.entities.inner.AverageQuote;
 import ru.ulmc.bank.entities.persistent.financial.BaseQuote;
 import ru.ulmc.bank.entities.persistent.financial.Quote;
@@ -23,10 +24,10 @@ public interface QuotesDao {
 
     List<BaseQuote> getLastBaseQuotes(String symbol, LocalDateTime startDateTime, LocalDateTime endDateTime);
 
-    ArrayList<AverageQuote> getDailyAverageBaseQuotes(String symbol, LocalDateTime startDateTime, LocalDateTime endDateTime);
+    List<AverageQuote> getDailyAverageBaseQuotesOnZeroVolume(String symbol, LocalDateTime startDateTime, LocalDateTime endDateTime);
 
     Quote getLastCalcQuote(String symbol);
 
-    Quote getLastCalcQuote(String symbol, int count);
+    List<Quote> getLastCalcQuotes(String symbol, int count);
 
 }

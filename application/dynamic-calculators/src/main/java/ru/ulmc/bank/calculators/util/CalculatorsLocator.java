@@ -48,7 +48,7 @@ public class CalculatorsLocator {
 
     private static FastClasspathScanner getFastClasspathScanner(
             ImplementingClassMatchProcessor<Calculator> interfaceMatchProcessor) {
-        FastClasspathScanner scanner = new FastClasspathScanner();
+        FastClasspathScanner scanner = new FastClasspathScanner("ru.ulmc.bank.calculators");
         scanner.addClassLoader(CalculatorsLocator.class.getClassLoader());
         scanner.matchClassesImplementing(Calculator.class, interfaceMatchProcessor);
         return scanner;

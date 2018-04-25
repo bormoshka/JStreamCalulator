@@ -1,29 +1,20 @@
 package ru.ulmc.bank.dao.impl;
 
+import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import ru.ulmc.bank.dao.QuotesDao;
 import ru.ulmc.bank.entities.inner.AverageQuote;
 import ru.ulmc.bank.entities.persistent.financial.BaseQuote;
 import ru.ulmc.bank.entities.persistent.financial.Quote;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class IgniteQuotesDao implements QuotesDao {
-
-    private final EntityManagerFactory emf;
-
-    public IgniteQuotesDao() {
-        emf = Persistence.createEntityManagerFactory("ogm-jpa-ignite");
-    }
+public class JdbcQuotesDao implements QuotesDao {
 
     @Override
     public void save(BaseQuote quote) {
-        EntityManager manager = emf.createEntityManager();
-        manager.merge(quote);
+
     }
 
     @Override
@@ -47,7 +38,7 @@ public class IgniteQuotesDao implements QuotesDao {
     }
 
     @Override
-    public ArrayList<AverageQuote> getDailyAverageBaseQuotes(String symbol, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    public ArrayList<AverageQuote> getDailyAverageBaseQuotesOnZeroVolume(String symbol, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         return null;
     }
 
@@ -57,7 +48,8 @@ public class IgniteQuotesDao implements QuotesDao {
     }
 
     @Override
-    public Quote getLastCalcQuote(String symbol, int count) {
+    public List<Quote> getLastCalcQuotes(String symbol, int count) {
         return null;
     }
+
 }

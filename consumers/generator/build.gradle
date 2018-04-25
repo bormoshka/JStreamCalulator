@@ -9,10 +9,10 @@ sourceCompatibility = 1.8
 mainClassName = 'ru.ulmc.generator.Generator'
 
 dependencies {
-    compile mods.api, mods.core,
+    compile project(":application:api"), project(":application:core"),
             libs.springBoot,
-            libs.springBootMQ
-    compile 'de.roskenet:springboot-javafx-support:1.3.25'
+            libs.springBootMQ,
+            "de.roskenet:springboot-javafx-support:2.1.6"
     compileOnly libs.lombok
     testCompile libs.test
 }

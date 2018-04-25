@@ -91,25 +91,26 @@ public class FakeQuotesDao implements QuotesDao {
     }
 
     @Override
-    public Quote getLastCalcQuote(String symbol, int count) {
+    public List<Quote> getLastCalcQuotes(String symbol, int count) {
         return null;
     }
 
+
     @Override
-    public ArrayList<AverageQuote> getDailyAverageBaseQuotes(String symbol, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    public ArrayList<AverageQuote> getDailyAverageBaseQuotesOnZeroVolume(String symbol, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         List<BaseQuote> lastQuotes = getLastBaseQuotes(symbol, startDateTime, endDateTime);
         ArrayList<AverageQuote> avgQuotes = new ArrayList<>();
         Map<LocalDate, List<BaseQuote>> groupBaseQuotes = lastQuotes.stream()
                 .collect(Collectors.groupingBy(o -> o.getDatetime().toLocalDate()));
 
         for (Map.Entry<LocalDate, List<BaseQuote>> pair : groupBaseQuotes.entrySet()) {
-            avgQuotes.add(new AverageQuote(pair.getKey().atStartOfDay(), symbol,
+            avgQuotes.add(new AverageQuote(pair.getKey(), symbol,
                     getAvgBid(pair.getValue()), getAvgOffer(pair.getValue())));
         }
         avgQuotes.sort((o1, o2) -> {
-            if (o1.getDatetime().isAfter(o2.getDatetime())) {
+            if (o1.getDate().isAfter(o2.getDate())) {
                 return 1;
-            } else if (o1.getDatetime().isBefore(o2.getDatetime())) {
+            } else if (o1.getDate().isBefore(o2.getDate())) {
                 return -1;
             }
             return 0;

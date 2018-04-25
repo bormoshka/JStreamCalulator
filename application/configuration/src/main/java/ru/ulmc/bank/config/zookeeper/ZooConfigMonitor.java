@@ -1,5 +1,8 @@
 package ru.ulmc.bank.config.zookeeper;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NonNull;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.api.CreateBuilder;
@@ -9,26 +12,18 @@ import org.apache.curator.framework.api.transaction.CuratorTransactionResult;
 import org.apache.curator.retry.RetryNTimes;
 import org.apache.curator.utils.CloseableUtils;
 import org.apache.curator.x.async.AsyncCuratorFramework;
-import org.apache.curator.x.async.modeled.ModelSerializer;
-import org.apache.curator.x.async.modeled.ModelSpec;
-import org.apache.curator.x.async.modeled.ModelSpecBuilder;
-import org.apache.curator.x.async.modeled.ModeledFramework;
-import org.apache.curator.x.async.modeled.ZPath;
+import org.apache.curator.x.async.modeled.*;
 import org.apache.curator.x.async.modeled.cached.CachedModeledFramework;
 import org.apache.curator.x.async.modeled.typed.TypedModeledFramework0;
 import org.apache.zookeeper.CreateMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.Closeable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 import ru.ulmc.bank.config.zookeeper.serializers.JsonModelSerializer;
 import ru.ulmc.bank.config.zookeeper.serializers.StringModelSerializer;
+
+import java.io.Closeable;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ZooConfigMonitor<T> implements AutoCloseable, Closeable {
 
@@ -37,15 +32,11 @@ public class ZooConfigMonitor<T> implements AutoCloseable, Closeable {
     private final CuratorFramework client;
     private final AsyncCuratorFramework asyncFramework;
     private final Class<T> clazz;
-    private ModelSpecBuilder<T> specBuilder;
-
-    private String znode;
-
-    private boolean closed;
-
-    private ModelSerializer<T> serializer;
-
     private final List<CachedModeledFramework<T>> subscribers = new ArrayList<>();
+    private ModelSpecBuilder<T> specBuilder;
+    private String znode;
+    private boolean closed;
+    private ModelSerializer<T> serializer;
 
     /**
      * @param connectString comma separated host:port pairs, each corresponding to a zk server. e.g.
@@ -57,10 +48,7 @@ public class ZooConfigMonitor<T> implements AutoCloseable, Closeable {
      *                      perspective).
      * @throws Exception in cases of network failure
      */
-    public ZooConfigMonitor(String connectString, String znode, Class<T> clazz) throws Exception {
-        Objects.requireNonNull(connectString);
-        Objects.requireNonNull(znode);
-        Objects.requireNonNull(clazz);
+    public ZooConfigMonitor(@NonNull String connectString, @NonNull String znode, @NonNull Class<T> clazz) throws Exception {
         this.znode = znode.startsWith("/") ? znode : "/" + znode;
         this.clazz = clazz;
         serializer = clazz == String.class ?
@@ -76,9 +64,8 @@ public class ZooConfigMonitor<T> implements AutoCloseable, Closeable {
         createNode();
     }
 
-    public ZooConfigMonitor(String connectString, String znode, Class<T> clazz, Map<String, T> mapStore) throws Exception {
+    public ZooConfigMonitor(@NonNull String connectString, @NonNull String znode, @NonNull Class<T> clazz, @NonNull Map<String, T> mapStore) throws Exception {
         this(connectString, znode, clazz);
-        Objects.requireNonNull(mapStore);
         startSubscriber(new Listener<T>() {
             @Override
             public void added(String key, T model) {
@@ -312,5 +299,4 @@ public class ZooConfigMonitor<T> implements AutoCloseable, Closeable {
             CloseableUtils.closeQuietly(client);
         }
     }
-
 }

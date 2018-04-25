@@ -2,11 +2,17 @@ apply plugin: 'java'
 apply plugin: 'idea'
 
 dependencies {
-    compile mods.model,
-            mods.configuration,
-            mods.api,
-            mods.dynCalc,
+    compile project(':application:model'),
+            project(":application:configuration"),
+            project(":application:api"),
+            project(":application:dynamic-calculators"),
+            libs.springBoot,
+            libs.springBootWeb,
             libs.guava, libs.logging, libs.cli, libs.flink
+
+    compile("com.rabbitmq:amqp-client:3.3.1") {
+        force = true
+    }
     compileOnly libs.lombok, libs.flink
-    testCompile libs.junit
+    testCompile libs.lombok, libs.junit, libs.test
 }

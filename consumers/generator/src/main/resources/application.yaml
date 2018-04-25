@@ -2,7 +2,7 @@ spring:
     jmx:
         enabled: false
     rabbitmq:
-       host: 192.168.2.8
+       host: 192.168.2.13
        username: rabbit
        password: rabbit
        port: 5672

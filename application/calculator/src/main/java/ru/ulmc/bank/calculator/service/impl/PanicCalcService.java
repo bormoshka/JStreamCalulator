@@ -13,7 +13,6 @@ import ru.ulmc.bank.calculators.impl.OlsTrendCalculator;
 /**
  * Сервис, отвечающий за вычисление котировок при критических отклонениях.
  */
-@Component
 public class PanicCalcService implements CalcService {
     private final DynamicCalculator dynamicCalculator;
     private final OlsTrendCalculator olsTrendCalculator;

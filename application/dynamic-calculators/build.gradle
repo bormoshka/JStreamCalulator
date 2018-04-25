@@ -4,8 +4,8 @@ apply plugin: 'idea'
 dependencies {
     compile libs.reflection
     compileOnly libs.lombok,
-            mods.model,
-            mods.configuration,
-            mods.api
+            project(':application:model'),
+            project(":application:configuration"),
+            project(":application:api")
     testCompile libs.junit
 }

@@ -2,25 +2,90 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="528.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.ulmc.generator.Controller">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="509.0" prefWidth="610.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.ulmc.generator.Controller">
    <children>
-      <TextField fx:id="symbolField" layoutX="15.0" layoutY="64.0" prefHeight="36.0" prefWidth="125.0" promptText="Symbol" />
-      <TextField fx:id="bidField" layoutX="152.0" layoutY="64.0" prefHeight="36.0" prefWidth="100.0" promptText="Bid" />
-      <TextField fx:id="offerField" layoutX="263.0" layoutY="64.0" prefHeight="36.0" prefWidth="100.0" promptText="Offer" />
-      <ToggleButton fx:id="streamToggle" layoutX="375.0" layoutY="64.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="64.0" text="Stream" />
-      <Button fx:id="sendBtn" layoutX="452.0" layoutY="64.0" mnemonicParsing="false" onAction="#sendQuote" prefHeight="36.0" prefWidth="64.0" text="Send" />
-      <Separator layoutY="44.0" prefHeight="11.0" prefWidth="528.0" />
-      <Label fx:id="appTitle" layoutX="176.0" layoutY="14.0" prefHeight="30.0" prefWidth="153.0" text="ARMQ generator" textAlignment="CENTER" wrapText="true">
+      <TitledPane fx:id="streamsPane" collapsible="false" layoutX="14.0" layoutY="136.0" prefHeight="184.0" prefWidth="586.0" text="Active Streams">
+         <content>
+            <ScrollPane fx:id="streamsWrapper">
+               <content>
+                  <VBox fx:id="streamList" alignment="TOP_CENTER" />
+               </content>
+            </ScrollPane>
+         </content>
+      </TitledPane>
+      <TextArea fx:id="output" editable="false" layoutX="14.0" layoutY="333.0" prefHeight="151.0" prefWidth="586.0" promptText="Program output">
          <font>
-            <Font size="20.0" />
-         </font></Label>
-      <TextArea fx:id="output" layoutX="16.0" layoutY="119.0" prefHeight="264.0" prefWidth="500.0" promptText="Program output" />
+            <Font name="Courier New" size="11.0" />
+         </font></TextArea>
+      <Label fx:id="versionLabel" alignment="CENTER_RIGHT" layoutX="375.0" layoutY="487.0" prefHeight="17.0" prefWidth="225.0" text="ver.  0.2" textAlignment="RIGHT" textOverrun="CLIP" />
+      <HBox alignment="CENTER_LEFT" layoutX="14.0" layoutY="33.0" prefHeight="43.0" prefWidth="586.0" spacing="10.0">
+         <children>
+            <TextField fx:id="symbolField" onAction="#tryToEnableButtons" onKeyReleased="#tryToEnableButtons" prefHeight="36.0" prefWidth="100.0" promptText="Symbol" />
+            <TextField fx:id="bidField" onAction="#tryToEnableButtons" onKeyReleased="#tryToEnableButtons" prefHeight="36.0" prefWidth="100.0" promptText="Bid " />
+            <TextField fx:id="offerField" onAction="#tryToEnableButtons" onKeyReleased="#tryToEnableButtons" prefHeight="36.0" prefWidth="100.0" promptText="Offer" />
+            <Button fx:id="sendBtn" defaultButton="true" disable="true" mnemonicParsing="false" onAction="#sendQuote" prefHeight="36.0" prefWidth="120.0" text="Send" />
+            <Button fx:id="streamBtn" disable="true" mnemonicParsing="false" prefHeight="36.0" prefWidth="120.0" text="Create stream" />
+         </children>
+      </HBox>
+      <HBox alignment="CENTER_LEFT" layoutX="14.0" layoutY="76.0" prefHeight="51.0" prefWidth="586.0" spacing="10.0">
+         <children>
+            <TextField fx:id="volatility" onKeyReleased="#tryToEnableButtons" prefHeight="36.0" prefWidth="100.0" promptText="Volatility" />
+            <Spinner fx:id="interval" editable="true" prefHeight="36.0" prefWidth="100.0" />
+            <ToggleButton fx:id="muteToggle" mnemonicParsing="false" prefHeight="36.0" prefWidth="100.0" text="Mute streams" />
+         </children>
+      </HBox>
+      <MenuBar layoutY="2.0" prefHeight="25.0" prefWidth="610.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="File">
+            <items>
+                  <MenuItem fx:id="openItem" mnemonicParsing="false" text="Open">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator>
+                  </MenuItem>
+                  <MenuItem fx:id="saveItem" mnemonicParsing="false" text="Save">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator>
+                  </MenuItem>
+                  <MenuItem fx:id="saveAsItem" mnemonicParsing="false" text="Save as...">
+                     <accelerator>
+                        <KeyCodeCombination alt="DOWN" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator>
+                  </MenuItem>
+              <MenuItem fx:id="quitItem" mnemonicParsing="false" text="Quit">
+                     <accelerator>
+                        <KeyCodeCombination alt="DOWN" code="Q" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator>
+                  </MenuItem>
+            </items>
+          </Menu>
+            <Menu fx:id="recentMenu" mnemonicParsing="false" text="Recent configurations">
+              <items>
+                <MenuItem mnemonicParsing="false" text="Action 1" />
+              </items>
+            </Menu>
+          <Menu mnemonicParsing="false" text="Help">
+            <items>
+              <MenuItem fx:id="aboutItem" mnemonicParsing="false" text="About" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
    </children>
 </AnchorPane>

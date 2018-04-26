@@ -1,4 +1,4 @@
-package ru.ulmc.generator;
+package ru.ulmc.generator.logic.beans;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

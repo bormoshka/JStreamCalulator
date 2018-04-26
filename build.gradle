@@ -47,7 +47,8 @@ buildscript {
                                      "org.apache.flink:flink-streaming-java_${scalaBinaryVersion}:${flinkVersion}",
                                      "org.apache.flink:flink-clients_${scalaBinaryVersion}:${flinkVersion}",
                                      "org.apache.flink:flink-connector-rabbitmq_${scalaBinaryVersion}:${flinkVersion}",
-                                     ],
+                ],
+                kryo              : 'com.esotericsoftware:kryo:4.0.2',
                 jackson           : ["com.fasterxml.jackson.core:jackson-databind:+",
                                      "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:+",
                                      "com.fasterxml.jackson.module:jackson-module-parameter-names:+",
@@ -88,14 +89,14 @@ buildscript {
                 test              : "org.springframework.boot:spring-boot-starter-test:${springBootVersion}",
                 junit             : "junit:junit:+",
         ]
-      /*  mods = [model        : project(':application:model'),
-                core         : project(":application:core"),
-                client       : project(":application:client"),
-                calculator   : project(":application:calculator"),
-                configuration: project(":application:configuration"),
-                dynCalc      : project(":application:dynamic-calculators"),
-                api          : project(":application:api")
-        ]*/
+        /*  mods = [model        : project(':application:model'),
+                  core         : project(":application:core"),
+                  client       : project(":application:client"),
+                  calculator   : project(":application:calculator"),
+                  configuration: project(":application:configuration"),
+                  dynCalc      : project(":application:dynamic-calculators"),
+                  api          : project(":application:api")
+          ]*/
     }
 
     apply from: 'repositories.gradle', to: buildscript

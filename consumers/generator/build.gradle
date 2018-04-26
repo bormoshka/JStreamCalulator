@@ -11,6 +11,7 @@ mainClassName = 'ru.ulmc.generator.Generator'
 dependencies {
     compile project(":application:api"), project(":application:core"),
             libs.springBoot,
+            libs.kryo,
             libs.springBootMQ,
             "de.roskenet:springboot-javafx-support:2.1.6"
     compileOnly libs.lombok

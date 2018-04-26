@@ -1,13 +1,19 @@
 spring:
-    jmx:
-        enabled: false
-    rabbitmq:
-       host: 192.168.2.13
-       username: rabbit
-       password: rabbit
-       port: 5672
+  main:
+    web-application-type: none
+  jmx:
+    enabled: false
+  rabbitmq:
+    host: 192.168.2.13
+    username: rabbit
+    password: rabbit
+    port: 5672
+  activemq:
+    broker-url:
 javafx:
   title: Генератор котировок
   stage:
     resizable: true
-
+logging:
+   level:
+      ru.ulmc: DEBUG

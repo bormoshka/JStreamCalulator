@@ -3,25 +3,30 @@ package ru.ulmc.bank.core.dao;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import ru.ulmc.bank.dao.QuotesDao;
 import ru.ulmc.bank.entities.inner.AverageQuote;
 import ru.ulmc.bank.entities.persistent.financial.BaseQuote;
 import ru.ulmc.bank.entities.persistent.financial.Quote;
 
+import javax.persistence.EntityManagerFactory;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @SuppressWarnings({"unchecked", "JpaQlInspection"})
+@Service
 public class JpaQuotesDao implements QuotesDao {
     private SessionFactory sessionFactory;
+
+    @Autowired
+    public JpaQuotesDao(EntityManagerFactory factory) {
+        this.sessionFactory = factory.unwrap(SessionFactory.class);
+        //   this(System.getProperties().entrySet().stream().collect(Collectors.toMap(o -> (String) o.getKey(), o -> (String) o.getValue())));
+    }
 
     public JpaQuotesDao(Map<String, String> props) {
         sessionFactory = DatabaseConfigurationFactory.getSessionFactory(props);
@@ -32,7 +37,17 @@ public class JpaQuotesDao implements QuotesDao {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
         session.save(quote);
-       // quote.getPrices().forEach(session::save);
+        // quote.getPrices().forEach(session::save);
+        session.getTransaction().commit();
+        session.close();
+    }
+
+    @Override
+    public void save(Quote quote) {
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        session.save(quote);
+        // quote.getPrices().forEach(session::save);
         session.getTransaction().commit();
         session.close();
     }

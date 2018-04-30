@@ -117,7 +117,7 @@ public class ZooTests {
     @Test
     public void initConfiguration() {
         try (AppConfigStorage strg = new AppConfigStorage("192.168.2.13")) {
-            strg.save(Environment.URL, "jdbc:hsqldb:mem:testdb");
+            strg.save(Environment.URL, "jdbc:hsqldb:mem:test-in-mem-db");
             strg.save(Environment.USER, "sa");
             strg.save(Environment.PASS, "");
             strg.save(Environment.DRIVER, "org.hsqldb.jdbcDriver");

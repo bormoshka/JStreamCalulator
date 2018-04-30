@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import ru.ulmc.bank.bean.IBaseQuote;
 import ru.ulmc.bank.calculator.service.CalcService;
 import ru.ulmc.bank.calculator.service.transfer.CalculationOutput;
-import ru.ulmc.bank.calculators.Calculator;
+import ru.ulmc.bank.entities.configuration.SymbolCalculatorConfig;
 import ru.ulmc.bank.entities.configuration.SymbolConfig;
 import ru.ulmc.bank.entities.persistent.financial.BaseQuote;
 import ru.ulmc.bank.entities.persistent.financial.CalcPrice;
@@ -14,9 +14,11 @@ import ru.ulmc.bank.entities.persistent.financial.Quote;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.DoubleStream;
 
 /**
  * Сервис, отвечающий за вычисление котировок при нормальных отклонениях.
@@ -27,21 +29,43 @@ public class DefaultCalcService implements CalcService {
 
     @Override
     public Quote calculateQuoteForSymbol(@NonNull SymbolConfig symbolConfig, @NonNull CalculationOutput quotePreResult) {
-        //todo: Реализовать вычисление по формуле
         Set<CalcPrice> prices = new HashSet<>();
         IBaseQuote quote = quotePreResult.getQuote();
         quote.getPrices().forEach(bp ->
-                prices.add(calc(symbolConfig, bp.getVolume(), bp.getBid(), bp.getOffer())));
+                prices.add(calc(symbolConfig, quotePreResult, bp.getVolume(), bp.getBid(), bp.getOffer())));
         return new Quote(LocalDateTime.now(), symbolConfig.getSymbol(), prices, (BaseQuote) quote);
     }
 
-    private CalcPrice calc(SymbolConfig symbolConfig, int volume, BigDecimal bidBase, BigDecimal offerBase) {
-        BigDecimal modBid = calcModifiedBid(bidBase, symbolConfig.getBidBaseModifier());
-        BigDecimal modOffer = calcModifiedOffer(offerBase, symbolConfig.getOfferBaseModifier());
+    private CalcPrice calc(SymbolConfig symbolConfig, CalculationOutput quotePreResult, int volume, BigDecimal bidBase, BigDecimal offerBase) {
+        List<BigDecimal> bids = new ArrayList<>();
+        List<BigDecimal> offers = new ArrayList<>();
+        List<Double> bidModifiers = new ArrayList<>();
+        List<Double> offerModifiers = new ArrayList<>();
 
-        //BigDecimal olsBid = symbolConfig.getCalculators()
+        Double bidBaseModifier = symbolConfig.getBidBaseModifier();
+        bids.add(calcModifiedBid(bidBase, bidBaseModifier));
+        bidModifiers.add(bidBaseModifier);
 
-        return new CalcPrice(volume, modBid, modOffer);
+        Double offerBaseModifier = symbolConfig.getOfferBaseModifier();
+        offers.add(calcModifiedOffer(offerBase, offerBaseModifier));
+        offerModifiers.add(offerBaseModifier);
+
+        quotePreResult.getCalculatorResult().forEach((calculatorConfig, calculatorResult) -> {
+            SymbolCalculatorConfig calcConf = symbolConfig.getCalculators().get(calculatorConfig.getFullClassname());
+            double bidModifier = calcConf.getBidModifier();
+            bids.add(calcModifiedBid(calculatorResult.getResultForBid(), bidModifier));
+            bidModifiers.add(bidModifier);
+
+            double offerModifier = calcConf.getOfferModifier();
+            offers.add(calcModifiedBid(calculatorResult.getResultForOffer(), offerModifier));
+            offerModifiers.add(offerModifier);
+        });
+        Result bid = new Result();
+        bids.forEach(bid::add);
+        Result offer = new Result();
+        offers.forEach(offer::add);
+
+        return new CalcPrice(volume, bid.divideOn(bidModifiers), offer.divideOn(offerModifiers));
     }
 
 
@@ -51,5 +75,18 @@ public class DefaultCalcService implements CalcService {
 
     private BigDecimal calcModifiedOffer(BigDecimal base, double modifier) {
         return base.add(base.multiply(BigDecimal.valueOf(modifier)));
+    }
+
+    private class Result {
+        private BigDecimal value = BigDecimal.ZERO;
+
+        void add(BigDecimal dec) {
+            value = value.add(dec);
+        }
+
+        BigDecimal divideOn(List<Double> modifiers) {
+            return value.divide(BigDecimal.valueOf(modifiers.stream()
+                    .flatMapToDouble(d -> DoubleStream.of(d.doubleValue())).sum()), BigDecimal.ROUND_HALF_UP);
+        }
     }
 }

@@ -1,14 +1,15 @@
 package ru.ulmc.bank.entities.configuration;
 
-import lombok.Data;
-import lombok.NonNull;
+import lombok.*;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode(of = {"symbol"})
+@ToString
 public class SymbolConfig implements Serializable {
     private String symbol;
     private String base;
@@ -16,9 +17,10 @@ public class SymbolConfig implements Serializable {
     private Boolean active = false;
     private Double bidBaseModifier;
     private Double offerBaseModifier;
-    private Map<String, SymbolCalculatorConfig> calculators;
+    private Map<String, SymbolCalculatorConfig> calculators = new HashMap<>();
 
     private SymbolConfig() {
+
     }
 
     public SymbolConfig(@NonNull String symbol, @NonNull Double bidBaseModifier, @NonNull Double offerBaseModifier) {
@@ -26,10 +28,18 @@ public class SymbolConfig implements Serializable {
         this.offerBaseModifier = offerBaseModifier;
         setSymbol(symbol);
         setSymbolParts(symbol);
+
     }
 
     public void setSymbolParts(@NonNull String symbol) {
         setBase(symbol.substring(0, symbol.indexOf('/')));
         setQuoted(symbol.substring(symbol.indexOf('/') + 1, symbol.length()));
+    }
+
+    public Map<String, SymbolCalculatorConfig> getCalculators() {
+        if (calculators == null) {
+            calculators = new HashMap<>();
+        }
+        return calculators;
     }
 }

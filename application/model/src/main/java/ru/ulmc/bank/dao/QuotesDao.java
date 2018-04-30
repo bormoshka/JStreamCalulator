@@ -16,6 +16,8 @@ public interface QuotesDao {
 
     void save(BaseQuote quote);
 
+    void save(Quote quote);
+
     BaseQuote getLastBaseQuote(String symbol);
 
     List<BaseQuote> getLastBaseQuotes(String symbol, int count);

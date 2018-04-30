@@ -11,7 +11,6 @@ public interface CalcService {
      * Вычисляет пригодные для публикации котировки
      *
      * @param symbolConfig Конфигурация валютной пары
-     * @param newQuote Новая котировка
      * @return Вычисленная котировка
      */
     Quote calculateQuoteForSymbol(SymbolConfig symbolConfig, CalculationOutput quotePreResult);

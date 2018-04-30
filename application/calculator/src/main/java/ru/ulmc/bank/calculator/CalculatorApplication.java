@@ -3,26 +3,34 @@ package ru.ulmc.bank.calculator;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.common.restartstrategy.RestartStrategies;
+import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.time.Time;
+import org.apache.flink.streaming.connectors.rabbitmq.RMQSink;
 import org.apache.flink.streaming.connectors.rabbitmq.RMQSource;
 import org.apache.flink.streaming.connectors.rabbitmq.common.RMQConnectionConfig;
+import org.apache.flink.streaming.util.serialization.TypeInformationSerializationSchema;
 import ru.ulmc.bank.bean.IBaseQuote;
 import ru.ulmc.bank.calculator.environment.EnvironmentHolder;
+import ru.ulmc.bank.calculator.serialization.BasePriceSerializer;
 import ru.ulmc.bank.calculator.serialization.BaseQuoteDto;
+import ru.ulmc.bank.calculator.serialization.BaseQuoteSerializer;
 import ru.ulmc.bank.calculator.serialization.QuoteJsonSerializationSchema;
 import ru.ulmc.bank.calculator.service.processors.BaseQuoteProcessor;
 import ru.ulmc.bank.calculator.service.processors.CalculationProcessor;
 import ru.ulmc.bank.calculator.service.processors.DefaultProcessor;
+import ru.ulmc.bank.calculator.service.processors.PublishingProcessor;
 import ru.ulmc.bank.calculators.util.CalculatorsLocator;
 import ru.ulmc.bank.constants.Queues;
+import ru.ulmc.bank.entities.persistent.financial.BasePrice;
 import ru.ulmc.bank.entities.persistent.financial.BaseQuote;
+import ru.ulmc.bank.entities.persistent.financial.Quote;
+
+import java.time.OffsetTime;
 
 @Slf4j
 public class CalculatorApplication {
-
-
     public static void main(String[] args) throws Exception {
         Cli cli = new Cli(args);
 
@@ -33,10 +41,13 @@ public class CalculatorApplication {
         BaseQuoteProcessor baseQuoteProcessor = new BaseQuoteProcessor();
         CalculationProcessor calcProcessor = new CalculationProcessor();
         DefaultProcessor processor = new DefaultProcessor();
+        PublishingProcessor publisher = new PublishingProcessor();
 
         // set up the execution environment
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.enableCheckpointing(30000L);
+        env.getConfig().addDefaultKryoSerializer(BaseQuote.class, BaseQuoteSerializer.class);
+        env.getConfig().addDefaultKryoSerializer(BasePrice.class, BasePriceSerializer.class);
         env.getConfig().setRestartStrategy(RestartStrategies.fixedDelayRestart(4, 10000));
 
         final RMQConnectionConfig connectionConfig = new RMQConnectionConfig.Builder()
@@ -60,11 +71,12 @@ public class CalculatorApplication {
                 .process(baseQuoteProcessor)
                 .process(calcProcessor)
                 .process(processor)
-                .addSink(quote -> log.info("CalculatedQuote: {}", quote));
-        // stream.addSink(new RMQSink<>(
-        //         connectionConfig,
-        //         Queues.BASE_QUOTES_REPLY,
-        //         new TypeInformationSerializationSchema<>(TypeInformation.of(IBaseQuote.class), env.getConfig())));
+                .process(publisher)
+                //.addSink(quote -> log.info("CalculatedQuote: {}", quote));
+         .addSink(new RMQSink<>(
+                 connectionConfig,
+                 Queues.BASE_QUOTES_REPLY,
+                 new TypeInformationSerializationSchema<>(TypeInformation.of(Quote.class), env.getConfig())));
         env.execute("Rabbit MQ CalculatorApplication");
 
     }

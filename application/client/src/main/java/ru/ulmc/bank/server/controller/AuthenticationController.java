@@ -4,7 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,8 +19,10 @@ import ru.ulmc.bank.core.service.impl.UserServiceImpl;
 import ru.ulmc.bank.entities.persistent.system.User;
 import ru.ulmc.bank.dao.repository.UserRoleRepository;
 import ru.ulmc.bank.server.config.security.AuthProvider;
+import ru.ulmc.bank.server.config.security.CurrentAuthenticationProvider;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collections;
 
 /**
  * Контроллер аутентификации

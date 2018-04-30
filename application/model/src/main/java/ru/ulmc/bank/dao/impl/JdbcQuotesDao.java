@@ -18,6 +18,11 @@ public class JdbcQuotesDao implements QuotesDao {
     }
 
     @Override
+    public void save(Quote quote) {
+
+    }
+
+    @Override
     public BaseQuote getLastBaseQuote(String symbol) {
         return null;
     }

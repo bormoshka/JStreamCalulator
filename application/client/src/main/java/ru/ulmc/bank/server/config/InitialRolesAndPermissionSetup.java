@@ -51,6 +51,9 @@ public class InitialRolesAndPermissionSetup implements ApplicationListener<Conte
     public void onApplicationEvent(ContextRefreshedEvent event) {
         if (alreadySetup)
             return;
+        if (userRepository.findByLogin("manager") != null) {
+            return;
+        }
 
         Permission finCurrencyRead = createPermissionIfNotFound(Perms.FIN_CURRENCY_READ);
         Permission finCurrencyWrite = createPermissionIfNotFound(Perms.FIN_CURRENCY_WRITE);

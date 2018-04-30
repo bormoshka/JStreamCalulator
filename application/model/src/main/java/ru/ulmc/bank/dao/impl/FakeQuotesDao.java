@@ -1,10 +1,10 @@
 package ru.ulmc.bank.dao.impl;
 
+import ru.ulmc.bank.bean.IPrice;
 import ru.ulmc.bank.dao.QuotesDao;
 import ru.ulmc.bank.entities.inner.AverageQuote;
 import ru.ulmc.bank.entities.persistent.financial.BasePrice;
 import ru.ulmc.bank.entities.persistent.financial.BaseQuote;
-import ru.ulmc.bank.entities.persistent.financial.Price;
 import ru.ulmc.bank.entities.persistent.financial.Quote;
 
 import java.math.BigDecimal;
@@ -55,6 +55,11 @@ public class FakeQuotesDao implements QuotesDao {
 
     @Override
     public void save(BaseQuote quote) {
+
+    }
+
+    @Override
+    public void save(Quote quote) {
 
     }
 
@@ -124,27 +129,27 @@ public class FakeQuotesDao implements QuotesDao {
     }
 
     private BigDecimal getAvgBid(List<BaseQuote> quotes) {
-        Set<Price> prices = getPricesForZeroVolume(quotes);
+        Set<IPrice> prices = getPricesForZeroVolume(quotes);
         double result = 0;
-        for (Price p : prices) {
+        for (IPrice p : prices) {
             result += p.getBid().doubleValue();
         }
         return BigDecimal.valueOf(result / prices.size());
     }
 
     private BigDecimal getAvgOffer(List<BaseQuote> quotes) {
-        Set<Price> prices = getPricesForZeroVolume(quotes);
+        Set<IPrice> prices = getPricesForZeroVolume(quotes);
         double result = 0;
-        for (Price p : prices) {
+        for (IPrice p : prices) {
             result += p.getOffer().doubleValue();
         }
         return BigDecimal.valueOf(result / prices.size());
     }
 
-    private Set<Price> getPricesForZeroVolume(List<BaseQuote> quotes) {
-        Set<Price> prices = new HashSet<>();
+    private Set<IPrice> getPricesForZeroVolume(List<BaseQuote> quotes) {
+        Set<IPrice> prices = new HashSet<>();
         for (BaseQuote quote : quotes) {
-            for (Price p : quote.getPrices()) {
+            for (IPrice p : quote.getPrices()) {
                 if (p.getVolume() == 0) {
                     prices.add(p);
                 }

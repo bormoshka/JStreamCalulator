@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Data
-@Entity
 @NoArgsConstructor
 @EqualsAndHashCode
 public abstract class Price implements IPrice {

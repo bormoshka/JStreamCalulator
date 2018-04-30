@@ -1,22 +1,41 @@
 package ru.ulmc.bank.entities.persistent.financial;
 
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import ru.ulmc.bank.bean.IPrice;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(of = "id")
 @Entity
+@Getter
+@Setter
 @Table(name = "FIN_CALC_PRICE",
         indexes = {@Index(name = "CALC_PRICE_VOLUME_INDEX", columnList = "VOL")})
 @SequenceGenerator(name = "SEQ_CALC_PRICE", allocationSize = 1)
-public class CalcPrice extends Price {
+public class CalcPrice implements IPrice /*extends Price */ {
+    @Id
+    @Column(name = "ID")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Getter
+    protected long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "quote_id", nullable = false)
-    private Quote quote;
+    @Column(name = "VOL")
+    protected int volume;
+    @Column(name = "BID")
+    protected BigDecimal bid;
+    @Column(name = "OFFER")
+    protected BigDecimal offer;
 
     public CalcPrice(int volume, BigDecimal bid, BigDecimal offer) {
-        super(volume, bid, offer);
+        if (volume < 0 || bid == null || offer == null || bid.compareTo(offer) > 0) {
+            throw new IllegalArgumentException("Illegal arguments: volume = " + volume + " bid=" + bid + " offer=" + offer + ". " +
+                    "Some of them are null or bid is greater than offer!");
+        }
+        this.volume = volume;
+        this.bid = bid;
+        this.offer = offer;
     }
 }

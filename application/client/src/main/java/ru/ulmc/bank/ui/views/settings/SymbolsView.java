@@ -5,16 +5,12 @@ import com.vaadin.data.provider.DataProvider;
 import com.vaadin.event.selection.SelectionEvent;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.Setter;
 import com.vaadin.server.Sizeable;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.EditorSaveEvent;
 import com.vaadin.ui.components.grid.FooterRow;
-import com.vaadin.ui.components.grid.HeaderRow;
 import com.vaadin.ui.components.grid.MultiSelectionModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.ulmc.bank.config.zookeeper.service.ConfigurationService;
 import ru.ulmc.bank.core.common.Perms;
@@ -26,10 +22,8 @@ import ru.ulmc.bank.ui.views.CommonView;
 import ru.ulmc.bank.ui.widgets.Notifier;
 import ru.ulmc.bank.ui.widgets.util.MenuSupport;
 
-import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -40,7 +34,6 @@ import java.util.stream.Collectors;
 public class SymbolsView extends CommonView implements View {
     static final String NAME = "fxSymbols";
     public static final MenuSupport MENU_SUPPORT = new MenuSupport(NAME, "Настройка валютных пар");
-    private static final Logger LOG = LoggerFactory.getLogger(SymbolsView.class);
     private final Grid<SymbolConfigModel> grid = new Grid<>();
     private final transient ConfigurationService service;
     private boolean updatePermission;
@@ -66,6 +59,8 @@ public class SymbolsView extends CommonView implements View {
     private Runnable functionClearEditor;
     private long inGridIdCounter = 0;
 
+    private CalculatorsPanel calcPanel;
+
     {
         decFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.US));
         decFormat.setParseBigDecimal(true);
@@ -74,6 +69,14 @@ public class SymbolsView extends CommonView implements View {
     @Autowired
     public SymbolsView(ConfigurationService service) {
         this.service = service;
+        calcPanel = new CalculatorsPanel(s -> {
+            allData.stream().filter(scm -> s.equalsIgnoreCase(scm.getSymbol())).findFirst()
+                    .ifPresent(scm -> {
+                        scm.setRowStatus(RowStatus.EDITED);
+                      //  grid.getDataProvider().refreshItem(scm);
+                    });
+            toggleBtnStatus(btnSave, true);
+        });
     }
 
     private void initComponent() {
@@ -109,8 +112,10 @@ public class SymbolsView extends CommonView implements View {
     protected void setupRoot() {
         super.setupRoot();
         layout.setSpacing(false);
-        layout.addComponent(grid);
-        layout.setExpandRatio(grid, 10);
+        HorizontalSplitPanel c = new HorizontalSplitPanel(grid, calcPanel);
+        c.setSizeFull();
+        layout.addComponent(c);
+        layout.setExpandRatio(c, 10);
     }
 
     private void initEditors() {
@@ -132,14 +137,16 @@ public class SymbolsView extends CommonView implements View {
         }
 
         grid.setSizeFull();
-
+        grid.setSelectionMode(Grid.SelectionMode.SINGLE);
+        grid.getSelectionModel().addSelectionListener(event -> event.getFirstSelectedItem()
+                .ifPresent(symbolConfigModel -> calcPanel.onSelect(symbolConfigModel)));
         grid.setStyleGenerator(this::chooseStyleNameForRow);
         grid.setDataProvider(DataProvider.ofCollection(allData));
         fetchData();
     }
 
     private <T> Grid.Column<SymbolConfigModel, T> createColumn(ValueProvider<SymbolConfigModel, T> valueProvider,
-                                                                String caption) {
+                                                               String caption) {
         return grid.addColumn(valueProvider)
                 .setMinimumWidth(80)
                 .setExpandRatio(1)
@@ -294,9 +301,9 @@ public class SymbolsView extends CommonView implements View {
                 .collect(Collectors.toList());
         if (rowsWithErrors.isEmpty()) {
             try {
-                removeFantomPairs();
+                removePhantomPairs();
                 preDeletedSymbols.forEach(service::deleteSymbol);
-                Set<SymbolConfig> currentSymbols = allData.stream()
+                Set<SymbolConfig> currentSymbols = allData.stream().filter(scm -> !preDeletedSymbols.contains(scm.getSymbol()))
                         .map(SymbolConfigModel::getSymbolEntity)
                         .collect(Collectors.toSet());
                 service.saveSymbols(currentSymbols);
@@ -319,7 +326,7 @@ public class SymbolsView extends CommonView implements View {
         }
     }
 
-    private void removeFantomPairs() {
+    private void removePhantomPairs() {
         Set<SymbolConfigModel> temporarySet = new HashSet<>(preSavedEntities);
         preSavedEntities.removeAll(preSavedEntities.stream()
                 .filter(symbolConfigModel -> preDeletedSymbols.contains(symbolConfigModel.getSymbol()))
@@ -438,7 +445,7 @@ public class SymbolsView extends CommonView implements View {
 
     private SymbolConfigModel validateBean(SymbolConfigModel bean) {
         boolean isValid = bean.getQuoted() != null && bean.getBase() != null;
-        isValid &= !bean.getQuoted().equals(bean.getBase());
+        isValid = isValid && !bean.getQuoted().equals(bean.getBase());
         bean.setValid(isValid);
         return bean;
     }
@@ -454,18 +461,4 @@ public class SymbolsView extends CommonView implements View {
         }
     }
 
-    private void parseRelations(SymbolConfigModel bean, Setter<SymbolConfigModel, BigDecimal> setterB,
-                                Setter<SymbolConfigModel, BigDecimal> setterS,
-                                ValueProvider<SymbolConfigModel, String> relation) throws ParseException {
-        String rawValue = relation.apply(bean);
-        if (rawValue.contains("/")) {
-            String[] values = rawValue.split("/");
-            setterB.accept(bean, (BigDecimal) decFormat.parse(values[0]));
-            setterS.accept(bean, (BigDecimal) decFormat.parse(values[1]));
-        } else {
-            BigDecimal value = (BigDecimal) decFormat.parse(rawValue);
-            setterB.accept(bean, value);
-            setterS.accept(bean, value);
-        }
-    }
 }

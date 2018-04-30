@@ -106,8 +106,8 @@ public class LoginForm extends VerticalLayout {
             msgLabel.setVisible(true);
             LOGGER.error("Unexpected error while logging in", ex);
         } catch (Exception ex) {
-            Notification.show("An unexpected error occurred", ex.getMessage(), Notification.Type.ERROR_MESSAGE);
             LOGGER.error("Unexpected error while logging in", ex);
+            Notification.show("An unexpected error occurred", ex.getMessage(), Notification.Type.ERROR_MESSAGE);
         } finally {
             signIn.setEnabled(true);
         }

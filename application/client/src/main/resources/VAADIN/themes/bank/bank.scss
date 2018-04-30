@@ -52,24 +52,6 @@
 @include font-face('IstokWeb',
         '../../../../bank/fonts/IstokWeb-BoldItalic', 700, italic);
 
-@keyframes newQuotAnimation {
-  0% {
-    background-color: rgba(33, 150, 243, 0.5);;
-  }
-  100% {
-    background-color: #ffffff;
-  }
-}
-
-@keyframes newQuotAnimationStriped {
-  0% {
-    background-color: rgba(33, 150, 243, 0.5);;
-  }
-  100% {
-    background-color: #f5f5f5;
-  }
-}
-
 @mixin bank {
   $v-font-family: 'IstokWeb';
 
@@ -104,6 +86,13 @@
   }
   .no-stripes .v-grid-row-stripe > td {
     // background: inherit;
+  }
+
+  .gray-row {
+    color: #7b7b7b;
+  }
+  .to-right {
+    text-align: right;
   }
 
   .error-grid-cell {
@@ -181,55 +170,8 @@
   .v-loading-indicator[style*="none"]:before { // search for display: none
     display: none;
   }
-
-  .new-quote,
-  .new-quote > td,
-  .v-grid-row.new-quote > td {
-    -webkit-animation: newQuotAnimation 750ms ease-out;
-    -moz-animation: newQuotAnimation 750ms ease-out;
-    -o-animation: newQuotAnimation 750ms ease-out;
-    animation: newQuotAnimation 750ms ease-out;
-  }
-  .v-grid-row-stripe.new-quote > td {
-    -webkit-animation: newQuotAnimation 750ms ease-out;
-    -moz-animation: newQuotAnimation 750ms ease-out;
-    -o-animation: newQuotAnimation 750ms ease-out;
-    animation: newQuotAnimationStriped 750ms ease-out;
-  }
   .h3-padding {
     margin-left: 20px;
-  }
-  .t1 {
-    margin-top: 10px;
-    font-size: $v-font-size + 4px;
-    font-weight: $v-font-weight + 400;
-  }
-  .t2 {
-    margin-top: 8px;
-    font-size: $v-font-size - 2px;
-    // margin-left: 10px;
-    font-weight: $v-font-weight;
-  }
-  .t3 {
-    margin-top: 5px;
-    // margin-left: 20px;
-  }
-  .v1 {
-    font-weight: $v-font-weight;
-    //margin-left: 25px;
-  }
-  .t4 {
-    font-size: $v-font-size - 4px;
-    color: #999999;
-    font-style: italic;
-    max-width: 200px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    word-break: keep-all;
-  }
-  .t2.constant,
-  .v2.constant {
-    color: #999999;
   }
   .half-margin-true {
     margin: $v-layout-margin-top/2 $v-layout-margin-right/2 $v-layout-margin-bottom/2 $v-layout-margin-left/2;

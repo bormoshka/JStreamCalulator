@@ -227,10 +227,10 @@ public class ZooConfigMonitor<T> implements AutoCloseable, Closeable {
         return combineTransactionResult(transacResult, ids);
     }
 
-    private <R> Result<R> combineTransactionResult(List<CuratorTransactionResult> transacResult, R data) throws Exception {
+    private <R> Result<R> combineTransactionResult(List<CuratorTransactionResult> transactResult, R data) throws Exception {
         Result<R> result;
         StringBuilder errors = new StringBuilder("Errors: ");
-        transacResult.stream().filter(r -> r.getError() != 0).forEach(r -> errors.append("Code: ").append(r.getError())
+        transactResult.stream().filter(r -> r.getError() != 0).forEach(r -> errors.append("Code: ").append(r.getError())
                 .append("; path: ").append(r.getForPath())
                 .append("; stat: ").append(r.getResultStat()));
         if (errors.length() > 10) {
@@ -249,34 +249,53 @@ public class ZooConfigMonitor<T> implements AutoCloseable, Closeable {
                 return new Result<>(new ArrayList<>());
             }
 
-            List<Result<T>> nodeValues = childrenNodes.stream().map(childNode -> readFromNode(znode + "/" + childNode)).collect(Collectors.toList());
+            List<Result<T>> nodeValues = childrenNodes.stream().map(this::readFromNode).collect(Collectors.toList());
             List<Result<T>> errors = nodeValues.stream().filter(n -> n.getException() != null).collect(Collectors.toList());
             return !errors.isEmpty() ?
-                    new Result<>("Error to get all datas", errors.get(0).getException()) :
+                    new Result<>("Error to get all data", errors.get(0).getException()) :
                     new Result<>(nodeValues.stream().map(Result::getData).collect(Collectors.toList()));
 
         } catch (Exception e) {
-            LOG.error("Error to collect all children datas for node " + znode, e);
-            return new Result<>("Error to collect all children datas for node " + znode, e);
+            LOG.error("Error to collect all children data for node " + znode, e);
+            return new Result<>("Error to collect all children data for node " + znode, e);
+        }
+    }
+
+    public List<Result<T>> readAllUnmodified() {
+        try {
+            List<String> childrenNodes = getChildrenNodes();
+            if (childrenNodes.isEmpty()) {
+                return new ArrayList<>();
+            }
+
+            List<Result<T>> nodeValues = childrenNodes.stream().map(this::readFromNode).collect(Collectors.toList());
+            List<Result<T>> errors = nodeValues.stream().filter(n -> n.getException() != null).collect(Collectors.toList());
+            return !errors.isEmpty() ?
+                    Collections.singletonList(new Result<>("Error to get all data", errors.get(0).getException())) :
+                    nodeValues;
+
+        } catch (Exception e) {
+            LOG.error("Error to collect all children data for node " + znode, e);
+            return Collections.singletonList(new Result<>("Error to collect all children data for node " + znode, e));
         }
     }
 
     public Result<T> read(String id) {
         // read the person with the given ID and asynchronously call the receiver after it is read
         Objects.requireNonNull(id, "id instance could not be null");
-        String childNode = znode + "/" + id;
-        return readFromNode(childNode);
+               return readFromNode(id);
     }
 
-    private Result<T> readFromNode(String childNode) {
+    private Result<T> readFromNode(String id) {
         Result<T> result;
+        String childNode = znode + "/" + id;
         try {
             if (!isNodeExist(childNode)) {
                 return new Result<>((!clazz.isPrimitive() ? null : clazz.newInstance()));
             }
 
             T model = serializer.deserialize(client.getData().forPath(childNode));
-            result = new Result<>(model);
+            result = new Result<>(id, model);
         } catch (Exception e) {
             result = new Result<>("Error to collect all children datas for node " + znode, e);
             LOG.error(result.getErrorMessage(), e);

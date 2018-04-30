@@ -34,7 +34,7 @@ buildscript {
     ext {
         springBootVersion = '2.0.1.RELEASE'
         flinkVersion = '1.3.3'
-        vaadinMainVersion = '8.1.0'
+        vaadinMainVersion = '8.4.0'
         scalaBinaryVersion = '2.10'
         lombokVersion = '1.16.16'
         libs = [
@@ -77,15 +77,16 @@ buildscript {
                 lombok            : "org.projectlombok:lombok:${lombokVersion}",
                 vaadin            : ["com.vaadin:vaadin-server:${vaadinMainVersion}",
                                      "com.vaadin:vaadin-shared:${vaadinMainVersion}",
-                                     "com.vaadin:vaadin-spring-boot:2.0.0",
+                                     "com.vaadin:vaadin-spring-boot:3.0.0",
                                      "com.vaadin:vaadin-themes:${vaadinMainVersion}",
                                      "com.vaadin:vaadin-client-compiled:${vaadinMainVersion}",
                                      "com.vaadin:vaadin-push:${vaadinMainVersion}",
+                                     'org.vaadin.addons:inputmask:1.0.2',
                                      "org.vaadin.spring.extensions:vaadin-spring-ext-boot:2.0.0.RELEASE",
                                      "org.vaadin.spring.extensions:vaadin-spring-ext-core:2.0.0.RELEASE",
                                      "org.vaadin.spring.extensions:vaadin-spring-ext-security:2.0.0.RELEASE"
                 ],
-                vaadinProvided    : ["com.vaadin:vaadin-client:+"],
+                vaadinProvided    : ["com.vaadin:vaadin-client:${vaadinMainVersion}"],
                 test              : "org.springframework.boot:spring-boot-starter-test:${springBootVersion}",
                 junit             : "junit:junit:+",
         ]

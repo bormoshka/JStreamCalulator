@@ -18,6 +18,7 @@ public class AppConfigStorage implements Closeable {
 
     private final Map<String, String> properties = new ConcurrentHashMap<>();
     private final ZooConfigMonitor<String> configMonitor;
+    private boolean isInitialized = false;
 
     public AppConfigStorage(@NonNull String zooConnection) throws Exception {
         log.info("Zoo symbols service was initialized {}", zooConnection);
@@ -30,6 +31,12 @@ public class AppConfigStorage implements Closeable {
     }
 
     public Map<String, String> getProperties() {
+        if (isInitialized) {
+            return properties;
+        }
+        configMonitor.readAllUnmodified().forEach(stringResult -> properties.put(stringResult.getNodeId(), stringResult.getData()));
+
+        isInitialized = !isInitialized;
         return properties;
     }
 

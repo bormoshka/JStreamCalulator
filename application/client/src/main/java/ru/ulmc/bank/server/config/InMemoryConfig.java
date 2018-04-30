@@ -10,11 +10,11 @@ import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
 
 @Configuration
-@Profile("dev")
+@Profile("db-inmemory")
 public class InMemoryConfig {
 
     @Bean
-    @Profile("dev")
+    @Profile("db-inmemory")
     public DataSource dataSource() {
         EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
         return builder

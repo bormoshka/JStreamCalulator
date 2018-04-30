@@ -38,18 +38,18 @@ public class BaseQuoteProcessor extends ProcessFunction<BaseQuoteDto, BaseQuote>
         }
 
         BaseQuote quote = convert(iQuote);
+        collector.collect(quote);
         CompletableFuture.runAsync(() -> quotesDao.save(quote));
 
-        collector.collect(quote);
     }
 
     private BaseQuote convert(BaseQuoteDto ibq) {
         BaseQuote bq = new BaseQuote();
-        bq.setDatetime(bq.getDatetime());
+        bq.setDatetime(ibq.getDatetime());
         bq.setReceiveTime(LocalDateTime.now());
         bq.setSymbol(ibq.getSymbol());
         bq.setId(UUID.randomUUID().toString());
-        ibq.getPrices().forEach(p -> bq.addPrice(new BasePrice(p.getVolume(), p.getBid(), p.getOffer(), bq)));
+        ibq.getPrices().forEach(p -> bq.addPrice(new BasePrice(p.getVolume(), p.getBid(), p.getOffer())));
         log.info(" Saving external IBaseQuote with ID {} to DB with ID {}", ibq.getId(), bq.getId());
         return bq;
     }

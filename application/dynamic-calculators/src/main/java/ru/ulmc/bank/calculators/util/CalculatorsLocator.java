@@ -7,6 +7,7 @@ import ru.ulmc.bank.calculators.Calculator;
 import ru.ulmc.bank.calculators.ResourcesEnvironment;
 import ru.ulmc.bank.core.common.exception.FxException;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -15,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class CalculatorsLocator {
     private static final Map<String, Calculator> loadedCalculators = new ConcurrentHashMap<>();
+    private static Set<CalculatorInfo> loadedCalculatorsInfos = null;
     private static final Object[] monitor = {};
     private static Boolean scanned = false;
 
@@ -23,7 +25,7 @@ public class CalculatorsLocator {
             FastClasspathScanner scanner = getFastClasspathScanner(subclass -> {
                 String name = subclass.getPackage().getName();
                 log.debug("Loading calculator class {} from package: {}", subclass.getSimpleName(), name);
-                loadedCalculators.put(subclass.getSimpleName(), init(environment, subclass));
+                loadedCalculators.put(subclass.getCanonicalName(), init(environment, subclass));
             });
             scanner.scan();
             scanned = true;
@@ -31,7 +33,9 @@ public class CalculatorsLocator {
     }
 
     public static Set<CalculatorInfo> collect() {
-
+        if (loadedCalculatorsInfos != null) {
+            return loadedCalculatorsInfos;
+        }
         Set<CalculatorInfo> loadedCalculatorsClasses = new HashSet<>();
         FastClasspathScanner scanner = getFastClasspathScanner(subclass -> {
             String name = subclass.getPackage().getName();
@@ -43,7 +47,8 @@ public class CalculatorsLocator {
             }
         });
         scanner.scan();
-        return loadedCalculatorsClasses;
+        loadedCalculatorsInfos = Collections.unmodifiableSet(loadedCalculatorsClasses);
+        return loadedCalculatorsInfos;
     }
 
     private static FastClasspathScanner getFastClasspathScanner(

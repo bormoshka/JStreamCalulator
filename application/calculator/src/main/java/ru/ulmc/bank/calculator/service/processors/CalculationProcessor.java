@@ -36,7 +36,7 @@ public class CalculationProcessor extends ProcessFunction<BaseQuote, Calculation
         Map<String, SymbolCalculatorConfig> calculators = symbolConfig.getCalculators();
         if (calculators != null && !calculators.isEmpty()) {
             calculators.forEach((s, symbolCalculatorConfig) -> {
-                if (symbolCalculatorConfig.getModifier() != 0.0d) {
+                if (symbolCalculatorConfig.getBidModifier() != 0.0d || symbolCalculatorConfig.getOfferModifier() != 0.0d) {
                     calcOutput.add(symbolCalculatorConfig, availableCalculators.get(s).calc(quote));
                 }
             });

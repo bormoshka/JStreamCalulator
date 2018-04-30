@@ -2,6 +2,7 @@ package ru.ulmc.bank.calculators.impl;
 
 
 import lombok.NoArgsConstructor;
+import ru.ulmc.bank.bean.IPrice;
 import ru.ulmc.bank.calculators.Calculator;
 import ru.ulmc.bank.calculators.ResourcesEnvironment;
 import ru.ulmc.bank.calculators.util.CalcPlugin;
@@ -54,6 +55,10 @@ public class MovingAverageTrendCalculator implements Calculator {
 
         int sizeSmoothingQuotes = smoothingAvgQuotes.size();
         int sizeStatisticQuotes = statisticQuotes.size();
+        if (sizeSmoothingQuotes < 3 || sizeStatisticQuotes < 3) {
+
+            return new CalculatorResult(getBidForZeroVolume(newQuote), getOfferForZeroVolume(newQuote), 1, 1);
+        }
 
         BigDecimal averageQuoteBid = smoothingAvgQuotes.get(sizeSmoothingQuotes - 2).getAverageQuoteBid();
         BigDecimal bidForZeroVolume = getBidForZeroVolume(statisticQuotes.get(sizeStatisticQuotes - 1));
@@ -80,7 +85,7 @@ public class MovingAverageTrendCalculator implements Calculator {
     }
 
     private BigDecimal getBidForZeroVolume(BaseQuote quote) {
-        for (Price p : quote.getPrices()) {
+        for (IPrice p : quote.getPrices()) {
             if (p.getVolume() == 0) {
                 return p.getBid();
             }
@@ -89,7 +94,7 @@ public class MovingAverageTrendCalculator implements Calculator {
     }
 
     private BigDecimal getOfferForZeroVolume(BaseQuote quote) {
-        for (Price p : quote.getPrices()) {
+        for (IPrice p : quote.getPrices()) {
             if (p.getVolume() == 0) {
                 return p.getOffer();
             }

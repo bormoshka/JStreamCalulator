@@ -29,14 +29,15 @@ public class Quote implements Serializable {
     @Column(name = "DATETIME")
     private LocalDateTime datetime;
 
-    @Column(name = "symbol")
+    @Column(name = "SYMBOL")
     private String symbol;
 
-    @OneToMany(mappedBy = "quote")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "QUOTE_ID", nullable = false)
     private Set<CalcPrice> prices;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, targetEntity = BaseQuote.class)
-    private BaseQuote sourceQuote;
+    @Column(name = "SRC_QUOTE_ID")
+    private String baseQuoteId;
 
     public Quote(@NonNull LocalDateTime date,
                     @NonNull String symbol, @NonNull Collection<CalcPrice> prices, @NonNull BaseQuote sourceQuote) {
@@ -44,6 +45,6 @@ public class Quote implements Serializable {
         this.datetime = date;
         this.symbol = symbol;
         this.prices = new HashSet<>(prices);
-        this.sourceQuote = sourceQuote;
+        this.baseQuoteId = sourceQuote.getId();
     }
 }

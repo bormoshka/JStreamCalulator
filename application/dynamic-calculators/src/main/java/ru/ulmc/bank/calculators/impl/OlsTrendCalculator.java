@@ -1,6 +1,7 @@
 package ru.ulmc.bank.calculators.impl;
 
 import lombok.NoArgsConstructor;
+import ru.ulmc.bank.bean.IPrice;
 import ru.ulmc.bank.calculators.Calculator;
 import ru.ulmc.bank.calculators.ResourcesEnvironment;
 import ru.ulmc.bank.calculators.util.CalcPlugin;
@@ -13,7 +14,6 @@ import ru.ulmc.bank.entities.persistent.financial.Price;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,25 +38,29 @@ public class OlsTrendCalculator implements Calculator {
     public CalculatorResult calc(BaseQuote newQuote) {
         LocalDateTime endPeriod = LocalDateTime.now();
         List<AverageQuote> statisticAvgQuotes = quotesDao.getDailyAverageBaseQuotesOnZeroVolume(newQuote.getSymbol(), endPeriod.minusDays(timeSeries), endPeriod);
-        statisticAvgQuotes.add(convertToAverageQuote(newQuote));
+        AverageQuote incomingQuote = convertToAverageQuote(newQuote);
+        statisticAvgQuotes.add(incomingQuote);
 
         double ratioAForBid = calcRatioAForBid(statisticAvgQuotes);
         double ratioBForBid = calcRatioBForBid(statisticAvgQuotes);
         double ratioAForOffer = calcRatioAForOffer(statisticAvgQuotes);
         double ratioBForOffer = calcRatioBForOffer(statisticAvgQuotes);
+        try {
+            BigDecimal forecastBid = new BigDecimal(ratioAForBid * (statisticAvgQuotes.size() + 1) + ratioBForBid); //todo: расчеты в bigDecimal
+            BigDecimal forecastOffer = BigDecimal.valueOf(ratioAForOffer * (statisticAvgQuotes.size() + 1) + ratioBForOffer);
+            double inaccuracyForBid = calcInaccuracyBid(statisticAvgQuotes, ratioAForBid, ratioBForBid);
+            double inaccuracyForOffer = calcInaccuracyOffer(statisticAvgQuotes, ratioAForOffer, ratioBForOffer);
+            return new CalculatorResult(forecastBid, forecastOffer, inaccuracyForBid, inaccuracyForOffer);
+        } catch (Exception ex) {
+            return new CalculatorResult(incomingQuote.getAverageQuoteBid(), incomingQuote.getAverageQuoteOffer(), 1, 1);
+        }
 
-        BigDecimal forecastBid = new BigDecimal(ratioAForBid * (statisticAvgQuotes.size() + 1) + ratioBForBid); //todo: расчеты в bigDecimal
-        BigDecimal forecastOffer = BigDecimal.valueOf(ratioAForOffer * (statisticAvgQuotes.size() + 1) + ratioBForOffer);
 
-        double inaccuracyForBid = calcInaccuracyBid(statisticAvgQuotes, ratioAForBid, ratioBForBid);
-        double inaccuracyForOffer = calcInaccuracyOffer(statisticAvgQuotes, ratioAForOffer, ratioBForOffer);
-
-        return new CalculatorResult(forecastBid, forecastOffer, inaccuracyForBid, inaccuracyForOffer);
     }
 
     private AverageQuote convertToAverageQuote(BaseQuote newQuote) {
-        Price newPrice = null;
-        for (Price p : newQuote.getPrices()) {
+        IPrice newPrice = null;
+        for (IPrice p : newQuote.getPrices()) {
             if (p.getVolume() == 0) {
                 newPrice = p;
             }

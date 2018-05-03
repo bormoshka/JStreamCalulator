@@ -36,10 +36,14 @@ public class BaseQuoteProcessor extends ProcessFunction<BaseQuoteDto, BaseQuote>
             log.info("Unknown symbol retrieved - {}. Skipping...", iQuote.getSymbol());
             return;
         }
-
-        BaseQuote quote = convert(iQuote);
-        collector.collect(quote);
-        CompletableFuture.runAsync(() -> quotesDao.save(quote));
+        try {
+            BaseQuote quote = convert(iQuote);
+            collector.collect(quote);
+            CompletableFuture.runAsync(() -> quotesDao.save(quote));
+        } catch (Exception ex) {
+            log.error("Processing BaseQuote Error", ex);
+            log.info("Skipping BaseQuote processing");
+        }
 
     }
 

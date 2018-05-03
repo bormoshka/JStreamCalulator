@@ -3,14 +3,13 @@ package ru.ulmc.generator;
 import de.felixroske.jfxsupport.AbstractJavaFxApplicationSupport;
 import de.felixroske.jfxsupport.SplashScreen;
 import javafx.stage.Stage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.ldap.LdapAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import ru.ulmc.generator.logic.StreamController;
+import ru.ulmc.generator.ui.views.MainView;
 
 @EnableAutoConfiguration(exclude = {
         DataSourceAutoConfiguration.class,
@@ -19,7 +18,6 @@ import ru.ulmc.generator.logic.StreamController;
         LdapAutoConfiguration.class})
 @SpringBootApplication
 public class Generator extends AbstractJavaFxApplicationSupport {
-
 
     public static void main(String[] args) {
         launch(Generator.class, MainView.class, new SplashScreen() {

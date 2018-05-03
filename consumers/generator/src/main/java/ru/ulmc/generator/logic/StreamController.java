@@ -8,6 +8,7 @@ import ru.ulmc.generator.logic.beans.QuoteEntity;
 import ru.ulmc.generator.logic.beans.StreamTask;
 
 import javax.annotation.PreDestroy;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
@@ -47,7 +48,15 @@ public class StreamController {
             log.info("Stream already enabled for {}", symbol);
             return;
         }
-        schedule(new StreamTask(symbol, bid, offer, volatility, interval));
+        schedule(new StreamTask(symbol, bid, offer, volatility, interval, null));
+    }
+
+    public void startNewTask(ScenarioProcess process) {
+        if (futures.keySet().contains(process.getSymbol())) {
+            log.info("Stream already enabled for {}", process.getSymbol());
+            return;
+        }
+        schedule(process);
     }
 
     private void schedule(StreamTask task) {
@@ -87,6 +96,38 @@ public class StreamController {
                 log.info("Rescheduling: {}", task);
                 stopStreaming(task.getSymbol());
                 schedule(task);
+            }, 1500, TimeUnit.MILLISECONDS);
+        });
+    }
+
+    private void schedule(ScenarioProcess process) {
+        log.info("Init streaming ScenarioProcess for {}", process.getSymbol());
+        List<QuoteEntity> entities = process.getQuotesToPublish();
+        futures.put(process.getSymbol(),
+                executor.scheduleAtFixedRate(() -> {
+            if (isStreamMuted) {
+                return;
+            }
+            if (entities.isEmpty()) {
+                reschedule(process);
+                return;
+            }
+            QuoteEntity remove = entities.remove(0);
+            log.debug("Scenario with i: {} for: {} Quote: {}", process.getInterval(), process.getSymbol(), remove);
+            publisher.publish(remove);
+            messageConsumer.accept("[SCENARIO STREAM] " + remove.getSymbol() + " QUID: " + remove.getId());
+        }, 1, (long) process.getInterval(), TimeUnit.SECONDS));
+    }
+
+    public void reschedule(ScenarioProcess process) {
+        scheduledForReschedule.compute(process.getSymbol(), (s, scheduledFuture) -> {
+            if (scheduledFuture != null && !(scheduledFuture.isCancelled() || scheduledFuture.isDone())) {
+                scheduledFuture.cancel(true);
+            }
+            return executor.schedule(() -> {
+                log.info("Rescheduling scenario for: {}", process);
+                stopStreaming(process.getSymbol());
+                schedule(process);
             }, 1500, TimeUnit.MILLISECONDS);
         });
     }

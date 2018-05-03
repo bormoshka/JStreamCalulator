@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@types/d3": "^4.10.0",
+    "@types/requirejs": "^2.1.31",
+    "@types/systemjs": "^0.20.5",
+    "d3": "^4.10.2",
+    "typescript": "2.5.2"
+  }
+}

@@ -65,7 +65,7 @@ public class CalculatorApplication {
                         false,                          // use correlation ids; can be false if only at-least-once is required
                         new QuoteJsonSerializationSchema()))           // deserialization schema to turn messages into Java objects
                 .setParallelism(1);                                    // non-parallel source is only required for exactly-once
-        stream.addSink(baseQuote -> log.info("Got a quote {}", baseQuote));
+       // stream.addSink(baseQuote -> log.info("Got a quote {}", baseQuote));
         stream/*.timeWindowAll(Time.seconds(1))
                 .maxBy("datetime")*/
                 .process(baseQuoteProcessor)

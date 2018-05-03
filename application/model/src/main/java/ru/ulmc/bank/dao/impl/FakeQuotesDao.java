@@ -100,6 +100,11 @@ public class FakeQuotesDao implements QuotesDao {
         return null;
     }
 
+    @Override
+    public List<Quote> getLastCalcQuotes(String symbol, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        return null;
+    }
+
 
     @Override
     public ArrayList<AverageQuote> getDailyAverageBaseQuotesOnZeroVolume(String symbol, LocalDateTime startDateTime, LocalDateTime endDateTime) {

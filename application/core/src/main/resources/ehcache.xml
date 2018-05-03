@@ -1,0 +1,68 @@
+<ehcache>
+    <diskStore path="java.io.tmpdir"/>
+    <defaultCache
+            maxEntriesLocalHeap="500000"
+            eternal="false"
+            timeToIdleSeconds="620"
+            timeToLiveSeconds="620"
+            maxEntriesLocalDisk="10000000"
+            diskExpiryThreadIntervalSeconds="120"
+            memoryStoreEvictionPolicy="LRU">
+        <persistence strategy="localTempSwap"/>
+        <cacheWriter writeMode="write-through" notifyListenersOnException="true" maxWriteDelay="30"
+                     rateLimitPerSecond="10" writeCoalescing="true" writeBatching="true" writeBatchSize="8"
+                     retryAttempts="20" retryAttemptDelaySeconds="60"/>
+    </defaultCache>
+    <cache name="ru.ulmc.bank.entities.persistent.financial.CalcPrice"
+            maxEntriesLocalHeap="1000"
+            eternal="false"
+            timeToIdleSeconds="620"
+            timeToLiveSeconds="620"
+            maxEntriesLocalDisk="10000"
+            diskExpiryThreadIntervalSeconds="120"
+            memoryStoreEvictionPolicy="LRU">
+        <persistence strategy="localTempSwap"/>
+        <cacheWriter writeMode="write-through" notifyListenersOnException="true" maxWriteDelay="30"
+                     rateLimitPerSecond="10" writeCoalescing="true" writeBatching="true" writeBatchSize="8"
+                     retryAttempts="20" retryAttemptDelaySeconds="60"/>
+    </cache>
+    <cache name="ru.ulmc.bank.entities.persistent.financial.Quote"
+           maxEntriesLocalHeap="1000"
+           eternal="false"
+           timeToIdleSeconds="620"
+           timeToLiveSeconds="620"
+           maxEntriesLocalDisk="10000"
+           diskExpiryThreadIntervalSeconds="120"
+           memoryStoreEvictionPolicy="LRU">
+        <persistence strategy="localTempSwap"/>
+        <cacheWriter writeMode="write-through" notifyListenersOnException="true" maxWriteDelay="30"
+                     rateLimitPerSecond="10" writeCoalescing="true" writeBatching="true" writeBatchSize="8"
+                     retryAttempts="20" retryAttemptDelaySeconds="60"/>
+    </cache>
+    <cache name="ru.ulmc.bank.entities.persistent.financial.BaseQuote"
+           maxEntriesLocalHeap="1000000"
+           eternal="false"
+           timeToIdleSeconds="620"
+           timeToLiveSeconds="620"
+           maxEntriesLocalDisk="100000000"
+           diskExpiryThreadIntervalSeconds="120"
+           memoryStoreEvictionPolicy="LRU">
+        <persistence strategy="localTempSwap"/>
+        <cacheWriter writeMode="write-through" notifyListenersOnException="true" maxWriteDelay="30"
+                     rateLimitPerSecond="10" writeCoalescing="true" writeBatching="true" writeBatchSize="8"
+                     retryAttempts="20" retryAttemptDelaySeconds="60"/>
+    </cache>
+    <cache name="ru.ulmc.bank.entities.persistent.financial.BasePrice"
+           maxEntriesLocalHeap="10000000"
+           eternal="false"
+           timeToIdleSeconds="620"
+           timeToLiveSeconds="620"
+           maxEntriesLocalDisk="1000000000"
+           diskExpiryThreadIntervalSeconds="120"
+           memoryStoreEvictionPolicy="LRU">
+        <persistence strategy="localTempSwap"/>
+        <cacheWriter writeMode="write-through" notifyListenersOnException="true" maxWriteDelay="30"
+                     rateLimitPerSecond="10" writeCoalescing="true" writeBatching="true" writeBatchSize="8"
+                     retryAttempts="20" retryAttemptDelaySeconds="60"/>
+    </cache>
+</ehcache>

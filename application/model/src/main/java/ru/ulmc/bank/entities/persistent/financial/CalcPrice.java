@@ -2,7 +2,9 @@ package ru.ulmc.bank.entities.persistent.financial;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import ru.ulmc.bank.bean.IPrice;
 
 import javax.persistence.*;
@@ -12,8 +14,11 @@ import java.math.BigDecimal;
 @Entity
 @Getter
 @Setter
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Table(name = "FIN_CALC_PRICE",
         indexes = {@Index(name = "CALC_PRICE_VOLUME_INDEX", columnList = "VOL")})
+@NoArgsConstructor
 @SequenceGenerator(name = "SEQ_CALC_PRICE", allocationSize = 1)
 public class CalcPrice implements IPrice /*extends Price */ {
     @Id

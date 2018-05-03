@@ -2,6 +2,7 @@ package ru.ulmc.bank.bean;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 public interface IBaseQuote extends Serializable {
@@ -11,5 +12,5 @@ public interface IBaseQuote extends Serializable {
 
     LocalDateTime getDatetime();
 
-    Set<? extends IPrice> getPrices();
+    List<? extends IPrice> getPrices();
 }

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds" >
+    <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <Pattern>%d{dd-MM-yyyy HH:mm:ss.SSS} %magenta([%-20thread{19}|%mdc{sessionid}-%mdc{requestid}]) %highlight(%-5level) %logger{36}.%M - %msg%n
+            </Pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>TRACE</level>
+        </filter>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>log/app_debug.log</File>
+        <rollingPolicy  class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy" >
+            <FileNamePattern>log/app_debug_%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+            <maxHistory>30</maxHistory>
+            <maxFileSize>5MB</maxFileSize>
+            <totalSizeCap>3GB</totalSizeCap>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%d{dd-MM-yyyy HH:mm:ss.SSS} [%-20thread{19}] %-5level %logger{36}.%M - %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="FILE" />
+    </appender>
+
+    <root level="DEBUG">
+        <appender-ref ref="FILE" />
+    </root>
+
+    <logger name="ru.ulmc.bank" additivity="false">
+        <level value="TRACE"/>
+        <appender-ref ref="ASYNC"/>
+        <appender-ref ref="consoleAppender"/>
+    </logger>
+
+    <logger name="org.hibernate" additivity="false">
+        <level value="INFO"/>
+        <appender-ref ref="ASYNC"/>
+        <appender-ref ref="consoleAppender"/>
+    </logger>
+
+    <root>
+        <level value="INFO"/>
+        <appender-ref ref="ASYNC"/>
+        <appender-ref ref="consoleAppender"/>
+    </root>
+</configuration>

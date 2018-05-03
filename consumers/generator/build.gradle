@@ -13,6 +13,7 @@ dependencies {
             libs.springBoot,
             libs.kryo,
             libs.springBootMQ,
+            'com.google.code.gson:gson:2.8.3',
             "de.roskenet:springboot-javafx-support:2.1.6"
     compileOnly libs.lombok
     testCompile libs.test

@@ -8,6 +8,7 @@ import ru.ulmc.bank.core.serialization.CommonJsonSerializer;
 import ru.ulmc.generator.logic.beans.QuoteEntity;
 
 import javax.annotation.PreDestroy;
+import java.time.LocalDateTime;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -31,6 +32,7 @@ public class PublishingController {
     }
 
     public void publish(QuoteEntity message) {
+        message.setDatetime(LocalDateTime.now());
         executor.execute(() -> rabbitTemplate.convertAndSend(Queues.BASE_QUOTES_QUEUE, jsonSerializer.serialize(message)));
     }
 }

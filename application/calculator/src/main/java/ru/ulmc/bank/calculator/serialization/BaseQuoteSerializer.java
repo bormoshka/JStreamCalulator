@@ -10,6 +10,7 @@ import ru.ulmc.bank.entities.persistent.financial.BaseQuote;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class BaseQuoteSerializer extends Serializer<BaseQuote> {
@@ -32,7 +33,7 @@ public class BaseQuoteSerializer extends Serializer<BaseQuote> {
         ce.setDatetime(kryo.readObject(input, LocalDateTime.class));
         ce.setReceiveTime(kryo.readObject(input, LocalDateTime.class));
         int size  = input.readInt();
-        Set<BasePrice> prices = new HashSet<>();
+        List<BasePrice> prices = new ArrayList<>();
         while (size-- > 0) {
             prices.add(kryo.readObject(input, BasePrice.class));
         }

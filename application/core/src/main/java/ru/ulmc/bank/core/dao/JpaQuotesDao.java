@@ -61,7 +61,7 @@ public class JpaQuotesDao implements QuotesDao {
     public List<BaseQuote> getLastBaseQuotes(String symbol, int count) {
         Session session = sessionFactory.openSession();
         sessionFactory.createEntityManager();
-        List<BaseQuote> quote = session.createQuery("select b from BaseQuote b where b.symbol = :symbol order by b.datetime DESC ")
+        List<BaseQuote> quote = session.createQuery("select b from BaseQuote b where b.symbol = :symbol order by b.datetime ASC ")
                 .setMaxResults(count)
                 .setParameter("symbol", symbol)
                 .getResultList();
@@ -81,7 +81,7 @@ public class JpaQuotesDao implements QuotesDao {
                 "where b.symbol = :symbol " +
                 " and b.datetime >= :dateStart " +
                 (endDateTime == null ? "" : " and b.datetime < :dateEnd ") +
-                " order by b.datetime DESC ")
+                " order by b.datetime ASC ")
                 .setParameter("symbol", symbol)
                 .setParameter("dateStart", startDateTime);
         if (endDateTime != null) {
@@ -126,11 +126,29 @@ public class JpaQuotesDao implements QuotesDao {
     public List<Quote> getLastCalcQuotes(String symbol, int count) {
         Session session = sessionFactory.openSession();
         sessionFactory.createEntityManager();
-        List<Quote> quote = session.createQuery("select b from Quote b where b.symbol = :symbol order by b.datetime DESC ")
+        List<Quote> quote = session.createQuery("select b from Quote b where b.symbol = :symbol order by b.baseDateTime ASC ")
                 .setMaxResults(count)
                 .setParameter("symbol", symbol)
                 .getResultList();
         session.close();
         return quote;
+    }
+
+    @Override
+    public List<Quote> getLastCalcQuotes(String symbol, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        Session session = sessionFactory.openSession();
+        Query<Quote> q = session.createQuery("select b from Quote b " +
+                "where b.symbol = :symbol " +
+                " and b.baseDateTime >= :dateStart " +
+                (endDateTime == null ? "" : " and b.baseDateTime < :dateEnd ") +
+                " order by b.baseDateTime ASC ")
+                .setParameter("symbol", symbol)
+                .setParameter("dateStart", startDateTime);
+        if (endDateTime != null) {
+            q.setParameter("dateEnd", endDateTime);
+        }
+        List<Quote> quotes = q.getResultList();
+        session.close();
+        return quotes;
     }
 }

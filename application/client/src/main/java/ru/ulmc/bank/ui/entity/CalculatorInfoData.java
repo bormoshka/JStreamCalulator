@@ -18,7 +18,7 @@ public class CalculatorInfoData {
     private SymbolCalculatorConfig calculatorConfig;
     private String bidModifierStr;
     private String offerModifierStr;
-    private static final String regexp = "\\d\\.\\d{1,5}";
+    private static final String regexp = "\\d(\\.\\d{1,5})?";
     private Pattern pat = Pattern.compile(regexp);
 
     public CalculatorInfoData(String symbol, CalculatorInfo calculatorInfo, SymbolCalculatorConfig calculatorConfig) {
@@ -29,6 +29,7 @@ public class CalculatorInfoData {
         this.fullClassName = calculatorInfo.getFullClassName();
         this.calculatorConfig = calculatorConfig;
         bidModifierStr = String.valueOf(calculatorConfig.getBidModifier());
+        offerModifierStr = String.valueOf(calculatorConfig.getOfferModifier());
     }
 
     public void setBidModifierStr(String str) {

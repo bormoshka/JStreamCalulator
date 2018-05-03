@@ -69,12 +69,12 @@ public class CalculatorsPanel extends Panel {
                 .setStyleGenerator(calculatorInfoData -> "to-right")
                 .setEditorComponent(offerField, CalculatorInfoData::setOfferModifierStr);
         grid.addColumn(CalculatorInfoData::getClassName)
-                .setWidth(270)
+                .setWidth(200)
                 .setCaption("Classname");
         grid.addColumn(CalculatorInfoData::getDescription)
                 .setCaption("Description")
                 .setExpandRatio(5)
-                .setWidth(250)
+                .setWidth(200)
                 .setDescriptionGenerator(CalculatorInfoData::getDescription);
 
         grid.getEditor().setEnabled(true);

@@ -3,12 +3,14 @@ package ru.ulmc.generator.logic;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
+import com.google.gson.Gson;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import ru.ulmc.generator.logic.beans.AppConfiguration;
+import ru.ulmc.generator.logic.beans.Scenario;
 import ru.ulmc.generator.logic.beans.UserConfiguration;
 
 import javax.annotation.PostConstruct;
@@ -26,8 +28,9 @@ import java.util.stream.Collectors;
 public class ConfigurationController {
     private final static String APP_CFG_FILENAME = ".//settings.acfg";
     private final StreamController controller;
+    private final Broadcaster broadcaster;
     @Getter
-    private UserConfiguration currentUserConfiguration = null;
+    private UserConfiguration currentUserConfiguration = new UserConfiguration();
     @Getter
     private AppConfiguration appConfiguration = new AppConfiguration();
     private ThreadLocal<Kryo> kryo = ThreadLocal.withInitial(() -> {
@@ -37,13 +40,14 @@ public class ConfigurationController {
     });
     @Getter
     private File lastUsedFile;
-
-    @Autowired
-    public ConfigurationController(StreamController controller) {
-        this.controller = controller;
-    }
     @Setter
     private Consumer<String> messageConsumer;
+
+    @Autowired
+    public ConfigurationController(StreamController controller, Broadcaster broadcaster) {
+        this.controller = controller;
+        this.broadcaster = broadcaster;
+    }
 
     @PostConstruct
     public void loadAppConfig() {
@@ -82,7 +86,9 @@ public class ConfigurationController {
             return null;
         }
         try (Input input = new Input(new FileInputStream(file))) {
-            currentUserConfiguration = (UserConfiguration) kryo.get().readClassAndObject(input);
+            currentUserConfiguration =  kryo.get().readObject(input, UserConfiguration.class);
+            Scenario scenario = currentUserConfiguration.getScenarios().get(0);
+            broadcaster.broadcast(new Broadcaster.BroadcastEvent<>(scenario));
             updateFileLinks(file);
         }
         controller.stopStreaming();
@@ -101,11 +107,11 @@ public class ConfigurationController {
         }
         try (Output output = new Output(new FileOutputStream(file))) {
             currentUserConfiguration = newConfig;
-            kryo.get().writeClassAndObject(output, currentUserConfiguration);
+            kryo.get().writeObject(output, currentUserConfiguration);
             output.flush();
         }
         updateFileLinks(file);
-
+        log.info("Configuration saved successfully");
     }
 
     private void updateFileLinks(File file) {

@@ -32,4 +32,6 @@ public interface QuotesDao {
 
     List<Quote> getLastCalcQuotes(String symbol, int count);
 
+    List<Quote> getLastCalcQuotes(String symbol,  LocalDateTime startDateTime, LocalDateTime endDateTime);
+
 }

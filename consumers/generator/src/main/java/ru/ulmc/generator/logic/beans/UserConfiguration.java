@@ -1,23 +1,26 @@
 package ru.ulmc.generator.logic.beans;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 public class UserConfiguration implements Serializable {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
     private String symbol;
     private double bid;
     private double offer;
     private double volatility;
     private double interval;
-
-    private List<StreamTask> streamTasks;
+    private List<StreamTask> streamTasks = new ArrayList<>();
+    private List<Scenario> scenarios = new ArrayList<>();
 
     public static UserConfiguration.ConfigurationBuilder builder() {
         return new UserConfiguration.ConfigurationBuilder();
@@ -29,6 +32,8 @@ public class UserConfiguration implements Serializable {
         private double offer;
         private double volatility;
         private double interval;
+
+        private List<Scenario> scenarios;
         private List<StreamTask> streamTasks;
 
         ConfigurationBuilder() {
@@ -64,8 +69,13 @@ public class UserConfiguration implements Serializable {
             return this;
         }
 
+        public UserConfiguration.ConfigurationBuilder scenarios(final List<Scenario> scenarios) {
+            this.scenarios = scenarios;
+            return this;
+        }
+
         public UserConfiguration build() {
-            return new UserConfiguration(this.symbol, this.bid, this.offer, this.volatility, this.interval, this.streamTasks);
+            return new UserConfiguration(this.symbol, this.bid, this.offer, this.volatility, this.interval, this.streamTasks, this.scenarios);
         }
 
         public String toString() {

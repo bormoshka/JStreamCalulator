@@ -13,7 +13,7 @@ spring:
 javafx:
   title: Генератор котировок
   stage:
-    resizable: true
+    resizable: false
 logging:
    level:
       ru.ulmc: DEBUG

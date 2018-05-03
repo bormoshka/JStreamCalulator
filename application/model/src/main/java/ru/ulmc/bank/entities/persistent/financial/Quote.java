@@ -4,18 +4,18 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Data
 @Entity
 @NoArgsConstructor
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @EqualsAndHashCode(of = {"id", "symbol", "datetime"})
 @Table(name = "FIN_CALC_QUOTE",
         indexes = {@Index(name = "CALC_QUOTE_DATETIME_INDEX", columnList = "datetime"),
@@ -29,12 +29,15 @@ public class Quote implements Serializable {
     @Column(name = "DATETIME")
     private LocalDateTime datetime;
 
+    @Column(name = "BASE_DATETIME")
+    private LocalDateTime baseDateTime;
+
     @Column(name = "SYMBOL")
     private String symbol;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "QUOTE_ID", nullable = false)
-    private Set<CalcPrice> prices;
+    private List<CalcPrice> prices;
 
     @Column(name = "SRC_QUOTE_ID")
     private String baseQuoteId;
@@ -44,7 +47,8 @@ public class Quote implements Serializable {
         this.id = UUID.randomUUID().toString();
         this.datetime = date;
         this.symbol = symbol;
-        this.prices = new HashSet<>(prices);
+        this.prices = new ArrayList<>(prices);
+        baseDateTime = sourceQuote.getDatetime();
         this.baseQuoteId = sourceQuote.getId();
     }
 }

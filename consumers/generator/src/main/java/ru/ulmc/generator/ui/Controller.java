@@ -1,7 +1,8 @@
-package ru.ulmc.generator;
+package ru.ulmc.generator.ui;
 
 import de.felixroske.jfxsupport.FXMLController;
 import javafx.application.Platform;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
@@ -11,15 +12,19 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.util.StringConverter;
 import javafx.util.converter.DoubleStringConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.ulmc.generator.logic.ConfigurationController;
-import ru.ulmc.generator.logic.PublishingController;
-import ru.ulmc.generator.logic.StreamController;
+import ru.ulmc.generator.Generator;
+import ru.ulmc.generator.UserInputException;
+import ru.ulmc.generator.logic.*;
 import ru.ulmc.generator.logic.beans.QuoteEntity;
+import ru.ulmc.generator.logic.beans.Scenario;
 import ru.ulmc.generator.logic.beans.UserConfiguration;
+import ru.ulmc.generator.ui.views.MainView;
+import ru.ulmc.generator.ui.views.ScenarioSelectView;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -36,8 +41,9 @@ public class Controller {
     private final PublishingController publishingController;
     private final StreamController streamController;
     private final ConfigurationController configurationController;
+    private final ViewManager viewManager;
     private final MainView view;
-
+    private final Broadcaster broadcaster;
     @FXML
     private TextArea output;
     @FXML
@@ -48,6 +54,8 @@ public class Controller {
     private TextField offerField;
     @FXML
     private Button streamBtn;
+    @FXML
+    private Button scenariosEditorBtn;
     @FXML
     private Button sendBtn;
     @FXML
@@ -72,21 +80,27 @@ public class Controller {
     private ScrollPane streamsWrapper;
     @FXML
     private Spinner<Double> interval;
-
+    @FXML
+    private ComboBox<Scenario> scenarioCombo;
     private Map<String, StreamRow> streamRows = new HashMap<>();
     private boolean isStreamOdd = false;
 
     @Autowired
-    public Controller(PublishingController publishingController, StreamController streamController, ConfigurationController configurationController, MainView view) {
+    public Controller(PublishingController publishingController, StreamController streamController,
+                      ConfigurationController configurationController, ViewManager viewManager, MainView view, Broadcaster broadcaster) {
         this.publishingController = publishingController;
         this.streamController = streamController;
         this.configurationController = configurationController;
+        this.viewManager = viewManager;
         this.view = view;
+        this.broadcaster = broadcaster;
     }
 
     public void initialize() {
         initMenuItems();
         initRecentMenu();
+        UiUtils.initScenarioComboBox(scenarioCombo, configurationController, broadcaster);
+        scenariosEditorBtn.setOnAction(this::showScenarioSelect);
         muteToggle.setOnAction(event -> {
             boolean selected = muteToggle.isSelected();
             streamController.setStreamMuted(selected);
@@ -123,6 +137,11 @@ public class Controller {
             }
         }));
         initStreamCreation();
+    }
+
+
+    public void showScenarioSelect(Event event) {
+        viewManager.open(ScenarioSelectView.class, Modality.APPLICATION_MODAL, "Scenario selector");
     }
 
     private void initRecentMenu() {
@@ -173,17 +192,26 @@ public class Controller {
         interval.getValueFactory().setValue(cfg.getInterval());
         streamList.getChildren().clear();
         cfg.getStreamTasks().forEach(task -> {
-            insertNewStreamRow(task.getSymbol(), task.getBid(), task.getOffer(), task.getInterval());
+            insertNewStreamRow(task.getSymbol(), task.getBid(), task.getOffer(), task.getInterval(), task.getScenario());
         });
         initRecentMenu();
     }
 
     private UserConfiguration collectConfig() {
+        double bid = 0;
+        double offer = 0;
+        try {
+            bid = bidField.getText() == null ? 0 : getBid();
+            offer = offerField.getText() == null ? 0 : getOffer();
+        } catch (Exception e) {
+
+        }
         return UserConfiguration.builder()
                 .symbol(symbolField.getText())
-                .bid(getBid())
-                .offer(getOffer())
+                .bid(bid)
+                .offer(offer)
                 .interval(interval.getValue())
+                .scenarios(configurationController.getCurrentUserConfiguration().getScenarios())
                 .streamTasks(streamRows.values().stream().map(StreamRow::getTask).collect(Collectors.toList()))
                 .build();
     }
@@ -235,7 +263,7 @@ public class Controller {
                 double bid = getBid();
                 double offer = getOffer();
                 Double interval = this.interval.getValue();
-                insertNewStreamRow(symbol, bid, offer, interval);
+                insertNewStreamRow(symbol, bid, offer, interval, scenarioCombo.getValue());
 
                 // streamController.startNewTask(symbol, bid, offer, 0, interval);
             } catch (Exception ex) {
@@ -245,18 +273,23 @@ public class Controller {
         });
     }
 
-    private void insertNewStreamRow(String symbol, double bid, double offer, Double interval) {
-        StreamRow sRow = new StreamRow(symbol, bid, offer, 0, interval);
+    private void insertNewStreamRow(String symbol, double bid, double offer, Double interval, Scenario scenario) {
+        StreamRow sRow = new StreamRow(broadcaster, configurationController, symbol, bid, offer, 0, interval, scenario);
         sRow.setPrefWidth(streamsPane.getPrefWidth());
         if (isStreamOdd) {
             sRow.setBackground(new Background(new BackgroundFill(Paint.valueOf("#eee"), CornerRadii.EMPTY, Insets.EMPTY)));
         }
-        sRow.initReschedule(streamController::reschedule);
+        sRow.initReschedule(streamController::reschedule, streamController::reschedule);
         ToggleButton toggleBtn = sRow.getToggleBtn();
         toggleBtn.setOnAction(tEvent -> {
             if (toggleBtn.isSelected()) {
                 sRow.toggleOn();
-                streamController.startNewTask(symbol, bid, offer, 0, interval);
+                ScenarioProcess scenarioProcess = sRow.getScenarioProcess();
+                if (scenarioProcess != null) {
+                    streamController.startNewTask(scenarioProcess);
+                } else {
+                    streamController.startNewTask(symbol, bid, offer, 0, interval);
+                }
             } else {
                 sRow.toggleOff();
                 streamController.stopStreaming(symbol);
@@ -350,8 +383,8 @@ public class Controller {
     }
 
     private void log(String msg) {
-        double top =output.getScrollTop();
+        double top = output.getScrollTop();
         output.setText(output.getText() + "\n" + LocalTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME) + ": " + msg);
-        output.setScrollTop(top+20);
+        output.setScrollTop(top + 20);
     }
 }

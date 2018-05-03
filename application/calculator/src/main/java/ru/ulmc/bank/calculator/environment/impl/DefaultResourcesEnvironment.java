@@ -20,7 +20,7 @@ public class DefaultResourcesEnvironment implements ResourcesEnvironment {
 
     public DefaultResourcesEnvironment(String zooConnectString) {
         try {
-            this.symbolConfigStorage = new SymbolConfigStorage(zooConnectString);
+            this.symbolConfigStorage = new SymbolConfigStorage(zooConnectString, true);
             this.appConfigStorage = new AppConfigStorage(zooConnectString);
             this.quotesDao = new JpaQuotesDao(appConfigStorage.getProperties());
         } catch (Exception e) {

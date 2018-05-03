@@ -1,9 +1,7 @@
 package ru.ulmc.bank.entities.persistent.financial;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import ru.ulmc.bank.bean.IPrice;
 
 import javax.persistence.*;
@@ -14,6 +12,9 @@ import java.math.BigDecimal;
 @Entity
 @Getter
 @Setter
+@Cacheable
+@ToString
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Table(name = "FIN_BASE_PRICE",
         indexes = {@Index(name = "BASE_PRICE_VOLUME_INDEX", columnList = "VOL")})
 @SequenceGenerator(name = "SEQ_BASE_PRICE", allocationSize = 1)

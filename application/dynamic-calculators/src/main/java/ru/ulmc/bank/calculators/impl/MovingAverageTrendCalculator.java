@@ -140,8 +140,10 @@ public class MovingAverageTrendCalculator implements Calculator {
 
     private double calcInaccuracyBid(List<BaseQuote> statisticQuotes, ArrayList<AverageQuote> smoothingAvgQuotes) {
         double sumDeviations = 0.0;
+
+        int size = statisticQuotes.size();
         for (int i = smoothingAvgQuotes.size() - 1; i > -1; i--) {
-            BigDecimal factValue = getBidForZeroVolume(statisticQuotes.get(statisticQuotes.size() + i - 4 - 2));
+            BigDecimal factValue = getBidForZeroVolume(statisticQuotes.get(size + i - 4 - 2));
             sumDeviations += smoothingAvgQuotes.get(i).getAverageQuoteBid().subtract(factValue)
                     .divide(factValue, ROUNDING_MODE).doubleValue() * 100;
         }
@@ -150,8 +152,9 @@ public class MovingAverageTrendCalculator implements Calculator {
 
     private double calcInaccuracyOffer(List<BaseQuote> statisticQuotes, ArrayList<AverageQuote> smoothingAvgQuotes) {
         double sumDeviations = 0.0;
+        int size = statisticQuotes.size();
         for (int i = smoothingAvgQuotes.size() - 1; i > -1; i--) {
-            BigDecimal factValue = getOfferForZeroVolume(statisticQuotes.get(statisticQuotes.size() + i - 4 - 2));
+            BigDecimal factValue = getOfferForZeroVolume(statisticQuotes.get(size + i - 4 - 2));
             sumDeviations += smoothingAvgQuotes.get(i).getAverageQuoteOffer().subtract(factValue)
                     .divide(factValue, ROUNDING_MODE).doubleValue() * 100;
         }

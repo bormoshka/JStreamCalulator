@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JdbcQuotesDao implements QuotesDao {
+public class JdbcQuotesDao {}/* implements QuotesDao {
 
     @Override
     public void save(BaseQuote quote) {
@@ -57,4 +57,4 @@ public class JdbcQuotesDao implements QuotesDao {
         return null;
     }
 
-}
+}*/

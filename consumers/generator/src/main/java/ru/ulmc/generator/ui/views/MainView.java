@@ -1,4 +1,4 @@
-package ru.ulmc.generator;
+package ru.ulmc.generator.ui.views;
 
 import de.felixroske.jfxsupport.AbstractFxmlView;
 import de.felixroske.jfxsupport.FXMLView;

@@ -1,0 +1,139 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>test</title>
+    <link href="https://fonts.googleapis.com/css?family=Istok+Web" rel="stylesheet">
+    <style>
+        html,
+        body {
+            font-family: 'Istok Web', sans-serif;
+            min-height: 50%;
+            width:100%;
+        }
+        #insertHere,
+        .tierChart {
+            min-height: 50%;
+            width:100%;
+        }
+        .tierChart > div {
+            float: left;
+        }
+
+        .axis path,
+        .axis line {
+            fill: none;
+            font: 10px sans-serif;
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
+
+        .grid line {
+            fill: none;
+            stroke-width: 1px;
+            stroke: #000000;
+            opacity: 0.1;
+
+            shape-rendering: crispEdges;
+            stroke-dasharray: 5, 8;
+        }
+
+        .bar.visible {
+            stroke: #fff;
+            stroke-opacity: 0.8;
+            stroke-width: 1;
+        }
+
+        .legend {
+            padding: 5px;
+            font: 10px sans-serif;
+            background: yellow;
+            box-shadow: 2px 2px 1px #888;
+        }
+
+        .tier-name {
+            display: block;
+            max-width: 200px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .tooltipVolumes table,
+        .tooltip table {
+            width: 100%;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .tooltipVolumes table td,
+        .tooltip table td {
+            margin: 0;
+            padding: 1px 3px;
+        }
+
+        .tooltipVolumes .selected-volume,
+        .tooltip .selected-volume {
+            background-color: rgba(47, 219, 30, 0.3);
+        }
+
+        .tooltip .hidden-volume {
+            font-style: italic;
+            color: #656565;
+        }
+
+        .volume-name {
+            display: none;
+        }
+
+        .tooltipVolumes,
+        .tooltip {
+            font-family: 'Istok Web', sans-serif;
+            background: #fff;
+            box-shadow: 0 0 5px #999999;
+            border-radius: 2px;
+            color: #333;
+            font-size: 14px;
+            left: 130px;
+            padding: 10px;
+            position: absolute;
+            text-align: center;
+            top: 95px;
+            z-index: 10;
+            display: block;
+            opacity: 0;
+        }
+
+        .hover .bar {
+
+        }
+    </style>
+</head>
+<body>
+<!--<table>
+    <tr>
+        <td>
+            <div id="tierChart" class="chart"></div>
+        </td>
+        <td>
+            <div id="volumeChart" class="chart"></div>
+        </td>
+    </tr>
+</table>-->
+<div id="insertHere"></div>
+<script src="./lib/d3/d3.v4.min.js"></script>
+<script src="./lib/d3/d3-selection.v1.min.js"></script>
+<script src="./lib/d3/d3-scale.v1.min.js"></script>
+<script src="./lib/d3/d3-scale-chromatic.v0.3.min.js"></script>
+<script src="./lib/d3/d3-color.v1.min.js"></script>
+<script src="./lib/d3/d3-dispatch.v1.min.js"></script>
+<script src="./lib/d3/d3-ease.v1.min.js"></script>
+<script src="./lib/d3/d3-interpolate.v1.min.js"></script>
+<script src="./lib/d3/d3-selection.v1.min.js"></script>
+<script src="./lib/d3/d3-timer.v1.min.js"></script>
+<script src="./lib/d3/d3-transition.v1.min.js"></script>
+<script src="./lib/system/system-production.js"></script>
+<script src="./gen/chartsBundle.js"></script>
+<script src="./lib/requireChart.js"></script>
+
+</body>
+</html>

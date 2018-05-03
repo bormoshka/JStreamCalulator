@@ -18,6 +18,7 @@ public class StreamTask implements Serializable {
     private double offer;
     private double volatility;
     private double interval;
+    private Scenario scenario;
 
     public QuoteEntity createQuote() {
         return new QuoteEntity(symbol, BigDecimal.valueOf(bid), BigDecimal.valueOf(offer));

@@ -159,6 +159,11 @@ public class SymbolsView extends CommonView implements View {
         Grid.Column<SymbolConfigModel, String> bidBaseModifier = storeColumn("bidModifier", createColumn(SymbolConfigModel::getBidModifier, "Bid mod"));
         Grid.Column<SymbolConfigModel, String> offerBaseModifier = storeColumn("offerModifier", createColumn(SymbolConfigModel::getOfferModifier, "Offer mod"));
 
+        grid.addComponentColumn(this::getToggleComponent)
+                .setSortable(false)
+                .setCaption("Вкл/Выкл")
+                .setMinimumWidth(160)
+                .setExpandRatio(0);
         if (hasUpdatePermission()) {
             fxsColumn.setEditorComponent(iso1Editor, SymbolConfigModel::setBase);
             quotedCol.setEditorComponent(iso2Editor, SymbolConfigModel::setQuoted);
@@ -166,6 +171,34 @@ public class SymbolsView extends CommonView implements View {
             offerBaseModifier.setEditorComponent(offerEditor, SymbolConfigModel::setOfferModifier);
         }
     }
+
+    private Component getToggleComponent(SymbolConfigModel ce) {
+        Button toggle = new Button();
+        toggle.setEnabled(hasUpdatePermission());
+        toggle.setDisableOnClick(true);
+        toggle.setWidth("150px");
+        toggle.addClickListener(event -> {
+            toggle.setEnabled(true);
+            ce.setActive(!ce.getActive());
+            service.changeActivation(ce.getSymbol(), ce.getActive());
+            toggleStyle(ce.getActive(), toggle);
+        });
+        toggleStyle(ce.getActive(), toggle);
+        return toggle;
+    }
+
+    private void toggleStyle(boolean isActive, Button toggle) {
+        if (isActive) {
+            toggle.setStyleName("toggle-on");
+            toggle.setCaption("Включен");
+        } else{
+            toggle.setStyleName("toggle-off");
+            toggle.setCaption("Выключен");
+        }
+        toggle.markAsDirty();
+    }
+
+
 
     private boolean hasCreatePermission() {
         return createPermission;

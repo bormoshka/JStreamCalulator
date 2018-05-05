@@ -8,6 +8,8 @@ import ru.ulmc.bank.entities.configuration.SymbolConfig;
 
 import javax.annotation.PostConstruct;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.stream.Collectors;
 
 @Service
 public class ConfigurationService {
@@ -34,5 +36,11 @@ public class ConfigurationService {
 
     public void saveSymbols(Collection<SymbolConfig> symbolConfigs) {
         symbolConfigStorage.saveSymbolConfigs(symbolConfigs);
+    }
+
+    public void changeActivation(String symbol, boolean isActive) {
+        SymbolConfig symbolConfig = symbolConfigStorage.getSymbolConfig(symbol);
+        symbolConfig.setActive(isActive);
+        symbolConfigStorage.saveSymbolConfigs(Collections.singleton(symbolConfig));
     }
 }

@@ -8,10 +8,12 @@ import com.byteowls.vaadin.chartjs.options.FillMode;
 import com.byteowls.vaadin.chartjs.options.scale.Axis;
 import com.byteowls.vaadin.chartjs.options.scale.LinearScale;
 import com.byteowls.vaadin.chartjs.options.zoom.XYMode;
-import com.vaadin.data.HasValue;
 import com.vaadin.navigator.View;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.DateTimeField;
+import com.vaadin.ui.HorizontalLayout;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.ulmc.bank.config.zookeeper.service.ConfigurationService;
 import ru.ulmc.bank.dao.QuotesDao;
@@ -23,13 +25,19 @@ import ru.ulmc.bank.ui.views.CommonView;
 import ru.ulmc.bank.ui.widgets.util.MenuSupport;
 
 import java.time.LocalDateTime;
+import java.time.chrono.IsoChronology;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.ResolverStyle;
+import java.time.format.SignStyle;
+import java.time.temporal.ChronoField;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_TIME;
+import static java.time.temporal.ChronoField.*;
 
 @SpringView(name = QuotesView.NAME)
 public class QuotesView extends CommonView implements View {
@@ -42,6 +50,8 @@ public class QuotesView extends CommonView implements View {
     private Predicate<BasePrice> basePricePredicate = basePrice -> basePrice.getVolume() == 0;
     private ChartJs chart;
     private boolean isInitialized = false;
+    private DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern("dd.MM.yy hh:mm:ss")
+            .toFormatter(Locale.getDefault());
 
     @Autowired
     public QuotesView(QuotesDao dao, ConfigurationService service) {
@@ -102,7 +112,7 @@ public class QuotesView extends CommonView implements View {
         baseQuotes.forEach(quote -> {
             quote.getPrices().stream().filter(basePricePredicate)
                     .findFirst().ifPresent(basePrice -> {
-                String label = quote.getDatetime().format(DateTimeFormatter.ISO_DATE_TIME);
+                String label = quote.getDatetime().format(formatter);
                 baseBid.addData(basePrice.getBid().doubleValue());
                 baseOffer.addData(basePrice.getOffer().doubleValue());
                 labels.add(label);

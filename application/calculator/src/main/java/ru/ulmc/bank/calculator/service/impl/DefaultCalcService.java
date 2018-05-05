@@ -42,23 +42,25 @@ public class DefaultCalcService implements CalcService {
         List<Double> bidModifiers = new ArrayList<>();
         List<Double> offerModifiers = new ArrayList<>();
 
+        // minimal bid and offer
         Double bidBaseModifier = symbolConfig.getBidBaseModifier();
         bids.add(calcModifiedBid(bidBase, bidBaseModifier));
-        bidModifiers.add(bidBaseModifier);
+        bidModifiers.add(1d);
 
         Double offerBaseModifier = symbolConfig.getOfferBaseModifier();
         offers.add(calcModifiedOffer(offerBase, offerBaseModifier));
-        offerModifiers.add(offerBaseModifier);
+        offerModifiers.add(1d);
 
-        quotePreResult.getCalculatorResult().forEach((calculatorConfig, calculatorResult) -> {
+        quotePreResult.getCalculatorResult().forEach((calculatorConfig, calcRes) -> {
             SymbolCalculatorConfig calcConf = symbolConfig.getCalculators().get(calculatorConfig.getFullClassname());
             double bidModifier = calcConf.getBidModifier();
-            bids.add(calcModifiedBid(calculatorResult.getResultForBid(), bidModifier));
+            bids.add(calcRes.getResultForBid().multiply(BigDecimal.valueOf(bidModifier)));
             bidModifiers.add(bidModifier);
 
             double offerModifier = calcConf.getOfferModifier();
-            offers.add(calcModifiedBid(calculatorResult.getResultForOffer(), offerModifier));
+            offers.add(calcRes.getResultForOffer().multiply(BigDecimal.valueOf(offerModifier)));
             offerModifiers.add(offerModifier);
+         //   log.trace("Calculated data {} {} {}", symbolConfig.getSymbol(), );
         });
         Result bid = new Result();
         bids.forEach(bid::add);

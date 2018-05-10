@@ -24,7 +24,6 @@ allprojects {
     javadoc {
         options.charSet = 'UTF-8'
     }
-
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
     }
@@ -93,19 +92,9 @@ buildscript {
                 test              : "org.springframework.boot:spring-boot-starter-test:${springBootVersion}",
                 junit             : "junit:junit:+",
         ]
-        /*  mods = [model        : project(':application:model'),
-                  core         : project(":application:core"),
-                  client       : project(":application:client"),
-                  calculator   : project(":application:calculator"),
-                  configuration: project(":application:configuration"),
-                  dynCalc      : project(":application:dynamic-calculators"),
-                  api          : project(":application:api")
-          ]*/
     }
-
     apply from: 'repositories.gradle', to: buildscript
     dependencies {
-
         classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
         classpath "fi.jasoft.plugin:gradle-vaadin-plugin:1.1.9"
         classpath 'org.javafxports:jfxmobile-plugin:1.0.0-b10'

@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import ru.ulmc.bank.ui.MainUI;
 import ru.ulmc.bank.ui.views.HomeView;
 import ru.ulmc.bank.ui.views.charts.QuotesView;
+import ru.ulmc.bank.ui.views.monitoring.QuotesMonitoringView;
 import ru.ulmc.bank.ui.views.settings.SymbolsView;;
 import ru.ulmc.bank.ui.widgets.util.MenuSupport;
 
@@ -150,6 +151,7 @@ public class MainMenuBarBuilder {
 
         refMenu = mainMenu.addItem("Мониторинг", VaadinIcons.DASHBOARD, null);
         createSubmenuItem(refMenu, QuotesView.MENU_SUPPORT);
+        createSubmenuItem(refMenu, QuotesMonitoringView.MENU_SUPPORT);
 
        // refMenu = mainMenu.addItem("Настройки", VaadinIcons.COG, null);
     }

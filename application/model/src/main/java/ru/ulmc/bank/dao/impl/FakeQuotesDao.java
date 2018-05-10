@@ -2,6 +2,7 @@ package ru.ulmc.bank.dao.impl;
 
 import ru.ulmc.bank.bean.IPrice;
 import ru.ulmc.bank.dao.QuotesDao;
+import ru.ulmc.bank.entities.inner.ActualQuotes;
 import ru.ulmc.bank.entities.inner.AverageQuote;
 import ru.ulmc.bank.entities.persistent.financial.BasePrice;
 import ru.ulmc.bank.entities.persistent.financial.BaseQuote;
@@ -74,7 +75,17 @@ public class FakeQuotesDao implements QuotesDao {
     }
 
     @Override
+    public List<ActualQuotes> getLastBaseQuotes(Collection<String> symbol) {
+        return null;
+    }
+
+    @Override
     public List<BaseQuote> getLastBaseQuotes(String symbol, LocalDateTime startDateTime) {
+        return null;
+    }
+
+    @Override
+    public List<BaseQuote> getLastBaseQuotes(String symbol, LocalDateTime startDateTime, int count) {
         return null;
     }
 
@@ -114,18 +125,26 @@ public class FakeQuotesDao implements QuotesDao {
                 .collect(Collectors.groupingBy(o -> o.getDatetime().toLocalDate()));
 
         for (Map.Entry<LocalDate, List<BaseQuote>> pair : groupBaseQuotes.entrySet()) {
-            avgQuotes.add(new AverageQuote(pair.getKey(), symbol,
+            avgQuotes.add(new AverageQuote(pair.getKey().atStartOfDay(), symbol,
                     getAvgBid(pair.getValue()), getAvgOffer(pair.getValue())));
         }
-        avgQuotes.sort((o1, o2) -> {
-            if (o1.getDate().isAfter(o2.getDate())) {
-                return 1;
-            } else if (o1.getDate().isBefore(o2.getDate())) {
-                return -1;
-            }
-            return 0;
-        });
+        avgQuotes.sort(AverageQuote::compareTo);
         return avgQuotes;
+    }
+
+    @Override
+    public List<AverageQuote> getHourlyAverageBaseQuotesOnZeroVolume(String symbol, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        return null;
+    }
+
+    @Override
+    public List<AverageQuote> getMinutelyAverageBaseQuotesOnZeroVolume(String symbol, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        return null;
+    }
+
+    @Override
+    public List<AverageQuote> getLastAverageBaseQuotesOnZeroVolume(String symbol, int count) {
+        return null;
     }
 
     private boolean isDateInRange(LocalDateTime check, LocalDateTime startDateTime, LocalDateTime endDateTime) {

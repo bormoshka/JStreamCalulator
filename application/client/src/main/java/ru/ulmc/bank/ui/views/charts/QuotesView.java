@@ -50,7 +50,7 @@ public class QuotesView extends CommonView implements View {
     private Predicate<BasePrice> basePricePredicate = basePrice -> basePrice.getVolume() == 0;
     private ChartJs chart;
     private boolean isInitialized = false;
-    private DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern("dd.MM.yy hh:mm:ss")
+    private DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern("dd.MM.yy HH:mm:ss")
             .toFormatter(Locale.getDefault());
 
     @Autowired
@@ -63,9 +63,9 @@ public class QuotesView extends CommonView implements View {
         ComboBox<String> symCombo = new ComboBox<>("Symbol");
         symCombo.setPlaceholder("Symbol");
         dateTimeFieldStart = new DateTimeField("Start date/time");
-        dateTimeFieldStart.setValue(LocalDateTime.now().minusDays(1));
+        dateTimeFieldStart.setValue(LocalDateTime.now().minusMinutes(10));
         dateTimeFieldEnd = new DateTimeField("End date/time");
-        dateTimeFieldEnd.setValue(LocalDateTime.now());
+        //dateTimeFieldEnd.setValue(LocalDateTime.now());
         Button apply = new Button("Apply");
         apply.addClickListener(clickEvent -> {
             apply(dao, symCombo.getValue());
@@ -99,7 +99,7 @@ public class QuotesView extends CommonView implements View {
         LineChartConfig config = new LineChartConfig();
         LineDataset baseBid = new LineDataset().fill(false);
         baseBid.label("BID");
-        baseBid.pointStyle(PointStyle.circle);
+        baseBid.pointStyle(PointStyle.line);
         baseBid.borderColor("#1565C0");
         baseBid.backgroundColor("#1E88E5");
         LineDataset baseOffer = new LineDataset().fill(true, 1);
@@ -107,7 +107,7 @@ public class QuotesView extends CommonView implements View {
         baseOffer.backgroundColor("rgba(33,150,243,0.5)");
         baseOffer.fill(FillMode.ORIGIN);
         baseOffer.label("OFFER");
-        baseOffer.pointStyle(PointStyle.circle);
+        baseOffer.pointStyle(PointStyle.line);
 
         baseQuotes.forEach(quote -> {
             quote.getPrices().stream().filter(basePricePredicate)
@@ -121,7 +121,7 @@ public class QuotesView extends CommonView implements View {
 
         LineDataset calcBid = new LineDataset().fill(false);
         calcBid.label("CALC BID");
-        calcBid.pointStyle(PointStyle.circle);
+        calcBid.pointStyle(PointStyle.dash);
         calcBid.borderColor("rgba(255,87,34,1)");
         calcBid.backgroundColor("rgba(255,87,34,1)");
         LineDataset calcOffer = new LineDataset()
@@ -131,7 +131,7 @@ public class QuotesView extends CommonView implements View {
         calcOffer.backgroundColor("rgba(255,87,34,0.4)");
         calcOffer.fill(FillMode.ORIGIN);
         calcOffer.label("CALC OFFER");
-        calcOffer.pointStyle(PointStyle.circle);
+        calcOffer.pointStyle(PointStyle.dash);
         quotes.forEach(quote -> {
             quote.getPrices().stream().filter(calcPrice -> calcPrice.getVolume() == 0)
                     .findFirst().ifPresent(price -> {

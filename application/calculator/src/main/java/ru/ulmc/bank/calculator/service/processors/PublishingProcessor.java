@@ -31,5 +31,6 @@ public class PublishingProcessor extends ProcessFunction<Quote, Quote> {
     public void processElement(Quote quote, Context context, Collector<Quote> collector) throws Exception {
         log.info("Publishing quote {}", quote);
         CompletableFuture.runAsync(() -> dao.save(quote));
+        collector.collect(quote);
     }
 }

@@ -10,10 +10,7 @@ import ru.ulmc.bank.bean.IPrice;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Data
 @Entity
@@ -25,6 +22,7 @@ import java.util.Set;
         indexes = {@Index(name = "BASE_QUOTE_DATETIME_INDEX", columnList = "datetime"),
                 @Index(name = "BASE_QUOTE_SYMBOL_INDEX", columnList = "symbol")})
 public class BaseQuote implements IBaseQuote {
+
     @Id
     @Column(name = "ID")
     private String id;
@@ -41,6 +39,15 @@ public class BaseQuote implements IBaseQuote {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "quote_id", nullable = false)
     private List<BasePrice> prices = new ArrayList<>();
+
+    public static final Comparator<BaseQuote> DATE_COMPARATOR = (o1, o2) -> {
+        if (o1.getDatetime().isAfter(o2.getDatetime())) {
+            return 1;
+        } else if (o1.getDatetime().isBefore(o2.getDatetime())) {
+            return -1;
+        }
+        return 0;
+    };
 
     public BaseQuote(@NonNull String quoteId, @NonNull LocalDateTime datetime,
                      @NonNull String symbol, @NonNull Set<BasePrice> price) {

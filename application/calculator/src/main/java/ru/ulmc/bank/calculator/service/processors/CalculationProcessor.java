@@ -6,6 +6,7 @@ import org.apache.flink.streaming.api.functions.ProcessFunction;
 import org.apache.flink.util.Collector;
 import ru.ulmc.bank.calculator.environment.EnvironmentHolder;
 import ru.ulmc.bank.calculator.service.transfer.CalculationOutput;
+import ru.ulmc.bank.calculators.CalcSourceQuote;
 import ru.ulmc.bank.calculators.Calculator;
 import ru.ulmc.bank.calculators.util.CalculatorsLocator;
 import ru.ulmc.bank.config.zookeeper.storage.SymbolConfigStorage;
@@ -37,7 +38,7 @@ public class CalculationProcessor extends ProcessFunction<BaseQuote, Calculation
         if (calculators != null && !calculators.isEmpty()) {
             calculators.forEach((s, symbolCalculatorConfig) -> {
                 if (symbolCalculatorConfig.getBidModifier() != 0.0d || symbolCalculatorConfig.getOfferModifier() != 0.0d) {
-                    calcOutput.add(symbolCalculatorConfig, availableCalculators.get(s).calc(quote));
+                    calcOutput.add(symbolCalculatorConfig, availableCalculators.get(s).calc(new CalcSourceQuote(quote, symbolConfig)));
                 }
             });
             collector.collect(calcOutput);

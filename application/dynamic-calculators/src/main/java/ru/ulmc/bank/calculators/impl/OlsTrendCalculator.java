@@ -1,20 +1,26 @@
 package ru.ulmc.bank.calculators.impl;
 
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import ru.ulmc.bank.bean.IPrice;
+import ru.ulmc.bank.calculators.CalcSourceQuote;
 import ru.ulmc.bank.calculators.Calculator;
 import ru.ulmc.bank.calculators.ResourcesEnvironment;
 import ru.ulmc.bank.calculators.util.CalcPlugin;
 import ru.ulmc.bank.dao.QuotesDao;
+import ru.ulmc.bank.entities.configuration.SymbolConfig;
 import ru.ulmc.bank.entities.inner.AverageQuote;
 import ru.ulmc.bank.entities.inner.CalculatorResult;
 import ru.ulmc.bank.entities.persistent.financial.BaseQuote;
-import ru.ulmc.bank.entities.persistent.financial.Price;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static ru.ulmc.bank.calculators.util.CalcUtils.*;
 
 /**
  * Ordinary Least Squares
@@ -23,8 +29,9 @@ import java.util.List;
         description = "Математический метод, применяемый для решения различных задач, основанный на минимизации суммы" +
                 " квадратов отклонений некоторых функций от искомых переменных")
 @NoArgsConstructor
+@Slf4j
 public class OlsTrendCalculator implements Calculator {
-    private QuotesDao quotesDao;
+    protected QuotesDao quotesDao;
     private int timeSeries = 90;
 
     @Override
@@ -35,10 +42,13 @@ public class OlsTrendCalculator implements Calculator {
 
     //расчет прогнозной котировки методом наименьших квадратов
     @Override
-    public CalculatorResult calc(BaseQuote newQuote) {
-        LocalDateTime endPeriod = LocalDateTime.now();
-        List<AverageQuote> statisticAvgQuotes = quotesDao.getDailyAverageBaseQuotesOnZeroVolume(newQuote.getSymbol(), endPeriod.minusDays(timeSeries), endPeriod);
-        AverageQuote incomingQuote = convertToAverageQuote(newQuote);
+    public CalculatorResult calc(CalcSourceQuote newQuote) {
+        SymbolConfig symbolConfig = newQuote.getSymbolConfig();
+        List<AverageQuote> statisticAvgQuotes = getAverageQuotesForPeriod(newQuote);
+        BaseQuote quote = newQuote.getQuote();
+        BigDecimal bidForZeroVolume = getBidForZeroVolume(quote);
+        BigDecimal offerForZeroVolume = getOfferForZeroVolume(quote);
+        AverageQuote incomingQuote = convertToAverageQuote(quote);
         statisticAvgQuotes.add(incomingQuote);
 
         double ratioAForBid = calcRatioAForBid(statisticAvgQuotes);
@@ -50,12 +60,48 @@ public class OlsTrendCalculator implements Calculator {
             BigDecimal forecastOffer = BigDecimal.valueOf(ratioAForOffer * (statisticAvgQuotes.size() + 1) + ratioBForOffer);
             double inaccuracyForBid = calcInaccuracyBid(statisticAvgQuotes, ratioAForBid, ratioBForBid);
             double inaccuracyForOffer = calcInaccuracyOffer(statisticAvgQuotes, ratioAForOffer, ratioBForOffer);
-            return new CalculatorResult(forecastBid, forecastOffer, inaccuracyForBid, inaccuracyForOffer);
+
+            BigDecimal minBaseBid = calcModifiedBid(bidForZeroVolume, symbolConfig.getBidBaseModifier());
+            BigDecimal maxBaseBid = calcModifiedBid(bidForZeroVolume, symbolConfig.getBidMaxModifier());
+
+            BigDecimal minBaseOffer = calcModifiedOffer(offerForZeroVolume, symbolConfig.getOfferBaseModifier());
+            BigDecimal maxBaseOffer = calcModifiedOffer(offerForZeroVolume, symbolConfig.getOfferMaxModifier());
+
+           // BigDecimal forecastBidWithInaccuracy = forecastBid.subtract(forecastBid.subtract(bidForZeroVolume).abs().multiply(bd(inaccuracyForBid)));
+           // BigDecimal forecastOfferWithInaccuracy = forecastOffer.add(forecastOffer.subtract(offerForZeroVolume).abs().multiply(bd(inaccuracyForOffer)));
+            BigDecimal forecastBidWithInaccuracy = forecastBid.subtract(forecastBid.multiply(bd(inaccuracyForBid)));
+            BigDecimal forecastOfferWithInaccuracy = forecastOffer.add(forecastOffer.multiply(bd(inaccuracyForOffer)));
+
+            log.trace("Calculation {} OFFER | base: {} forecast: {} min: {} forecastInaccurate: {} max: {} ina: {}", symbolConfig.getSymbol(), f(offerForZeroVolume),
+                    f(forecastOffer), f(minBaseOffer), f(forecastOfferWithInaccuracy), f(maxBaseOffer), f(inaccuracyForOffer));
+            log.trace("Calculation {}   BID | base: {} forecast: {} min: {} forecastInaccurate: {} max: {} ina: {}", symbolConfig.getSymbol(), f(bidForZeroVolume),
+                    f(forecastBid), f(minBaseBid), f(forecastBidWithInaccuracy), f(maxBaseBid), f(inaccuracyForBid));
+            if (forecastBidWithInaccuracy.compareTo(minBaseBid) > 0) {
+                forecastBid = minBaseBid;
+            } else if (forecastBidWithInaccuracy.compareTo(maxBaseBid) < 0) {
+                forecastBid = maxBaseBid;
+            } else {
+                forecastBid = forecastBidWithInaccuracy;
+            }
+
+            if (forecastOfferWithInaccuracy.compareTo(minBaseOffer) < 0) {
+                forecastOffer = minBaseOffer;
+            } else if (forecastOfferWithInaccuracy.compareTo(maxBaseOffer) > 0) {
+                forecastOffer = maxBaseOffer;
+            } else {
+                forecastOffer = forecastOfferWithInaccuracy;
+            }
+            return new CalculatorResult(forecastBid, forecastOffer);
         } catch (Exception ex) {
-            return new CalculatorResult(incomingQuote.getAverageQuoteBid(), incomingQuote.getAverageQuoteOffer(), 1, 1);
+            log.error("Calculation Failed", ex);
+            return new CalculatorResult(calcModifiedBid(bidForZeroVolume, symbolConfig.getBidMaxModifier()),
+                    calcModifiedOffer(offerForZeroVolume, symbolConfig.getOfferMaxModifier()));
         }
+    }
 
-
+    protected List<AverageQuote> getAverageQuotesForPeriod(CalcSourceQuote newQuote) {
+        LocalDateTime endPeriod = LocalDateTime.now();
+        return quotesDao.getDailyAverageBaseQuotesOnZeroVolume(newQuote.getSymbol(), endPeriod.minusDays(timeSeries), endPeriod);
     }
 
     private AverageQuote convertToAverageQuote(BaseQuote newQuote) {
@@ -65,7 +111,7 @@ public class OlsTrendCalculator implements Calculator {
                 newPrice = p;
             }
         }
-        return new AverageQuote(LocalDate.from(newQuote.getDatetime()), newQuote.getSymbol(),
+        return new AverageQuote(newQuote.getDatetime(), newQuote.getSymbol(),
                 newPrice.getBid(), newPrice.getOffer());
     }
 

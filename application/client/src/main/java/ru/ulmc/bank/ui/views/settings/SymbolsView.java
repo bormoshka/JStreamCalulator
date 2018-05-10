@@ -47,6 +47,8 @@ public class SymbolsView extends CommonView implements View {
     private ComboBox<String> iso2Editor;
     private TextField bidEditor;
     private TextField offerEditor;
+    private TextField bidMaxEditor;
+    private TextField offerMaxEditor;
     private DecimalFormat decFormat = new DecimalFormat("###.###");
     private Map<String, Grid.Column> columnsByName = new HashMap<>();
     private Button btnAdd;
@@ -73,7 +75,7 @@ public class SymbolsView extends CommonView implements View {
             allData.stream().filter(scm -> s.equalsIgnoreCase(scm.getSymbol())).findFirst()
                     .ifPresent(scm -> {
                         scm.setRowStatus(RowStatus.EDITED);
-                      //  grid.getDataProvider().refreshItem(scm);
+                        //  grid.getDataProvider().refreshItem(scm);
                     });
             toggleBtnStatus(btnSave, true);
         });
@@ -123,6 +125,8 @@ public class SymbolsView extends CommonView implements View {
         iso2Editor = createIsoComboBox("");
         bidEditor = createTextField();
         offerEditor = createTextField();
+        bidMaxEditor = createTextField();
+        offerMaxEditor = createTextField();
 
     }
 
@@ -148,7 +152,7 @@ public class SymbolsView extends CommonView implements View {
     private <T> Grid.Column<SymbolConfigModel, T> createColumn(ValueProvider<SymbolConfigModel, T> valueProvider,
                                                                String caption) {
         return grid.addColumn(valueProvider)
-                .setMinimumWidth(80)
+                .setMinimumWidth(40)
                 .setExpandRatio(1)
                 .setCaption(caption);
     }
@@ -156,9 +160,12 @@ public class SymbolsView extends CommonView implements View {
     private void initHeader() {
         Grid.Column<SymbolConfigModel, String> fxsColumn = storeColumn("base", createColumn(SymbolConfigModel::getBase, "ISO1"));
         Grid.Column<SymbolConfigModel, String> quotedCol = storeColumn("quoted", createColumn(SymbolConfigModel::getQuoted, "ISO2"));
-        Grid.Column<SymbolConfigModel, String> bidBaseModifier = storeColumn("bidModifier", createColumn(SymbolConfigModel::getBidModifier, "Bid mod"));
-        Grid.Column<SymbolConfigModel, String> offerBaseModifier = storeColumn("offerModifier", createColumn(SymbolConfigModel::getOfferModifier, "Offer mod"));
+        Grid.Column<SymbolConfigModel, String> bidBaseModifier = storeColumn("bidModifier", createColumn(SymbolConfigModel::getBidModifier, "Мин. bid, %"));
+        Grid.Column<SymbolConfigModel, String> offerBaseModifier = storeColumn("offerModifier", createColumn(SymbolConfigModel::getOfferModifier, "Мин. offer, %"));
+        Grid.Column<SymbolConfigModel, String> bidMaxBaseModifier = storeColumn("bidMaxModifier", createColumn(SymbolConfigModel::getMaxBidModifier, "Макс. bid, %"));
+        Grid.Column<SymbolConfigModel, String> offerMaxBaseModifier = storeColumn("offerMaxModifier", createColumn(SymbolConfigModel::getMaxOfferModifier, "Макс. offer, %"));
 
+        grid.sort(fxsColumn);
         grid.addComponentColumn(this::getToggleComponent)
                 .setSortable(false)
                 .setCaption("Вкл/Выкл")
@@ -169,6 +176,8 @@ public class SymbolsView extends CommonView implements View {
             quotedCol.setEditorComponent(iso2Editor, SymbolConfigModel::setQuoted);
             bidBaseModifier.setEditorComponent(bidEditor, SymbolConfigModel::setBidModifier);
             offerBaseModifier.setEditorComponent(offerEditor, SymbolConfigModel::setOfferModifier);
+            bidMaxBaseModifier.setEditorComponent(bidMaxEditor, SymbolConfigModel::setMaxBidModifier);
+            offerMaxBaseModifier.setEditorComponent(offerMaxEditor, SymbolConfigModel::setMaxOfferModifier);
         }
     }
 
@@ -191,13 +200,12 @@ public class SymbolsView extends CommonView implements View {
         if (isActive) {
             toggle.setStyleName("toggle-on");
             toggle.setCaption("Включен");
-        } else{
+        } else {
             toggle.setStyleName("toggle-off");
             toggle.setCaption("Выключен");
         }
         toggle.markAsDirty();
     }
-
 
 
     private boolean hasCreatePermission() {
@@ -228,25 +236,20 @@ public class SymbolsView extends CommonView implements View {
     }
 
     private void initFooter() {
-        ComboBox<String> base = createIsoComboBox("Base currency");
-        ComboBox<String> quoted = createIsoComboBox("Quoted currency");
-        ComboBox<Boolean> yesNo = createBooleanComboBox();
+        ComboBox<String> base = createIsoComboBox("Базовая валюта");
+        ComboBox<String> quoted = createIsoComboBox("Котируемая валюта");
         functionClearEditor = () -> {
             base.clear();
             quoted.clear();
-            yesNo.clear();
             base.setComponentError(null);
             quoted.setComponentError(null);
-            yesNo.setComponentError(null);
         };
 
-        yesNo.setSelectedItem(true);
         base.setEmptySelectionAllowed(true);
         quoted.setEmptySelectionAllowed(true);
-        String defWidth = "220px";
+        String defWidth = "120px";
         base.setWidth(defWidth);
         quoted.setWidth(defWidth);
-        yesNo.setWidth("80px");
 
         String reqStr = "Обязательное поле";
         binder = new Binder<>(SymbolConfigModel.class);
@@ -318,7 +321,7 @@ public class SymbolsView extends CommonView implements View {
         editor.setPlaceholder(caption);
         editor.setEmptySelectionAllowed(false);
         editor.setWidth(100.0f, Sizeable.Unit.PERCENTAGE);
-        editor.setPopupWidth("400px");
+        editor.setPopupWidth("300px");
         return editor;
     }
 

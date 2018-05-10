@@ -9,7 +9,6 @@ import ru.ulmc.bank.entities.configuration.SymbolConfig;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
-import java.util.Date;
 import java.util.UUID;
 
 import static ru.ulmc.bank.ui.entity.RowStatus.NOT_CHANGED;
@@ -18,10 +17,7 @@ import static ru.ulmc.bank.ui.entity.RowStatus.NOT_CHANGED;
 @AllArgsConstructor
 @EqualsAndHashCode(of = "inGridId", callSuper = false)
 public class SymbolConfigModel {
-    private final ThreadLocal<DecimalFormat> formatter = ThreadLocal.withInitial(() -> {
-        DecimalFormat df = new DecimalFormat("##.##");
-        return df;
-    });
+    private final ThreadLocal<DecimalFormat> formatter = ThreadLocal.withInitial(() -> new DecimalFormat("##.##"));
     private final String inGridId;
     @Delegate
     private SymbolConfig symbolEntity;
@@ -40,24 +36,48 @@ public class SymbolConfigModel {
     }
 
     public String getBidModifier() {
-        return formatter.get().format(symbolEntity.getBidBaseModifier());
+        return formatter.get().format(symbolEntity.getBidBaseModifier() * 100);
     }
 
     public void setBidModifier(String bidModifier) {
         try {
-            symbolEntity.setBidBaseModifier(formatter.get().parse(bidModifier).doubleValue());
+            symbolEntity.setBidBaseModifier(formatter.get().parse(bidModifier.replace(".", ",")).doubleValue() / 100);
         } catch (ParseException e) {
             throw new UserInputException("Wrong format of bidModifier", e);
         }
     }
 
     public String getOfferModifier() {
-        return formatter.get().format(symbolEntity.getOfferBaseModifier());
+        return formatter.get().format(symbolEntity.getOfferBaseModifier() * 100);
     }
 
     public void setOfferModifier(String offerModifier) {
         try {
-            symbolEntity.setOfferBaseModifier(formatter.get().parse(offerModifier).doubleValue());
+            symbolEntity.setOfferBaseModifier(formatter.get().parse(offerModifier.replace(".", ",")).doubleValue() / 100);
+        } catch (ParseException e) {
+            throw new UserInputException("Wrong format of offerModifier", e);
+        }
+    }
+
+    public String getMaxBidModifier() {
+        return formatter.get().format(symbolEntity.getBidMaxModifier() * 100);
+    }
+
+    public void setMaxBidModifier(String bidModifier) {
+        try {
+            symbolEntity.setBidMaxModifier(formatter.get().parse(bidModifier.replace(".", ",")).doubleValue() / 100);
+        } catch (ParseException e) {
+            throw new UserInputException("Wrong format of bidModifier", e);
+        }
+    }
+
+    public String getMaxOfferModifier() {
+        return formatter.get().format(symbolEntity.getOfferMaxModifier() * 100);
+    }
+
+    public void setMaxOfferModifier(String offerModifier) {
+        try {
+            symbolEntity.setOfferMaxModifier(formatter.get().parse(offerModifier.replace(".", ",")).doubleValue() / 100);
         } catch (ParseException e) {
             throw new UserInputException("Wrong format of offerModifier", e);
         }

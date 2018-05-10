@@ -20,6 +20,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.DoubleStream;
 
+import static ru.ulmc.bank.calculators.util.CalcUtils.calcModifiedBid;
+import static ru.ulmc.bank.calculators.util.CalcUtils.calcModifiedOffer;
+
 /**
  * Сервис, отвечающий за вычисление котировок при нормальных отклонениях.
  */
@@ -67,16 +70,9 @@ public class DefaultCalcService implements CalcService {
         Result offer = new Result();
         offers.forEach(offer::add);
 
-        return new CalcPrice(volume, bid.divideOn(bidModifiers), offer.divideOn(offerModifiers));
-    }
-
-
-    private BigDecimal calcModifiedBid(BigDecimal base, double modifier) {
-        return base.subtract(base.multiply(BigDecimal.valueOf(modifier)));
-    }
-
-    private BigDecimal calcModifiedOffer(BigDecimal base, double modifier) {
-        return base.add(base.multiply(BigDecimal.valueOf(modifier)));
+        BigDecimal bid1 = bid.divideOn(bidModifiers);
+        BigDecimal offer1 = offer.divideOn(offerModifiers);
+        return new CalcPrice(volume, bid1, offer1);
     }
 
     private class Result {
@@ -88,7 +84,7 @@ public class DefaultCalcService implements CalcService {
 
         BigDecimal divideOn(List<Double> modifiers) {
             return value.divide(BigDecimal.valueOf(modifiers.stream()
-                    .flatMapToDouble(d -> DoubleStream.of(d.doubleValue())).sum()), BigDecimal.ROUND_HALF_UP);
+                    .mapToDouble(Double::doubleValue).sum()), BigDecimal.ROUND_HALF_UP);
         }
     }
 }

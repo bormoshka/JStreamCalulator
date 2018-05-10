@@ -2,32 +2,37 @@ package ru.ulmc.bank.calculators.impl;
 
 
 import lombok.NoArgsConstructor;
-import ru.ulmc.bank.bean.IPrice;
+import lombok.extern.slf4j.Slf4j;
+import ru.ulmc.bank.calculators.CalcSourceQuote;
 import ru.ulmc.bank.calculators.Calculator;
 import ru.ulmc.bank.calculators.ResourcesEnvironment;
 import ru.ulmc.bank.calculators.util.CalcPlugin;
-import ru.ulmc.bank.core.common.exception.FxException;
 import ru.ulmc.bank.dao.QuotesDao;
+import ru.ulmc.bank.entities.configuration.SymbolConfig;
 import ru.ulmc.bank.entities.inner.AverageQuote;
 import ru.ulmc.bank.entities.inner.CalculatorResult;
 import ru.ulmc.bank.entities.persistent.financial.BaseQuote;
-import ru.ulmc.bank.entities.persistent.financial.Price;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ru.ulmc.bank.calculators.util.CalcUtils.*;
+
 @CalcPlugin(name = "Вычислитель скользящей средней",
         description = "Скользящее среднее — один из старейших и наиболее распространённый индикатор " +
-        "технического анализа, относящийся к трендовым индикаторам")
+                "технического анализа, относящийся к трендовым индикаторам")
 @NoArgsConstructor
+@Slf4j
 public class MovingAverageTrendCalculator implements Calculator {
     public static final int ROUNDING_MODE = BigDecimal.ROUND_CEILING;
     private static final BigDecimal TWO = BigDecimal.valueOf(2);
-    private final BigDecimal smoothingLevels = new BigDecimal(4);
+    private final BigDecimal smoothingLevels = new BigDecimal(3);
     private QuotesDao quotesDao;
+    private NumberFormat nFormat = new DecimalFormat("0.0000000");
     private int timeSeries = 1;
 
     @Override
@@ -38,26 +43,20 @@ public class MovingAverageTrendCalculator implements Calculator {
 
     //сглаживание ряда методом скользящих средних, 4 уровня сглаживания
     @Override
-    public CalculatorResult calc(BaseQuote newQuote) {
+    public CalculatorResult calc(CalcSourceQuote newQuote) {
         LocalDateTime endPeriod = LocalDateTime.now();
+        SymbolConfig symbolConfig = newQuote.getSymbolConfig();
         List<BaseQuote> statisticQuotes = quotesDao.getLastBaseQuotes(newQuote.getSymbol(), endPeriod.minusDays(timeSeries), endPeriod);
-        statisticQuotes.add(newQuote);
-        statisticQuotes.sort((o1, o2) -> {
-            if (o1.getDatetime().isAfter(o2.getDatetime())) {
-                return 1;
-            } else if (o1.getDatetime().isBefore(o2.getDatetime())) {
-                return -1;
-            }
-            return 0;
-        });
+        BaseQuote quote = newQuote.getQuote();
+        statisticQuotes.add(quote);
+       // statisticQuotes.sort(BaseQuote.DATE_COMPARATOR);
 
         ArrayList<AverageQuote> smoothingAvgQuotes = getSmoothingAvgQuotes(getAvgQuotes(statisticQuotes));
 
         int sizeSmoothingQuotes = smoothingAvgQuotes.size();
         int sizeStatisticQuotes = statisticQuotes.size();
         if (sizeSmoothingQuotes < 3 || sizeStatisticQuotes < 3) {
-
-            return new CalculatorResult(getBidForZeroVolume(newQuote), getOfferForZeroVolume(newQuote), 1, 1);
+            return new CalculatorResult(getBidForZeroVolume(quote), getOfferForZeroVolume(quote));
         }
 
         BigDecimal averageQuoteBid = smoothingAvgQuotes.get(sizeSmoothingQuotes - 2).getAverageQuoteBid();
@@ -75,7 +74,38 @@ public class MovingAverageTrendCalculator implements Calculator {
         double inaccuracyForBid = calcInaccuracyBid(statisticQuotes, smoothingAvgQuotes);
         double inaccuracyForOffer = calcInaccuracyOffer(statisticQuotes, smoothingAvgQuotes);
 
-        return new CalculatorResult(forecastBid, forecastOffer, inaccuracyForBid, inaccuracyForOffer);
+        BigDecimal minBaseBid = calcModifiedBid(bidForZeroVolume, symbolConfig.getBidBaseModifier());
+        BigDecimal maxBaseBid = calcModifiedBid(bidForZeroVolume, symbolConfig.getBidMaxModifier());
+
+        BigDecimal minBaseOffer = calcModifiedOffer(offerForZeroVolume, symbolConfig.getOfferBaseModifier());
+        BigDecimal maxBaseOffer = calcModifiedOffer(offerForZeroVolume, symbolConfig.getOfferMaxModifier());
+
+        BigDecimal forecastBidWithInaccuracy = forecastBid.subtract(forecastBid.multiply(bd(inaccuracyForBid)));
+        BigDecimal forecastOfferWithInaccuracy = forecastOffer.add(forecastOffer.multiply(bd(inaccuracyForOffer)));
+
+
+        log.trace("Calculation {} OFFER | base: {} forecast: {} min: {} forecastInaccurate: {} max: {} ina: {}", symbolConfig.getSymbol(), f(offerForZeroVolume),
+                f(forecastOffer), f(minBaseOffer), f(forecastOfferWithInaccuracy), f(maxBaseOffer), f(inaccuracyForOffer));
+        log.trace("Calculation {}   BID | base: {} forecast: {} min: {} forecastInaccurate: {} max: {} ina: {}", symbolConfig.getSymbol(), f(bidForZeroVolume),
+                f(forecastBid), f(minBaseBid), f(forecastBidWithInaccuracy), f(maxBaseBid), f(inaccuracyForBid));
+
+        if (forecastBidWithInaccuracy.compareTo(minBaseBid) > 0) {
+            forecastBid = minBaseBid;
+        } else if (forecastBidWithInaccuracy.compareTo(maxBaseBid) < 0) {
+            forecastBid = maxBaseBid;
+        } else {
+            forecastBid = forecastBidWithInaccuracy;
+        }
+
+        if (forecastOfferWithInaccuracy.compareTo(minBaseOffer) < 0) {
+            forecastOffer = minBaseOffer;
+        } else if (forecastOfferWithInaccuracy.compareTo(maxBaseOffer) > 0) {
+            forecastOffer = maxBaseOffer;
+        } else {
+            forecastOffer = forecastOfferWithInaccuracy;
+        }
+
+        return new CalculatorResult(forecastBid, forecastOffer);
     }
 
     private BigDecimal calcForecast(BigDecimal averageQuote,
@@ -84,22 +114,8 @@ public class MovingAverageTrendCalculator implements Calculator {
                 .add(valueForZeroVolume.subtract(valForZeroVolumePrev).divide(smoothingLevels, ROUNDING_MODE));
     }
 
-    private BigDecimal getBidForZeroVolume(BaseQuote quote) {
-        for (IPrice p : quote.getPrices()) {
-            if (p.getVolume() == 0) {
-                return p.getBid();
-            }
-        }
-        throw new FxException("Zero volume was not found");
-    }
-
-    private BigDecimal getOfferForZeroVolume(BaseQuote quote) {
-        for (IPrice p : quote.getPrices()) {
-            if (p.getVolume() == 0) {
-                return p.getOffer();
-            }
-        }
-        throw new FxException("Zero volume was not found");
+    private String f(Number n) {
+        return nFormat.format(n);
     }
 
     private List<AverageQuote> getAvgQuotes(List<BaseQuote> statisticQuotes) {
@@ -115,7 +131,7 @@ public class MovingAverageTrendCalculator implements Calculator {
             }
 
             BaseQuote baseQuote = statisticQuotes.get(i + smLevels - 1);
-            statisticAvgQuotes.add(new AverageQuote(LocalDate.from(baseQuote.getDatetime()), baseQuote.getSymbol(),
+            statisticAvgQuotes.add(new AverageQuote(baseQuote.getDatetime(), baseQuote.getSymbol(),
                     sumQuoteBid.divide(smoothingLevels, ROUNDING_MODE), sumQuoteOffer.divide(smoothingLevels, ROUNDING_MODE)));
         }
         return statisticAvgQuotes;
@@ -127,7 +143,7 @@ public class MovingAverageTrendCalculator implements Calculator {
         for (int i = 0; i < i1; i++) {
             AverageQuote current = statisticAvgQuotes.get(i);
             AverageQuote next = statisticAvgQuotes.get(i + 1);
-            output.add(new AverageQuote(next.getDate(), next.getSymbol(),
+            output.add(new AverageQuote(next.getOrder(), next.getSymbol(),
                     getAverageOfTwo(current.getAverageQuoteBid(), next.getAverageQuoteBid()),
                     getAverageOfTwo(current.getAverageQuoteOffer(), next.getAverageQuoteOffer())));
         }
@@ -143,9 +159,10 @@ public class MovingAverageTrendCalculator implements Calculator {
 
         int size = statisticQuotes.size();
         for (int i = smoothingAvgQuotes.size() - 1; i > -1; i--) {
-            BigDecimal factValue = getBidForZeroVolume(statisticQuotes.get(size + i - 4 - 2));
-            sumDeviations += smoothingAvgQuotes.get(i).getAverageQuoteBid().subtract(factValue)
-                    .divide(factValue, ROUNDING_MODE).doubleValue() * 100;
+            BigDecimal factValue = getBidForZeroVolume(statisticQuotes.get(i + smoothingLevels.intValue()));
+            BigDecimal averageQuoteBid = smoothingAvgQuotes.get(i).getAverageQuoteBid();
+            sumDeviations += averageQuoteBid.subtract(factValue).abs()
+                    .divide(factValue, ROUNDING_MODE).doubleValue();
         }
         return sumDeviations / smoothingAvgQuotes.size();
     }
@@ -154,9 +171,9 @@ public class MovingAverageTrendCalculator implements Calculator {
         double sumDeviations = 0.0;
         int size = statisticQuotes.size();
         for (int i = smoothingAvgQuotes.size() - 1; i > -1; i--) {
-            BigDecimal factValue = getOfferForZeroVolume(statisticQuotes.get(size + i - 4 - 2));
-            sumDeviations += smoothingAvgQuotes.get(i).getAverageQuoteOffer().subtract(factValue)
-                    .divide(factValue, ROUNDING_MODE).doubleValue() * 100;
+            BigDecimal factValue = getOfferForZeroVolume(statisticQuotes.get(i + smoothingLevels.intValue()));
+            sumDeviations += smoothingAvgQuotes.get(i).getAverageQuoteOffer().subtract(factValue).abs()
+                    .divide(factValue, ROUNDING_MODE).doubleValue();
         }
         return sumDeviations / smoothingAvgQuotes.size();
     }

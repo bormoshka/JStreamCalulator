@@ -45,10 +45,12 @@ public class ScenarioProcess {
             double middleStep = getIncrement(step, middle, count);
             boolean randomTrendGoesUp = tlRand.nextBoolean();
             while (i-- > 0) {
-                randomTrendGoesUp = tlRand.nextDouble() > 0.85 ? !randomTrendGoesUp : randomTrendGoesUp;
-                double v = tlRand.nextDouble(step.getVolatility()) * (randomTrendGoesUp ? 1 : -1);
-                bid = bid + v * bid + middleStep;
-                offer = offer + v * offer + middleStep;
+                double v1 = 0.40 + tlRand.nextDouble();
+                randomTrendGoesUp = tlRand.nextDouble() > v1 ? !randomTrendGoesUp : randomTrendGoesUp;
+                double v = step.getVolatility() > 0 ? tlRand.nextDouble(step.getVolatility()) * (randomTrendGoesUp ? 1 : -1) : 0;
+                double v2 = (tlRand.nextBoolean() ? 1 : -1 ) * tlRand.nextDouble(0.001);
+                bid = bid + v * bid + v2 * bid + middleStep;
+                offer = offer + v * offer + v2 * offer + middleStep;
                 if (bid < 5 || offer < 5) {
                     v = tlRand.nextDouble();
                     bid = v * 3 + 5 ;

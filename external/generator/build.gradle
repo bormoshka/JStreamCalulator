@@ -9,7 +9,8 @@ sourceCompatibility = 1.8
 mainClassName = 'ru.ulmc.generator.Generator'
 
 dependencies {
-    compile project(":application:api"), project(":application:core"),
+    compile project(":application:api"),
+            project(":application:core"),
             libs.springBoot,
             libs.kryo,
             libs.springBootMQ,

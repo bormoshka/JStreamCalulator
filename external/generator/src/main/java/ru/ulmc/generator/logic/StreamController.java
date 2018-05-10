@@ -116,7 +116,7 @@ public class StreamController {
             log.debug("Scenario with i: {} for: {} Quote: {}", process.getInterval(), process.getSymbol(), remove);
             publisher.publish(remove);
             messageConsumer.accept("[SCENARIO STREAM] " + remove.getSymbol() + " QUID: " + remove.getId());
-        }, 1, (long) process.getInterval(), TimeUnit.SECONDS));
+        }, 1000, (long) (process.getInterval()*1000), TimeUnit.MILLISECONDS));
     }
 
     public void reschedule(ScenarioProcess process) {

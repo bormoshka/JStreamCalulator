@@ -1,21 +1,23 @@
 package ru.ulmc.bank.entities.inner;
 
-import lombok.Data;
-import ru.ulmc.bank.entities.persistent.financial.BaseQuote;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-@Data
-public class CalculatorResult {
+@Getter
+@Setter
+@ToString(includeFieldNames = false)
+@NoArgsConstructor
+public class CalculatorResult implements Serializable {
     private BigDecimal resultForBid;
     private BigDecimal resultForOffer;
-    private double inaccuracyForBid;
-    private double inaccuracyForOffer;
 
-    public CalculatorResult(BigDecimal resultForBid, BigDecimal resultForOffer, double inaccuracyForBid, double inaccuracyForOffer) {
+    public CalculatorResult(BigDecimal resultForBid, BigDecimal resultForOffer) {
         this.resultForBid = resultForBid;
         this.resultForOffer = resultForOffer;
-        this.inaccuracyForBid = inaccuracyForBid;
-        this.inaccuracyForOffer = inaccuracyForOffer;
     }
 }

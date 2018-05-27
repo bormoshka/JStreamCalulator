@@ -40,7 +40,7 @@ public class ScenariosSelectController {
 
         editBtn.setOnAction(event -> {
             ScenarioEditorView.currentScenario = listView.getSelectionModel().getSelectedItem();
-            viewManager.open(ScenarioEditorView.class, Modality.APPLICATION_MODAL, "Editing scenario");
+            viewManager.open(ScenarioEditorView.class, Modality.APPLICATION_MODAL, "Редактирование сценария");
         });
         listView.setCellFactory(param -> new ListCell<Scenario>() {
             @Override
@@ -49,7 +49,7 @@ public class ScenariosSelectController {
                 if (empty) {
                     setGraphic(null);
                 } else {
-                    setGraphic(new Label(item.getName() + " (steps: " + item.getSteps().size() + ")"));
+                    setGraphic(new Label(item.getName() + " (шагов: " + item.getSteps().size() + ")"));
                 }
             }
 
@@ -76,7 +76,7 @@ public class ScenariosSelectController {
     @FXML
     public void newScenario() {
         ScenarioEditorView.currentScenario = null;
-        viewManager.open(ScenarioEditorView.class, Modality.APPLICATION_MODAL, "Creating new scenario");
+        viewManager.open(ScenarioEditorView.class, Modality.APPLICATION_MODAL, "Создание нового сценария");
     }
 
 }

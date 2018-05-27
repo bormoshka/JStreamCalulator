@@ -75,11 +75,11 @@ public class StreamRow extends HBox {
         offerLabel.setText("offer:");
         offerLabel.setLabelFor(offerField);
         Label volLabel = new Label();
-        volLabel.setText("vol:");
+        volLabel.setText("объем:");
         volLabel.setLabelFor(volatilityField);
 
         Label intLabel = new Label();
-        intLabel.setText("per:");
+        intLabel.setText("за:");
         intLabel.setLabelFor(intervalSpinner);
         scenarios = new ComboBox<>();
         UiUtils.initScenarioComboBox(scenarios, configurationController, broadcaster);

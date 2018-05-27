@@ -1,8 +1,7 @@
 package ru.ulmc.bank.calculator.service;
 
 import ru.ulmc.bank.calculator.service.transfer.CalculationOutput;
-import ru.ulmc.bank.entities.configuration.SymbolConfig;
-import ru.ulmc.bank.entities.persistent.financial.BaseQuote;
+import ru.ulmc.bank.config.zookeeper.entities.SymbolConfig;
 import ru.ulmc.bank.entities.persistent.financial.Quote;
 
 public interface CalcService {

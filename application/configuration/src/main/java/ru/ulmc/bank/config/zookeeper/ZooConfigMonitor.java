@@ -1,7 +1,5 @@
 package ru.ulmc.bank.config.zookeeper;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NonNull;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -22,7 +20,10 @@ import ru.ulmc.bank.config.zookeeper.serializers.JsonModelSerializer;
 import ru.ulmc.bank.config.zookeeper.serializers.StringModelSerializer;
 
 import java.io.Closeable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ZooConfigMonitor<T> implements AutoCloseable, Closeable {
@@ -34,22 +35,17 @@ public class ZooConfigMonitor<T> implements AutoCloseable, Closeable {
     private final Class<T> clazz;
     private final List<CachedModeledFramework<T>> subscribers = new ArrayList<>();
     private ModelSpecBuilder<T> specBuilder;
-    private String znode;
+    private String zNode;
     private boolean closed;
     private ModelSerializer<T> serializer;
 
     /**
-     * @param connectString comma separated host:port pairs, each corresponding to a zk server. e.g.
-     *                      "127.0.0.1:3000,127.0.0.1:3001,127.0.0.1:3002" If the optional chroot
-     *                      suffix is used the example would look like: "127.0.0.1:3000,127.0.0.1:3001,127.0.0.1:3002/app/a"
-     *                      where the client would be rooted at "/app/a" and all paths would be
-     *                      relative to this root - ie getting/setting/etc... "/foo/bar" would
-     *                      result in operations being run on "/app/a/foo/bar" (from the server
-     *                      perspective).
+     * @param connectString comma separated host:port like "127.0.0.1:3000,127.0.0.1:3001,127.0.0.1:3002"
      * @throws Exception in cases of network failure
      */
-    public ZooConfigMonitor(@NonNull String connectString, @NonNull String znode, @NonNull Class<T> clazz) throws Exception {
-        this.znode = znode.startsWith("/") ? znode : "/" + znode;
+    public ZooConfigMonitor(@NonNull String connectString, @NonNull String zNode, @NonNull Class<T> clazz)
+            throws Exception {
+        this.zNode = zNode.startsWith("/") ? zNode : "/" + zNode;
         this.clazz = clazz;
         serializer = clazz == String.class ?
                 (ModelSerializer<T>) new StringModelSerializer() :
@@ -57,42 +53,42 @@ public class ZooConfigMonitor<T> implements AutoCloseable, Closeable {
         client = CuratorFrameworkFactory.newClient(connectString, new RetryNTimes(10, 500));
 
         asyncFramework = AsyncCuratorFramework.wrap(client);
-        specBuilder = ModelSpec.builder(ZPath.parse(znode), serializer)
+        specBuilder = ModelSpec.builder(ZPath.parse(zNode), serializer)
                 .withTtl(-1)
                 .withCreateMode(CreateMode.PERSISTENT);
         client.start();
         createNode();
     }
 
-    public ZooConfigMonitor(@NonNull String connectString, @NonNull String znode, @NonNull Class<T> clazz, @NonNull Map<String, T> mapStore) throws Exception {
-        this(connectString, znode, clazz);
+    public ZooConfigMonitor(@NonNull String connectString, @NonNull String zNode, @NonNull Class<T> clazz,
+                            @NonNull Map<String, T> mapStore) throws Exception {
+        this(connectString, zNode, clazz);
         startSubscriber(new Listener<T>() {
             @Override
             public void added(String key, T model) {
-                LOG.debug("Added to node " + key + " zoo path " + znode);
+                LOG.debug("Added to node " + key + " zoo path " + zNode);
                 mapStore.put(key, model);
             }
 
             @Override
             public void updated(String key, T model) {
-                LOG.debug("Updated into node " + key + " zoo path " + znode);
+                LOG.debug("Updated into node " + key + " zoo path " + zNode);
                 mapStore.put(key, model);
             }
 
             @Override
             public void removed(String key) {
-                LOG.debug("Removed from node " + key + " zoo path " + znode);
+                LOG.debug("Removed from node " + key + " zoo path " + zNode);
                 mapStore.remove(key);
             }
         });
     }
 
     public void startSubscriber(Listener<T> listener) {
-        startSubscriber(znode + "/{id}", listener);
+        startSubscriber(zNode + "/{id}", listener);
     }
 
-    private void startSubscriber(String node, Listener<T> listener) {
-        Objects.requireNonNull(listener, "Listener instance shuld be specified");
+    private void startSubscriber(String node, @NonNull Listener<T> listener) {
         TypedModeledFramework0<T> typedClient = TypedModeledFramework0.from(ModeledFramework.builder(), specBuilder, node);
         CachedModeledFramework<T> cache = typedClient.resolved(asyncFramework).cached();
         cache.start();
@@ -117,25 +113,20 @@ public class ZooConfigMonitor<T> implements AutoCloseable, Closeable {
 
     private void createNode() throws Exception {
         try {
-            if (!isNodeExist(znode)) {
+            if (!isNodeExist(zNode)) {
                 CreateBuilder createBuilder = client.create();
                 createBuilder.creatingParentContainersIfNeeded();
                 createBuilder.creatingParentsIfNeeded();
-                createBuilder.forPath(znode);
+                createBuilder.forPath(zNode);
             }
         } catch (Exception e) {
-            LOG.error("Error establish connection with the Zookeeper's node " + znode, e);
+            LOG.error("Error establish connection with the Zookeeper's node " + zNode, e);
             throw e;
         }
     }
 
-    public Result<T> save(Object id, T model) {
-        Objects.requireNonNull(id, "id instance should be specified");
-        Objects.requireNonNull(model, "model instance should be specified");
-        // change the affected path to be modeled's base path plus id: i.e. "/example/path/{id}"
-        // by default ModeledFramework instances update the node if it already exists
-        // so this will either create or update the node
-        String nodePath = znode + "/" + id;
+    public Result<T> save(@NonNull Object id, @NonNull T model) {
+        String nodePath = zNode + "/" + id;
         try {
             byte[] data = serializer.serialize(model);
             if (isNodeExist(nodePath)) {
@@ -146,15 +137,13 @@ public class ZooConfigMonitor<T> implements AutoCloseable, Closeable {
 
             return new Result<>(model);
         } catch (Exception e) {
-            LOG.error("Error to run transaction save operation for node " + znode + " and id " + id, e);
+            LOG.error("Error to run transaction save operation for node " + zNode + " and id " + id, e);
             return new Result<>("Error to save node " + id, e);
         }
     }
 
 
-    public Result<List<T>> saveAll(Map<String, T> configSymbols) {
-        Objects.requireNonNull(configSymbols, "id instance should be specified");
-
+    public Result<List<T>> saveAll(@NonNull Map<String, T> configSymbols) {
         CuratorMultiTransaction transaction = client.transaction();
         List<CuratorOp> operations = new ArrayList<>(configSymbols.size());
         Result<List<T>> result = null;
@@ -162,7 +151,7 @@ public class ZooConfigMonitor<T> implements AutoCloseable, Closeable {
             List<String> childrenNodes = getChildrenNodes();
             for (String id : configSymbols.keySet()) {
                 T model = configSymbols.get(id);
-                String nodePath = znode + "/" + id;
+                String nodePath = zNode + "/" + id;
                 CuratorOp curatorOp = !childrenNodes.contains(id) ?
                         client.transactionOp().create().forPath(nodePath, serializer.serialize(model)) :
                         client.transactionOp().setData().forPath(nodePath, serializer.serialize(model));
@@ -170,7 +159,7 @@ public class ZooConfigMonitor<T> implements AutoCloseable, Closeable {
                 operations.add(curatorOp);
             }
         } catch (Exception e) {
-            result = new Result<>("Error to collect transaction save operations for node " + znode, e);
+            result = new Result<>("Error to collect transaction save operations for node " + zNode, e);
             LOG.error(result.getErrorMessage(), e);
         }
 
@@ -179,7 +168,7 @@ public class ZooConfigMonitor<T> implements AutoCloseable, Closeable {
                 List<CuratorTransactionResult> transacResult = transaction.forOperations(operations);
                 result = combineTransactionResult(transacResult, new ArrayList<>(configSymbols.values()));
             } catch (Exception e) {
-                result = new Result<>("Error to commit transaction for node " + znode, e);
+                result = new Result<>("Error to commit transaction for node " + zNode, e);
                 LOG.error(result.getErrorMessage(), e);
             }
         }
@@ -191,40 +180,15 @@ public class ZooConfigMonitor<T> implements AutoCloseable, Closeable {
         return client.checkExists().forPath(nodePath) != null;
     }
 
-    public Result<Object> delete(Object id) {
-        Objects.requireNonNull(id, "id instance should be specified");
-        // change the affected path to be modeled's base path plus id: i.e. "/example/path/{id}"
-        // by default ModeledFramework instances update the node if it already exists
-        // so this will either create or update the node
+    public Result<Object> delete(@NonNull Object id) {
         CuratorMultiTransaction transaction = client.transaction();
         try {
-            List<CuratorTransactionResult> transacResult = transaction.forOperations(client.transactionOp().delete().forPath(znode + "/" + id));
+            List<CuratorTransactionResult> transacResult = transaction.forOperations(client.transactionOp().delete().forPath(zNode + "/" + id));
             return combineTransactionResult(transacResult, id);
         } catch (Exception e) {
-            LOG.error("Error to run transaction delete operation for node " + znode + " and id " + id, e);
+            LOG.error("Error to run transaction delete operation for node " + zNode + " and id " + id, e);
             return new Result<>("Error to delete node " + id, e);
         }
-    }
-
-    public Result<List<String>> deleteAll(List<String> ids) throws Exception {
-        Objects.requireNonNull(ids, "id instance should be specified");
-
-        // change the affected path to be modeled's base path plus id: i.e. "/example/path/{id}"
-        // by default ModeledFramework instances update the node if it already exists
-        // so this will either create or update the node
-        CuratorMultiTransaction transaction = client.transaction();
-        List<CuratorOp> operations = new ArrayList<>(ids.size());
-        for (Object id : ids) {
-            try {
-                operations.add(client.transactionOp().delete().forPath(znode + "/" + id));
-            } catch (Exception e) {
-                LOG.error("Error to collect transaction delete operations for node " + znode + " and ids " + ids, e);
-                throw e;
-            }
-        }
-
-        List<CuratorTransactionResult> transacResult = transaction.forOperations(operations);
-        return combineTransactionResult(transacResult, ids);
     }
 
     private <R> Result<R> combineTransactionResult(List<CuratorTransactionResult> transactResult, R data) throws Exception {
@@ -256,8 +220,8 @@ public class ZooConfigMonitor<T> implements AutoCloseable, Closeable {
                     new Result<>(nodeValues.stream().map(Result::getData).collect(Collectors.toList()));
 
         } catch (Exception e) {
-            LOG.error("Error to collect all children data for node " + znode, e);
-            return new Result<>("Error to collect all children data for node " + znode, e);
+            LOG.error("Error to collect all children data for node " + zNode, e);
+            return new Result<>("Error to collect all children data for node " + zNode, e);
         }
     }
 
@@ -275,20 +239,18 @@ public class ZooConfigMonitor<T> implements AutoCloseable, Closeable {
                     nodeValues;
 
         } catch (Exception e) {
-            LOG.error("Error to collect all children data for node " + znode, e);
-            return Collections.singletonList(new Result<>("Error to collect all children data for node " + znode, e));
+            LOG.error("Error to collect all children data for node " + zNode, e);
+            return Collections.singletonList(new Result<>("Error to collect all children data for node " + zNode, e));
         }
     }
 
-    public Result<T> read(String id) {
-        // read the person with the given ID and asynchronously call the receiver after it is read
-        Objects.requireNonNull(id, "id instance could not be null");
-               return readFromNode(id);
+    public Result<T> read(@NonNull String id) {
+        return readFromNode(id);
     }
 
     private Result<T> readFromNode(String id) {
         Result<T> result;
-        String childNode = znode + "/" + id;
+        String childNode = zNode + "/" + id;
         try {
             if (!isNodeExist(childNode)) {
                 return new Result<>((!clazz.isPrimitive() ? null : clazz.newInstance()));
@@ -297,7 +259,7 @@ public class ZooConfigMonitor<T> implements AutoCloseable, Closeable {
             T model = serializer.deserialize(client.getData().forPath(childNode));
             result = new Result<>(id, model);
         } catch (Exception e) {
-            result = new Result<>("Error to collect all children datas for node " + znode, e);
+            result = new Result<>("Error to collect all children datas for node " + zNode, e);
             LOG.error(result.getErrorMessage(), e);
         }
 
@@ -306,7 +268,7 @@ public class ZooConfigMonitor<T> implements AutoCloseable, Closeable {
 
 
     List<String> getChildrenNodes() throws Exception {
-        return client.getChildren().forPath(znode);
+        return client.getChildren().forPath(zNode);
     }
 
     @Override

@@ -29,7 +29,7 @@ import ru.ulmc.bank.ui.widgets.Notifier;
 
 import javax.servlet.ServletException;
 
-@SpringUI(path = "/*")
+@SpringUI(path = "/")
 @Title("JBank. Интерфейс расчётного модуля")
 @Theme("bank")
 @VaadinSessionScope

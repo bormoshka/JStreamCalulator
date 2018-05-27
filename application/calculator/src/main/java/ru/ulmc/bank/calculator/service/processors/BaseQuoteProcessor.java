@@ -8,7 +8,7 @@ import ru.ulmc.bank.calculator.environment.EnvironmentHolder;
 import ru.ulmc.bank.calculator.serialization.BaseQuoteDto;
 import ru.ulmc.bank.config.zookeeper.storage.SymbolConfigStorage;
 import ru.ulmc.bank.dao.QuotesDao;
-import ru.ulmc.bank.entities.configuration.SymbolConfig;
+import ru.ulmc.bank.config.zookeeper.entities.SymbolConfig;
 import ru.ulmc.bank.entities.persistent.financial.BasePrice;
 import ru.ulmc.bank.entities.persistent.financial.BaseQuote;
 

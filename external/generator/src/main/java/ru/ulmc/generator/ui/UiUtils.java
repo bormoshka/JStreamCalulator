@@ -12,6 +12,9 @@ public class UiUtils {
         scenarioCombo.setConverter(new StringConverter<Scenario>() {
             @Override
             public String toString(Scenario object) {
+                if (object == null) {
+                    return "Не выбрано";
+                }
                 return object.getName();
             }
 
@@ -24,6 +27,7 @@ public class UiUtils {
                         .filter(scenario -> scenario.getName().equalsIgnoreCase(string)).findFirst().orElse(null);
             }
         });
+        scenarioCombo.getItems().add(null);
         scenarioCombo.getItems().addAll(configurationController.getCurrentUserConfiguration().getScenarios());
         broadcaster.register(Scenario.class, new Broadcaster.BroadcastListener() {
             @Override

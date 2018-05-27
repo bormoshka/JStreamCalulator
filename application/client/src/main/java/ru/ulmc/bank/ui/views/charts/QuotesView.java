@@ -10,14 +10,11 @@ import com.byteowls.vaadin.chartjs.options.scale.LinearScale;
 import com.byteowls.vaadin.chartjs.options.zoom.XYMode;
 import com.vaadin.navigator.View;
 import com.vaadin.spring.annotation.SpringView;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.DateTimeField;
-import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.ulmc.bank.config.zookeeper.service.ConfigurationService;
 import ru.ulmc.bank.dao.QuotesDao;
-import ru.ulmc.bank.entities.configuration.SymbolConfig;
+import ru.ulmc.bank.config.zookeeper.entities.SymbolConfig;
 import ru.ulmc.bank.entities.persistent.financial.BasePrice;
 import ru.ulmc.bank.entities.persistent.financial.BaseQuote;
 import ru.ulmc.bank.entities.persistent.financial.Quote;
@@ -25,24 +22,16 @@ import ru.ulmc.bank.ui.views.CommonView;
 import ru.ulmc.bank.ui.widgets.util.MenuSupport;
 
 import java.time.LocalDateTime;
-import java.time.chrono.IsoChronology;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
-import java.time.format.ResolverStyle;
-import java.time.format.SignStyle;
-import java.time.temporal.ChronoField;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
-import static java.time.format.DateTimeFormatter.ISO_LOCAL_TIME;
-import static java.time.temporal.ChronoField.*;
-
 @SpringView(name = QuotesView.NAME)
 public class QuotesView extends CommonView implements View {
     static final String NAME = "quotesChart";
-    public static final MenuSupport MENU_SUPPORT = new MenuSupport(NAME, "Просмотр котировок");
+    public static final MenuSupport MENU_SUPPORT = new MenuSupport(NAME, "Просмотр динамики котировок");
     private final QuotesDao dao;
     private final DateTimeField dateTimeFieldStart;
     private final DateTimeField dateTimeFieldEnd;
@@ -60,13 +49,13 @@ public class QuotesView extends CommonView implements View {
         this.service = service;
 
         setupRoot();
-        ComboBox<String> symCombo = new ComboBox<>("Symbol");
-        symCombo.setPlaceholder("Symbol");
-        dateTimeFieldStart = new DateTimeField("Start date/time");
+        ComboBox<String> symCombo = new ComboBox<>("Валютная пара");
+        symCombo.setPlaceholder("Не выбрано");
+        dateTimeFieldStart = new DateTimeField("Время начала");
         dateTimeFieldStart.setValue(LocalDateTime.now().minusMinutes(10));
-        dateTimeFieldEnd = new DateTimeField("End date/time");
+        dateTimeFieldEnd = new DateTimeField("Время конца");
         //dateTimeFieldEnd.setValue(LocalDateTime.now());
-        Button apply = new Button("Apply");
+        Button apply = new Button("Применить");
         apply.addClickListener(clickEvent -> {
             apply(dao, symCombo.getValue());
         });
@@ -77,6 +66,7 @@ public class QuotesView extends CommonView implements View {
         });
         HorizontalLayout hl = new HorizontalLayout(symCombo, dateTimeFieldStart, dateTimeFieldEnd, apply);
         hl.setSpacing(true);
+        hl.setComponentAlignment(apply, Alignment.BOTTOM_LEFT);
 
         chart = new ChartJs();
         layout.addComponents(hl, chart);
@@ -140,8 +130,9 @@ public class QuotesView extends CommonView implements View {
             });
         });
 
-        Double max = baseOffer.getData() != null ? baseOffer.getData().stream().mapToDouble(Double::doubleValue).max().orElse(0) : 0;
-        Double min = baseBid.getData() != null ? baseBid.getData().stream().mapToDouble(Double::doubleValue).min().orElse(0) : 0;
+        Double maxOffer = baseOffer.getData() != null ? baseOffer.getData().stream().mapToDouble(Double::doubleValue).max().orElse(0) : 0;
+        Double minBid = baseBid.getData() != null ? baseBid.getData().stream().mapToDouble(Double::doubleValue).min().orElse(0) : 0;
+        double spread = maxOffer - minBid;
         config
                 .data()
                 .labelsAsList(labels)
@@ -170,10 +161,9 @@ public class QuotesView extends CommonView implements View {
                         .ticks()
                         .beginAtZero(false)
                         //.maxTicksLimit(15)
-                        .suggestedMax((int) (max + (max * 0.10)))
-                        .suggestedMin((int) (min - (min * 0.10)))
+                        .suggestedMax((int) (maxOffer + (spread * 0.10)))
+                        .suggestedMin((int) (minBid - (spread * 0.10)))
                         .and())
-                // .add(Axis.X, new LinearScale().stacked(false).gridLines().display(true).and())
                 .and()
                 .title()
                 .display(true)
@@ -181,14 +171,6 @@ public class QuotesView extends CommonView implements View {
                 .and()
                 .done();
 
-        //  for (int i = 0; i < config.data().getDatasets().size(); i++) {
-        //      LineDataset lds = (LineDataset) config.data().getDatasetAtIndex(i);
-        //      lds.label("D" + i);
-        //      lds.borderColor(ColorUtils.toRgb(new int[]{100, 100, 100}));
-        //      lds.backgroundColor(ColorUtils.toRgba(new int[]{200, 200, 200}, 0.5));
-        //      // generate data
-        //      lds.dataAsList(Arrays.asList(10d, 20d, 30d, 40d));
-        //  }
         ChartJs chart = new ChartJs(config);
         //chart.configure(config);
         //chart.update();

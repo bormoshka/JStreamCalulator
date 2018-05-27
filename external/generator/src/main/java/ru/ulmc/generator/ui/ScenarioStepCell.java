@@ -192,7 +192,7 @@ public class ScenarioStepCell extends ListCell<ScenarioStep> {
         });
         //  remove.setBackground(new Background(new BackgroundFill(new Color(0, 0, 0, 0), CornerRadii.EMPTY, Insets.EMPTY)));
         cellBox = new HBox(imageView,
-                new Label("Delta:"), stepFld, new Label("Vol:"), volatilityFld, new Label("Dur:"),
+                new Label("Дельта:"), stepFld, new Label("Волатильность:"), volatilityFld, new Label("Длительность:"),
                 durationFld, unitsCombo, trendCombo, remove);
         cellBox.setSpacing(10);
         cellBox.setAlignment(Pos.CENTER_LEFT);

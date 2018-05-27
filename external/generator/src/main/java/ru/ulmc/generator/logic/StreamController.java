@@ -51,7 +51,7 @@ public class StreamController {
         schedule(new StreamTask(symbol, bid, offer, volatility, interval, null));
     }
 
-    public void startNewTask(ScenarioProcess process) {
+    public void startNewTask(QuotesSource process) {
         if (futures.keySet().contains(process.getSymbol())) {
             log.info("Stream already enabled for {}", process.getSymbol());
             return;
@@ -100,7 +100,7 @@ public class StreamController {
         });
     }
 
-    private void schedule(ScenarioProcess process) {
+    private void schedule(QuotesSource process) {
         log.info("Init streaming ScenarioProcess for {}", process.getSymbol());
         List<QuoteEntity> entities = process.getQuotesToPublish();
         futures.put(process.getSymbol(),
@@ -119,7 +119,7 @@ public class StreamController {
         }, 1000, (long) (process.getInterval()*1000), TimeUnit.MILLISECONDS));
     }
 
-    public void reschedule(ScenarioProcess process) {
+    public void reschedule(QuotesSource process) {
         scheduledForReschedule.compute(process.getSymbol(), (s, scheduledFuture) -> {
             if (scheduledFuture != null && !(scheduledFuture.isCancelled() || scheduledFuture.isDone())) {
                 scheduledFuture.cancel(true);

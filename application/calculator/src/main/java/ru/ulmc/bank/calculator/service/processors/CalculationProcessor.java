@@ -10,8 +10,8 @@ import ru.ulmc.bank.calculators.CalcSourceQuote;
 import ru.ulmc.bank.calculators.Calculator;
 import ru.ulmc.bank.calculators.util.CalculatorsLocator;
 import ru.ulmc.bank.config.zookeeper.storage.SymbolConfigStorage;
-import ru.ulmc.bank.entities.configuration.SymbolCalculatorConfig;
-import ru.ulmc.bank.entities.configuration.SymbolConfig;
+import ru.ulmc.bank.config.zookeeper.entities.SymbolCalculatorConfig;
+import ru.ulmc.bank.config.zookeeper.entities.SymbolConfig;
 import ru.ulmc.bank.entities.persistent.financial.BaseQuote;
 
 import java.util.Map;

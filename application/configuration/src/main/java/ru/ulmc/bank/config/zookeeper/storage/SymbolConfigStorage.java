@@ -7,8 +7,8 @@ import ru.ulmc.bank.config.zookeeper.ConfigPath;
 import ru.ulmc.bank.config.zookeeper.Result;
 import ru.ulmc.bank.config.zookeeper.ZooConfigMonitor;
 import ru.ulmc.bank.core.common.exception.ConfigurationException;
-import ru.ulmc.bank.entities.configuration.Currency;
-import ru.ulmc.bank.entities.configuration.SymbolConfig;
+import ru.ulmc.bank.config.zookeeper.entities.Currency;
+import ru.ulmc.bank.config.zookeeper.entities.SymbolConfig;
 
 import java.io.Closeable;
 import java.io.IOException;

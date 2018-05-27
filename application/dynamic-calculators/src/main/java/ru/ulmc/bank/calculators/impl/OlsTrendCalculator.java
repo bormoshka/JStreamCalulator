@@ -8,15 +8,12 @@ import ru.ulmc.bank.calculators.Calculator;
 import ru.ulmc.bank.calculators.ResourcesEnvironment;
 import ru.ulmc.bank.calculators.util.CalcPlugin;
 import ru.ulmc.bank.dao.QuotesDao;
-import ru.ulmc.bank.entities.configuration.SymbolConfig;
+import ru.ulmc.bank.config.zookeeper.entities.SymbolConfig;
 import ru.ulmc.bank.entities.inner.AverageQuote;
 import ru.ulmc.bank.entities.inner.CalculatorResult;
 import ru.ulmc.bank.entities.persistent.financial.BaseQuote;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -67,10 +64,8 @@ public class OlsTrendCalculator implements Calculator {
             BigDecimal minBaseOffer = calcModifiedOffer(offerForZeroVolume, symbolConfig.getOfferBaseModifier());
             BigDecimal maxBaseOffer = calcModifiedOffer(offerForZeroVolume, symbolConfig.getOfferMaxModifier());
 
-           // BigDecimal forecastBidWithInaccuracy = forecastBid.subtract(forecastBid.subtract(bidForZeroVolume).abs().multiply(bd(inaccuracyForBid)));
-           // BigDecimal forecastOfferWithInaccuracy = forecastOffer.add(forecastOffer.subtract(offerForZeroVolume).abs().multiply(bd(inaccuracyForOffer)));
-            BigDecimal forecastBidWithInaccuracy = forecastBid.subtract(forecastBid.multiply(bd(inaccuracyForBid)));
-            BigDecimal forecastOfferWithInaccuracy = forecastOffer.add(forecastOffer.multiply(bd(inaccuracyForOffer)));
+            BigDecimal forecastBidWithInaccuracy = forecastBid.subtract(forecastBid.multiply(bd(inaccuracyForBid/100)));
+            BigDecimal forecastOfferWithInaccuracy = forecastOffer.add(forecastOffer.multiply(bd(inaccuracyForOffer/100)));
 
             log.trace("Calculation {} OFFER | base: {} forecast: {} min: {} forecastInaccurate: {} max: {} ina: {}", symbolConfig.getSymbol(), f(offerForZeroVolume),
                     f(forecastOffer), f(minBaseOffer), f(forecastOfferWithInaccuracy), f(maxBaseOffer), f(inaccuracyForOffer));
@@ -101,7 +96,7 @@ public class OlsTrendCalculator implements Calculator {
 
     protected List<AverageQuote> getAverageQuotesForPeriod(CalcSourceQuote newQuote) {
         LocalDateTime endPeriod = LocalDateTime.now();
-        return quotesDao.getDailyAverageBaseQuotesOnZeroVolume(newQuote.getSymbol(), endPeriod.minusDays(timeSeries), endPeriod);
+        return quotesDao.getHourlyAverageBaseQuotesOnZeroVolume(newQuote.getSymbol(), endPeriod.minusDays(timeSeries), endPeriod);
     }
 
     private AverageQuote convertToAverageQuote(BaseQuote newQuote) {
@@ -168,7 +163,7 @@ public class OlsTrendCalculator implements Calculator {
     private double calcRatioAForBid(List<AverageQuote> averageQuotes) {
         double sumQuotesBid = calcSumQuotesBid(averageQuotes);
         double sumPeriods = calcSumPeriod(averageQuotes);
-        double sumMultiplyQuotesAndPeriod = calcSumMultiplyQuotesBidAndPeriod(averageQuotes).doubleValue(); // todo: fix
+        double sumMultiplyQuotesAndPeriod = calcSumMultiplyQuotesBidAndPeriod(averageQuotes).doubleValue(); // todo: to BD
         double sumSqrtPeriod = calcSumSquarePeriod(averageQuotes);
 
         return ((sumMultiplyQuotesAndPeriod) - (sumQuotesBid * sumPeriods) / averageQuotes.size()) / (sumSqrtPeriod - sumPeriods * sumPeriods / averageQuotes.size());
@@ -177,7 +172,7 @@ public class OlsTrendCalculator implements Calculator {
     private double calcRatioAForOffer(List<AverageQuote> averageQuotes) {
         double sumQuotesOffer = calcSumQuotesOffer(averageQuotes);
         double sumPeriods = calcSumPeriod(averageQuotes);
-        double sumMultiplyQuotesAndPeriod = calcSumMultiplyQuotesOfferAndPeriod(averageQuotes).doubleValue(); // todo: fix
+        double sumMultiplyQuotesAndPeriod = calcSumMultiplyQuotesOfferAndPeriod(averageQuotes).doubleValue(); // todo: to BD
         double sumSqrtQuotesOffer = calcSumSquarePeriod(averageQuotes);
 
         return ((sumMultiplyQuotesAndPeriod) - (sumQuotesOffer * sumPeriods) / averageQuotes.size()) / (sumSqrtQuotesOffer - sumPeriods * sumPeriods / averageQuotes.size());
@@ -202,7 +197,7 @@ public class OlsTrendCalculator implements Calculator {
     private double calcInaccuracyBid(List<AverageQuote> averageQuotes, double ratioAForBid, double ratioBForBid) {
         double sumDeviations = 0.0;
         for (int i = 0; i < averageQuotes.size(); i++) {
-            double factValue = averageQuotes.get(i).getAverageQuoteBid().doubleValue(); // todo: fix
+            double factValue = averageQuotes.get(i).getAverageQuoteBid().doubleValue(); // todo: to BD
             sumDeviations += ((ratioAForBid * (i + 1) + ratioBForBid) - factValue) / factValue * 100;
         }
         return sumDeviations / averageQuotes.size();
@@ -211,7 +206,7 @@ public class OlsTrendCalculator implements Calculator {
     private double calcInaccuracyOffer(List<AverageQuote> averageQuotes, double ratioAForOffer, double ratioBForOffer) {
         double sumDeviations = 0.0;
         for (int i = 0; i < averageQuotes.size(); i++) {
-            double factValue = averageQuotes.get(i).getAverageQuoteOffer().doubleValue(); // todo: fix
+            double factValue = averageQuotes.get(i).getAverageQuoteOffer().doubleValue(); // todo: to BD
             sumDeviations += ((ratioAForOffer * (i + 1) + ratioBForOffer) - factValue) / factValue * 100;
         }
         return sumDeviations / averageQuotes.size();

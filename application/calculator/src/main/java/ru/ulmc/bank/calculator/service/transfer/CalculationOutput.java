@@ -3,7 +3,7 @@ package ru.ulmc.bank.calculator.service.transfer;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import ru.ulmc.bank.bean.IBaseQuote;
-import ru.ulmc.bank.entities.configuration.SymbolCalculatorConfig;
+import ru.ulmc.bank.config.zookeeper.entities.SymbolCalculatorConfig;
 import ru.ulmc.bank.entities.inner.CalculatorResult;
 
 import java.util.HashMap;

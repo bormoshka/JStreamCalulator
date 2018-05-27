@@ -22,6 +22,7 @@ import ru.ulmc.generator.UserInputException;
 import ru.ulmc.generator.logic.*;
 import ru.ulmc.generator.logic.beans.QuoteEntity;
 import ru.ulmc.generator.logic.beans.Scenario;
+import ru.ulmc.generator.logic.beans.StaticData;
 import ru.ulmc.generator.logic.beans.UserConfiguration;
 import ru.ulmc.generator.ui.views.MainView;
 import ru.ulmc.generator.ui.views.ScenarioSelectView;
@@ -30,6 +31,7 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -58,6 +60,10 @@ public class Controller {
     private Button scenariosEditorBtn;
     @FXML
     private Button sendBtn;
+    @FXML
+    private Button importBtn;
+    @FXML
+    private ListView<StaticData> staticDataListView;
     @FXML
     private ToggleButton muteToggle;
     @FXML
@@ -106,6 +112,19 @@ public class Controller {
             streamController.setStreamMuted(selected);
             //  muteToggle.setText(selected ? "Mute streams" : "Mute streams");
         });
+
+        staticDataListView.setCellFactory(view -> new StaticDataStreamCell(streamController));
+        importBtn.setOnAction(event -> {
+            FileChooser fileChooser = getStaticDataFileChooser("Импорт котировок");
+            try {
+                StaticData staticData = ImportFileParser.load(fileChooser.showOpenDialog(Generator.getStage()));
+                staticDataListView.getItems().add(staticData);
+                configurationController.getCurrentUserConfiguration().getStaticData().add(staticData);
+            } catch (Exception e) {
+                log.error("Can't read from file!", e);
+                log("Ошибка чтения из файла!");
+            }
+        });
         streamController.setMessageConsumer(s -> {
             Platform.runLater(() -> log(s));
         });
@@ -141,7 +160,7 @@ public class Controller {
 
 
     public void showScenarioSelect(Event event) {
-        viewManager.open(ScenarioSelectView.class, Modality.APPLICATION_MODAL, "Scenario selector");
+        viewManager.open(ScenarioSelectView.class, Modality.APPLICATION_MODAL, "Управление сценариями");
     }
 
     private void initRecentMenu() {
@@ -194,6 +213,8 @@ public class Controller {
         cfg.getStreamTasks().forEach(task -> {
             insertNewStreamRow(task.getSymbol(), task.getBid(), task.getOffer(), task.getInterval(), task.getScenario());
         });
+        staticDataListView.getItems().clear();
+        staticDataListView.getItems().addAll(cfg.getStaticData());
         initRecentMenu();
     }
 
@@ -201,8 +222,10 @@ public class Controller {
         double bid = 0;
         double offer = 0;
         try {
-            bid = bidField.getText() == null ? 0 : getBid();
-            offer = offerField.getText() == null ? 0 : getOffer();
+            String text = bidField.getText();
+            bid = text == null || text.isEmpty() ? 0 : getBid();
+            text = offerField.getText();
+            offer = text == null || text.isEmpty() ? 0 : getOffer();
         } catch (Exception e) {
 
         }
@@ -213,6 +236,7 @@ public class Controller {
                 .interval(interval.getValue())
                 .scenarios(configurationController.getCurrentUserConfiguration().getScenarios())
                 .streamTasks(streamRows.values().stream().map(StreamRow::getTask).collect(Collectors.toList()))
+                .staticData(new ArrayList<>(staticDataListView.getItems()))
                 .build();
     }
 
@@ -227,12 +251,12 @@ public class Controller {
     }
 
     private void openLoadDialog(Consumer<File> fileConsumer) {
-        FileChooser fileChooser = getFileChooser("Open Config File");
+        FileChooser fileChooser = getFileChooser("Открытие конфигурационного файла");
         fileConsumer.accept(fileChooser.showOpenDialog(Generator.getStage()));
     }
 
     private void openSaveDialog(Consumer<File> fileConsumer) {
-        FileChooser fileChooser = getFileChooser("Save config file as");
+        FileChooser fileChooser = getFileChooser("Сохранить конфигурационный файл как...");
         fileConsumer.accept(fileChooser.showSaveDialog(Generator.getStage()));
     }
 
@@ -244,10 +268,21 @@ public class Controller {
         return fileChooser;
     }
 
+    private FileChooser getStaticDataFileChooser(String title) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle(title);
+        fileChooser.setInitialDirectory(new File(".//"));
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter[]{
+                new FileChooser.ExtensionFilter("Текстывый файл", "*.txt"),
+                new FileChooser.ExtensionFilter("Все файлы", "*.*")
+        });
+        return fileChooser;
+    }
+
     private FileChooser.ExtensionFilter[] getExtensionFilter() {
         return new FileChooser.ExtensionFilter[]{
-                new FileChooser.ExtensionFilter("Generator config file", "*.gcfg"),
-                new FileChooser.ExtensionFilter("All files", "*.*")
+                new FileChooser.ExtensionFilter("Файл конфигурации", "*.gcfg"),
+                new FileChooser.ExtensionFilter("Все файлы", "*.*")
         };
     }
 

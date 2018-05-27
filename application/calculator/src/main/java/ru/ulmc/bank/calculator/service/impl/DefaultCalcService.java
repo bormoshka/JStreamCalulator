@@ -6,8 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import ru.ulmc.bank.bean.IBaseQuote;
 import ru.ulmc.bank.calculator.service.CalcService;
 import ru.ulmc.bank.calculator.service.transfer.CalculationOutput;
-import ru.ulmc.bank.entities.configuration.SymbolCalculatorConfig;
-import ru.ulmc.bank.entities.configuration.SymbolConfig;
+import ru.ulmc.bank.config.zookeeper.entities.SymbolCalculatorConfig;
+import ru.ulmc.bank.config.zookeeper.entities.SymbolConfig;
 import ru.ulmc.bank.entities.persistent.financial.BaseQuote;
 import ru.ulmc.bank.entities.persistent.financial.CalcPrice;
 import ru.ulmc.bank.entities.persistent.financial.Quote;
@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.DoubleStream;
 
 import static ru.ulmc.bank.calculators.util.CalcUtils.calcModifiedBid;
 import static ru.ulmc.bank.calculators.util.CalcUtils.calcModifiedOffer;

@@ -10,19 +10,19 @@
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.ulmc.generator.ui.ScenarioEditorController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="666.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.ulmc.generator.ui.ScenarioEditorController">
    <children>
       <ToolBar prefHeight="40.0" prefWidth="548.0">
          <items>
-            <Label text="Delta:" />
+            <Label text="Дельта:" />
             <TextField fx:id="stepFld" onInputMethodTextChanged="#tryToEnableAddBtn" onKeyReleased="#tryToEnableAddBtn" prefHeight="25.0" prefWidth="50.0" />
-            <Label layoutX="10.0" layoutY="17.0" text="Volatility:" />
+            <Label layoutX="10.0" layoutY="17.0" text="Волатильность:" />
             <TextField fx:id="volatilityFld" layoutX="57.0" layoutY="13.0" onInputMethodTextChanged="#tryToEnableAddBtn" onKeyReleased="#tryToEnableAddBtn" prefHeight="25.0" prefWidth="49.0" />
-            <Label layoutX="10.0" layoutY="17.0" text="Duration:" />
+            <Label layoutX="10.0" layoutY="17.0" text="Длительность:" />
             <TextField fx:id="durationFld" layoutX="57.0" layoutY="13.0" onInputMethodTextChanged="#tryToEnableAddBtn" onKeyReleased="#tryToEnableAddBtn" prefHeight="25.0" prefWidth="48.0" />
-            <ComboBox fx:id="unitsCombo" layoutX="322.0" layoutY="10.0" onInputMethodTextChanged="#tryToEnableAddBtn" prefHeight="25.0" prefWidth="89.0" promptText="Units" />
-            <ComboBox fx:id="trendCombo" onInputMethodTextChanged="#tryToEnableAddBtn" prefHeight="25.0" prefWidth="89.0" promptText="Trend" />
-            <Button fx:id="addBtn" defaultButton="true" disable="true" mnemonicParsing="false" prefHeight="25.0" prefWidth="86.0" text="Add" />
+            <ComboBox fx:id="unitsCombo" layoutX="322.0" layoutY="10.0" onInputMethodTextChanged="#tryToEnableAddBtn" prefHeight="25.0" prefWidth="89.0" promptText="Единицы времени" />
+            <ComboBox fx:id="trendCombo" onInputMethodTextChanged="#tryToEnableAddBtn" prefHeight="25.0" prefWidth="89.0" promptText="Тренд" />
+            <Button fx:id="addBtn" defaultButton="true" disable="true" mnemonicParsing="false" prefHeight="25.0" prefWidth="86.0" text="Добавить" />
          </items>
          <opaqueInsets>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -31,9 +31,9 @@
       <ListView fx:id="listView" prefHeight="412.0" prefWidth="548.0" />
       <ButtonBar nodeOrientation="LEFT_TO_RIGHT" pickOnBounds="false" prefHeight="40.0" prefWidth="531.0">
          <buttons>
-            <TextField fx:id="scenarioName" minWidth="300.0" onInputMethodTextChanged="#tryToEnableSaveBth" onKeyReleased="#tryToEnableSaveBth" prefHeight="29.0" prefWidth="365.0" promptText="Scenario Name" />
-            <Button fx:id="createBtn" defaultButton="true" disable="true" maxWidth="80.0" minWidth="22.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="80.0" text="Save" />
-            <Button fx:id="closeBtn" cancelButton="true" maxWidth="80.0" minWidth="0.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="80.0" text="Cancel" />
+            <TextField fx:id="scenarioName" minWidth="300.0" onInputMethodTextChanged="#tryToEnableSaveBth" onKeyReleased="#tryToEnableSaveBth" prefHeight="25.0" prefWidth="562.0" promptText="Имя сценария" />
+            <Button fx:id="createBtn" defaultButton="true" disable="true" maxWidth="80.0" minWidth="22.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="80.0" text="Сохранить" />
+            <Button fx:id="closeBtn" cancelButton="true" maxWidth="80.0" minWidth="0.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="80.0" text="Закрыть" />
          </buttons>
          <padding>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />

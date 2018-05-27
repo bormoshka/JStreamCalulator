@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Delegate;
 import ru.ulmc.bank.core.common.exception.UserInputException;
-import ru.ulmc.bank.entities.configuration.SymbolConfig;
+import ru.ulmc.bank.config.zookeeper.entities.SymbolConfig;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;

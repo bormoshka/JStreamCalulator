@@ -3,6 +3,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
@@ -18,9 +19,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="509.0" prefWidth="610.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.ulmc.generator.ui.Controller">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="695.0" prefWidth="712.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.ulmc.generator.ui.Controller">
    <children>
-      <TitledPane fx:id="streamsPane" collapsible="false" layoutX="14.0" layoutY="136.0" prefHeight="184.0" prefWidth="586.0" text="Active Streams">
+      <TitledPane fx:id="streamsPane" collapsible="false" layoutX="14.0" layoutY="136.0" prefHeight="184.0" prefWidth="687.0" text="Динамические стримы">
          <content>
             <ScrollPane fx:id="streamsWrapper">
                <content>
@@ -29,65 +30,71 @@
             </ScrollPane>
          </content>
       </TitledPane>
-      <TextArea fx:id="output" editable="false" layoutX="14.0" layoutY="333.0" prefHeight="151.0" prefWidth="586.0" promptText="Program output">
+      <TextArea fx:id="output" editable="false" layoutX="14.0" layoutY="504.0" prefHeight="151.0" prefWidth="687.0" promptText="Вывод программы">
          <font>
             <Font name="Courier New" size="11.0" />
          </font></TextArea>
-      <Label fx:id="versionLabel" alignment="CENTER_RIGHT" layoutX="375.0" layoutY="487.0" prefHeight="17.0" prefWidth="225.0" text="ver.  0.2" textAlignment="RIGHT" textOverrun="CLIP" />
-      <HBox alignment="CENTER_LEFT" layoutX="14.0" layoutY="33.0" prefHeight="43.0" prefWidth="586.0" spacing="10.0">
+      <Label fx:id="versionLabel" alignment="CENTER_RIGHT" layoutX="373.0" layoutY="664.0" prefHeight="17.0" prefWidth="327.0" text="версия 0.3" textAlignment="RIGHT" textOverrun="CLIP" />
+      <HBox alignment="CENTER_LEFT" layoutX="14.0" layoutY="33.0" prefHeight="43.0" prefWidth="698.0" spacing="10.0">
          <children>
             <TextField fx:id="symbolField" onAction="#tryToEnableButtons" onKeyReleased="#tryToEnableButtons" prefHeight="36.0" prefWidth="100.0" promptText="Symbol" />
             <TextField fx:id="bidField" onAction="#tryToEnableButtons" onKeyReleased="#tryToEnableButtons" prefHeight="36.0" prefWidth="100.0" promptText="Bid " />
             <TextField fx:id="offerField" onAction="#tryToEnableButtons" onKeyReleased="#tryToEnableButtons" prefHeight="36.0" prefWidth="100.0" promptText="Offer" />
-            <Button fx:id="sendBtn" defaultButton="true" disable="true" mnemonicParsing="false" onAction="#sendQuote" prefHeight="36.0" prefWidth="120.0" text="Send" />
-            <Button fx:id="streamBtn" disable="true" mnemonicParsing="false" prefHeight="36.0" prefWidth="120.0" text="Create stream" />
+            <Button fx:id="sendBtn" defaultButton="true" disable="true" mnemonicParsing="false" onAction="#sendQuote" prefHeight="36.0" prefWidth="120.0" text="Отправить" />
+            <Button fx:id="streamBtn" disable="true" mnemonicParsing="false" prefHeight="36.0" prefWidth="120.0" text="Создать стрим" />
+            <ToggleButton fx:id="muteToggle" mnemonicParsing="false" prefHeight="36.0" prefWidth="100.0" text="Заглушить" />
          </children>
       </HBox>
       <HBox alignment="CENTER_LEFT" layoutX="14.0" layoutY="76.0" prefHeight="51.0" prefWidth="586.0" spacing="10.0">
          <children>
             <Spinner fx:id="interval" editable="true" prefHeight="36.0" prefWidth="100.0" />
-            <ComboBox fx:id="scenarioCombo" prefHeight="36.0" prefWidth="209.0" promptText="Scenario" />
-            <Button fx:id="scenariosEditorBtn" mnemonicParsing="false" prefHeight="36.0" prefWidth="120.0" text="Edit scenarios" />
-            <ToggleButton fx:id="muteToggle" mnemonicParsing="false" prefHeight="36.0" prefWidth="100.0" text="Mute streams" />
+            <ComboBox fx:id="scenarioCombo" prefHeight="36.0" prefWidth="209.0" promptText="Сценарий" />
+            <Button fx:id="scenariosEditorBtn" mnemonicParsing="false" prefHeight="36.0" prefWidth="120.0" text="Сценарии" />
+            <Button fx:id="importBtn" layoutX="339.0" layoutY="18.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="120.0" text="Импорт" />
          </children>
       </HBox>
-      <MenuBar layoutY="2.0" prefHeight="25.0" prefWidth="610.0">
+      <MenuBar layoutY="2.0" prefHeight="25.0" prefWidth="720.0">
         <menus>
-          <Menu mnemonicParsing="false" text="File">
+          <Menu mnemonicParsing="false" text="Файл">
             <items>
-                  <MenuItem fx:id="openItem" mnemonicParsing="false" text="Open">
+                  <MenuItem fx:id="openItem" mnemonicParsing="false" text="Открыть">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator>
                   </MenuItem>
-                  <MenuItem fx:id="saveItem" mnemonicParsing="false" text="Save">
+                  <MenuItem fx:id="saveItem" mnemonicParsing="false" text="Сохранить">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator>
                   </MenuItem>
-                  <MenuItem fx:id="saveAsItem" mnemonicParsing="false" text="Save as...">
+                  <MenuItem fx:id="saveAsItem" mnemonicParsing="false" text="Сохранить как...">
                      <accelerator>
                         <KeyCodeCombination alt="DOWN" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator>
                   </MenuItem>
-              <MenuItem fx:id="quitItem" mnemonicParsing="false" text="Quit">
+              <MenuItem fx:id="quitItem" mnemonicParsing="false" text="Выйти">
                      <accelerator>
                         <KeyCodeCombination alt="DOWN" code="Q" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator>
                   </MenuItem>
             </items>
           </Menu>
-            <Menu fx:id="recentMenu" mnemonicParsing="false" text="Recent configurations">
+            <Menu fx:id="recentMenu" mnemonicParsing="false" text="Недавние конфигурации">
               <items>
                 <MenuItem mnemonicParsing="false" text="Action 1" />
               </items>
             </Menu>
-          <Menu mnemonicParsing="false" text="Help">
+          <Menu mnemonicParsing="false" text="Помощь">
             <items>
               <MenuItem fx:id="aboutItem" mnemonicParsing="false" text="About" />
             </items>
           </Menu>
         </menus>
       </MenuBar>
+      <TitledPane fx:id="streamsPane" collapsible="false" layoutX="14.0" layoutY="320.0" prefHeight="184.0" prefWidth="687.0" text="Стримы из статических данных">
+         <content>
+            <ListView fx:id="staticDataListView" />
+         </content>
+      </TitledPane>
    </children>
 </AnchorPane>

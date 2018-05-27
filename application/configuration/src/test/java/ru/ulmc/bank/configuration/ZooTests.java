@@ -12,8 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.rules.TemporaryFolder;
 import ru.ulmc.bank.config.zookeeper.storage.AppConfigStorage;
 import ru.ulmc.bank.config.zookeeper.storage.SymbolConfigStorage;
-import ru.ulmc.bank.entities.configuration.Currency;
-import ru.ulmc.bank.entities.configuration.SymbolConfig;
+import ru.ulmc.bank.config.zookeeper.entities.Currency;
+import ru.ulmc.bank.config.zookeeper.entities.SymbolConfig;
 
 import java.io.IOException;
 import java.util.Arrays;

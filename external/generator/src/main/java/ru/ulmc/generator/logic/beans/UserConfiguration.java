@@ -6,14 +6,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 public class UserConfiguration implements Serializable {
-    private static final long serialVersionUID = 2L;
+    private static final long serialVersionUID = 3L;
     private String symbol;
     private double bid;
     private double offer;
@@ -21,6 +22,7 @@ public class UserConfiguration implements Serializable {
     private double interval;
     private List<StreamTask> streamTasks = new ArrayList<>();
     private List<Scenario> scenarios = new ArrayList<>();
+    private List<StaticData> staticData = new ArrayList<>();
 
     public static UserConfiguration.ConfigurationBuilder builder() {
         return new UserConfiguration.ConfigurationBuilder();
@@ -35,6 +37,7 @@ public class UserConfiguration implements Serializable {
 
         private List<Scenario> scenarios;
         private List<StreamTask> streamTasks;
+        private List<StaticData> staticData = new ArrayList<>();
 
         ConfigurationBuilder() {
         }
@@ -74,8 +77,13 @@ public class UserConfiguration implements Serializable {
             return this;
         }
 
+        public UserConfiguration.ConfigurationBuilder staticData(final List<StaticData> staticData) {
+            this.staticData = staticData;
+            return this;
+        }
+
         public UserConfiguration build() {
-            return new UserConfiguration(this.symbol, this.bid, this.offer, this.volatility, this.interval, this.streamTasks, this.scenarios);
+            return new UserConfiguration(this.symbol, this.bid, this.offer, this.volatility, this.interval, this.streamTasks, this.scenarios, this.staticData);
         }
 
         public String toString() {

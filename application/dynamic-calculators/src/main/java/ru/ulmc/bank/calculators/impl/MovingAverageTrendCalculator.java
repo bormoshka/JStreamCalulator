@@ -8,7 +8,7 @@ import ru.ulmc.bank.calculators.Calculator;
 import ru.ulmc.bank.calculators.ResourcesEnvironment;
 import ru.ulmc.bank.calculators.util.CalcPlugin;
 import ru.ulmc.bank.dao.QuotesDao;
-import ru.ulmc.bank.entities.configuration.SymbolConfig;
+import ru.ulmc.bank.config.zookeeper.entities.SymbolConfig;
 import ru.ulmc.bank.entities.inner.AverageQuote;
 import ru.ulmc.bank.entities.inner.CalculatorResult;
 import ru.ulmc.bank.entities.persistent.financial.BaseQuote;

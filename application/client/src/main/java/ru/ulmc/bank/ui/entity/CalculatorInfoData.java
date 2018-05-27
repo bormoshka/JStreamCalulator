@@ -3,7 +3,7 @@ package ru.ulmc.bank.ui.entity;
 import lombok.Getter;
 import lombok.experimental.Delegate;
 import ru.ulmc.bank.calculators.util.CalculatorInfo;
-import ru.ulmc.bank.entities.configuration.SymbolCalculatorConfig;
+import ru.ulmc.bank.config.zookeeper.entities.SymbolCalculatorConfig;
 
 import java.util.regex.Pattern;
 

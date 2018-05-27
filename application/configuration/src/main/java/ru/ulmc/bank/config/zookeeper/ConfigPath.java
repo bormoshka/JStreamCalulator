@@ -1,8 +1,8 @@
 package ru.ulmc.bank.config.zookeeper;
 
 import lombok.Getter;
-import ru.ulmc.bank.entities.configuration.Currency;
-import ru.ulmc.bank.entities.configuration.SymbolConfig;
+import ru.ulmc.bank.config.zookeeper.entities.Currency;
+import ru.ulmc.bank.config.zookeeper.entities.SymbolConfig;
 
 @Getter
 public enum ConfigPath {

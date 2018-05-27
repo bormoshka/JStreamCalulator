@@ -88,7 +88,7 @@ public class JpaQuotesDao implements QuotesDao {
         List<Quote> calcQuotes = session.createQuery("select distinct q from Quote q " +
           //      " join fetch CalcPrice cp " +
                 " where q.symbol in :symbol " +
-                " and q.datetime = (select max(d.datetime) from Quote d where d.symbol = q.symbol) " +
+                " and q.baseDateTime = (select max(d.baseDateTime) from Quote d where d.symbol = q.symbol) " +
                 " order by q.symbol DESC ")
                 .setParameter("symbol", symbol)
                 .getResultList();

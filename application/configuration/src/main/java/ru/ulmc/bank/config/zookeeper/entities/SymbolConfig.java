@@ -1,4 +1,4 @@
-package ru.ulmc.bank.entities.configuration;
+package ru.ulmc.bank.config.zookeeper.entities;
 
 import lombok.*;
 
@@ -23,6 +23,14 @@ public class SymbolConfig implements Serializable {
 
     private SymbolConfig() {
 
+    }
+
+    public SymbolConfig(String symbol, double bidBaseModifier, double offerBaseModifier, double bidMaxModifier, double offerMaxModifier) {
+        this.symbol = symbol;
+        this.bidBaseModifier = bidBaseModifier;
+        this.offerBaseModifier = offerBaseModifier;
+        this.bidMaxModifier = bidMaxModifier;
+        this.offerMaxModifier = offerMaxModifier;
     }
 
     public SymbolConfig(@NonNull String symbol,

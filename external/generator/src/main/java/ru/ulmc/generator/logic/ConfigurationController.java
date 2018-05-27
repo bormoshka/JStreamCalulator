@@ -87,8 +87,10 @@ public class ConfigurationController {
         }
         try (Input input = new Input(new FileInputStream(file))) {
             currentUserConfiguration =  kryo.get().readObject(input, UserConfiguration.class);
-            Scenario scenario = currentUserConfiguration.getScenarios().get(0);
-            broadcaster.broadcast(new Broadcaster.BroadcastEvent<>(scenario));
+            if (!currentUserConfiguration.getScenarios().isEmpty()) {
+                Scenario scenario = currentUserConfiguration.getScenarios().get(0);
+                broadcaster.broadcast(new Broadcaster.BroadcastEvent<>(scenario));
+            }
             updateFileLinks(file);
         }
         controller.stopStreaming();

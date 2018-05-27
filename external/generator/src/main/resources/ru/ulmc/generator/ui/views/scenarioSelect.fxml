@@ -7,18 +7,18 @@
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="340.0" spacing="10.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.ulmc.generator.ui.ScenariosSelectController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="216.0" prefWidth="340.0" spacing="10.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.ulmc.generator.ui.ScenariosSelectController">
    <children>
-      <TitledPane animated="false" collapsible="false" prefHeight="446.0" prefWidth="300.0" text="Scenarios">
+      <TitledPane animated="false" collapsible="false" prefHeight="446.0" prefWidth="300.0" text="Сценарии">
          <content>
             <ListView fx:id="listView" />
          </content>
       </TitledPane>
       <ButtonBar prefHeight="40.0" prefWidth="300.0">
          <buttons>
-            <Button fx:id="editBtn" disable="true" layoutX="170.0" layoutY="14.0" mnemonicParsing="false" text="Edit" />
-            <Button fx:id="createBtn" mnemonicParsing="false" onAction="#newScenario" text="New" />
-            <Button fx:id="closeBtn" mnemonicParsing="false" text="Close" />
+            <Button fx:id="editBtn" disable="true" layoutX="170.0" layoutY="14.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="102.0" text="Изменить" />
+            <Button fx:id="createBtn" mnemonicParsing="false" onAction="#newScenario" text="Создать" />
+            <Button fx:id="closeBtn" mnemonicParsing="false" text="Закрыть" />
          </buttons>
       </ButtonBar>
    </children>

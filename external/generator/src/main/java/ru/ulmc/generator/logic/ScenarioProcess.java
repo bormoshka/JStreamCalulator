@@ -15,7 +15,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @Getter
 @Setter
 @ToString
-public class ScenarioProcess {
+public class ScenarioProcess implements QuotesSource{
     private final double startBid;
     private final double startOffer;
     private String symbol;
@@ -60,7 +60,6 @@ public class ScenarioProcess {
                     bid -= bid - offer * 2;
                 }
                 quotes.add(new QuoteEntity(symbol, BigDecimal.valueOf(bid), BigDecimal.valueOf(offer)));
-
             }
         });
         return quotes;

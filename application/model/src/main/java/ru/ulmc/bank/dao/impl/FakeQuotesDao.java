@@ -11,6 +11,7 @@ import ru.ulmc.bank.entities.persistent.financial.Quote;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -134,7 +135,17 @@ public class FakeQuotesDao implements QuotesDao {
 
     @Override
     public List<AverageQuote> getHourlyAverageBaseQuotesOnZeroVolume(String symbol, LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        return null;
+        List<BaseQuote> lastQuotes = getLastBaseQuotes(symbol, startDateTime, endDateTime);
+        ArrayList<AverageQuote> avgQuotes = new ArrayList<>();
+        Map<LocalDateTime, List<BaseQuote>> groupBaseQuotes = lastQuotes.stream()
+                .collect(Collectors.groupingBy(o -> o.getDatetime().truncatedTo(ChronoUnit.HOURS)));
+
+        for (Map.Entry<LocalDateTime, List<BaseQuote>> pair : groupBaseQuotes.entrySet()) {
+            avgQuotes.add(new AverageQuote(pair.getKey(), symbol,
+                    getAvgBid(pair.getValue()), getAvgOffer(pair.getValue())));
+        }
+        avgQuotes.sort(AverageQuote::compareTo);
+        return avgQuotes;
     }
 
     @Override

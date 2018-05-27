@@ -1,4 +1,4 @@
-package ru.ulmc.bank.entities.configuration;
+package ru.ulmc.bank.config.zookeeper.entities;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

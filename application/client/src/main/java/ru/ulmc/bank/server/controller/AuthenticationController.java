@@ -65,7 +65,7 @@ public class AuthenticationController {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             if (AuthProvider.LDAP.name().equalsIgnoreCase(authProvider)) {
                 User user = userDetailsService.findUser(((LdapUserDetailsImpl) authentication.getPrincipal()).getUsername());
-                LOG.debug("User frol LDAP logged In with login: {}, roles empty: {}", user.getLogin(),
+                LOG.debug("User from LDAP logged In with login: {}, roles empty: {}", user.getLogin(),
                         user.getRoles().isEmpty());
                 return user;
             } else {

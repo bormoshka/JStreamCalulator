@@ -10,11 +10,8 @@ import ru.ulmc.bank.calculator.environment.EnvironmentHolder;
 import ru.ulmc.bank.calculator.service.CalcService;
 import ru.ulmc.bank.calculator.service.transfer.CalculationOutput;
 import ru.ulmc.bank.config.zookeeper.storage.SymbolConfigStorage;
-import ru.ulmc.bank.entities.configuration.SymbolConfig;
-import ru.ulmc.bank.entities.persistent.financial.BaseQuote;
+import ru.ulmc.bank.config.zookeeper.entities.SymbolConfig;
 import ru.ulmc.bank.entities.persistent.financial.Quote;
-
-import java.util.Set;
 
 @Slf4j
 public class DefaultProcessor extends ProcessFunction<CalculationOutput, Quote> {

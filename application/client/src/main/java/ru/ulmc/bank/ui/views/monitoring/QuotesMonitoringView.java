@@ -8,7 +8,7 @@ import com.vaadin.ui.components.grid.HeaderRow;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.ulmc.bank.config.zookeeper.service.ConfigurationService;
 import ru.ulmc.bank.dao.QuotesDao;
-import ru.ulmc.bank.entities.configuration.SymbolConfig;
+import ru.ulmc.bank.config.zookeeper.entities.SymbolConfig;
 import ru.ulmc.bank.entities.inner.ActualQuotes;
 import ru.ulmc.bank.entities.persistent.financial.BaseQuote;
 import ru.ulmc.bank.entities.persistent.financial.Quote;
@@ -21,11 +21,10 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @SpringView(name = QuotesMonitoringView.NAME)
 public class QuotesMonitoringView extends CommonView implements View {
-    static final String NAME = "quotesChart";
+    static final String NAME = "quotesTable";
     public static final MenuSupport MENU_SUPPORT = new MenuSupport(NAME, "Просмотр актуальных котировок");
     private final QuotesDao dao;
     private final TreeGrid<SymbolsQuotesModel> grid = new TreeGrid<>();

@@ -3,13 +3,12 @@ package ru.ulmc.bank.config.zookeeper.service;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.ulmc.bank.config.zookeeper.storage.SymbolConfigStorage;
-import ru.ulmc.bank.entities.configuration.Currency;
-import ru.ulmc.bank.entities.configuration.SymbolConfig;
+import ru.ulmc.bank.config.zookeeper.entities.Currency;
+import ru.ulmc.bank.config.zookeeper.entities.SymbolConfig;
 
 import javax.annotation.PostConstruct;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.stream.Collectors;
 
 @Service
 public class ConfigurationService {

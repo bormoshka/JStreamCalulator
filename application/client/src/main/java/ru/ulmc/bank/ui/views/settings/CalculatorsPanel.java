@@ -8,7 +8,7 @@ import org.vaadin.inputmask.InputMask;
 import org.vaadin.inputmask.client.Alias;
 import ru.ulmc.bank.calculators.util.CalculatorInfo;
 import ru.ulmc.bank.calculators.util.CalculatorsLocator;
-import ru.ulmc.bank.entities.configuration.SymbolCalculatorConfig;
+import ru.ulmc.bank.config.zookeeper.entities.SymbolCalculatorConfig;
 import ru.ulmc.bank.ui.entity.CalculatorInfoData;
 import ru.ulmc.bank.ui.entity.SymbolConfigModel;
 
@@ -57,22 +57,22 @@ public class CalculatorsPanel extends Panel {
         grid.setStyleGenerator(item -> (item.getBidModifierStr() == null || (item.getBidModifier() <= 0 && item.getOfferModifier() <= 0)) ? "gray-row" : "");
         grid.addColumn(CalculatorInfoData::getName)
                 .setExpandRatio(11)
-                .setCaption("Name");
+                .setCaption("Название");
         grid.addColumn(CalculatorInfoData::getBidModifierStr)
-                .setCaption("Bid Modifier")
+                .setCaption("Bid множитель")
                 .setWidth(80)
                 .setStyleGenerator(calculatorInfoData -> "to-right")
                 .setEditorComponent(bidField, CalculatorInfoData::setBidModifierStr);
         grid.addColumn(CalculatorInfoData::getOfferModifierStr)
-                .setCaption("Offer Modifier")
+                .setCaption("Offer множитель")
                 .setWidth(80)
                 .setStyleGenerator(calculatorInfoData -> "to-right")
                 .setEditorComponent(offerField, CalculatorInfoData::setOfferModifierStr);
         grid.addColumn(CalculatorInfoData::getClassName)
                 .setWidth(200)
-                .setCaption("Classname");
+                .setCaption("Имя класса");
         grid.addColumn(CalculatorInfoData::getDescription)
-                .setCaption("Description")
+                .setCaption("Описание")
                 .setExpandRatio(5)
                 .setWidth(200)
                 .setDescriptionGenerator(CalculatorInfoData::getDescription);

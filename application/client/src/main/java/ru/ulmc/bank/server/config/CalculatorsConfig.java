@@ -11,7 +11,7 @@ import ru.ulmc.bank.calculators.util.CalculatorsLocator;
 import java.util.Set;
 
 /**
- * Класс, отвечающий за инициализацию пользовательский холей и разрешений.
+ * Класс, отвечающий за инициализацию конфигурации расчетных модулей.
  */
 @Slf4j
 @Component

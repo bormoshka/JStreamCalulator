@@ -10,7 +10,6 @@ public enum ConfigPath {
     SYMBOL("lists/symbol", SymbolConfig.class),
     CONFIG("app/commonConfig", String.class);
 
-
     private final String path;
     private final Class entityClass;
 

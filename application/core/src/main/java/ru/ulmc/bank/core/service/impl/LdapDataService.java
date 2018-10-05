@@ -21,7 +21,7 @@ import java.util.List;
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
 
 /**
- * Контроллер аутентификации
+ * Сервис аутентификации
  */
 @Controller
 @Profile("ldap")

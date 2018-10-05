@@ -1,13 +1,19 @@
 package ru.ulmc.bank.entities.persistent.system;
 
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 
 /**
  * Разрешение/права на выполнение действий.
  */
-@Getter @Setter @ToString @EqualsAndHashCodes
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 @Entity
 @Table(name = "SYS_PERMISSION",
         indexes = {@Index(name = "PERMISSION_ID_INDX", columnList = "ID", unique = true)})

@@ -11,9 +11,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Created by User on 08.04.2017.
- */
 public class UserPrincipal implements UserDetails {
 
     private final User user;

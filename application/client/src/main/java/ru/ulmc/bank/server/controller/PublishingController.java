@@ -5,9 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import ru.ulmc.bank.constants.Queues;
 
-/**
- * Created by User on 30.04.2017.
- */
 @Controller
 public class PublishingController {
     private final RabbitTemplate rabbitTemplate;

@@ -267,7 +267,7 @@ public class ZooConfigMonitor<T> implements AutoCloseable, Closeable {
     }
 
 
-    List<String> getChildrenNodes() throws Exception {
+    private List<String> getChildrenNodes() throws Exception {
         return client.getChildren().forPath(zNode);
     }
 

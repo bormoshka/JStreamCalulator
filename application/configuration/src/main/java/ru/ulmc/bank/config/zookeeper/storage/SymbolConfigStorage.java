@@ -65,8 +65,7 @@ public class SymbolConfigStorage implements Closeable {
         return result.getData();
     }
 
-    public Currency saveCurrency(Currency currency) {
-        Objects.requireNonNull(currency);
+    public Currency saveCurrency(@NonNull Currency currency) {
         Result<Currency> result = currencyMonitor.save(currency.getIso(), currency);
         if (result.getErrorMessage() != null) {
             throw new ConfigurationException("Error to save currency " + currency.getIso());
@@ -74,8 +73,7 @@ public class SymbolConfigStorage implements Closeable {
         return result.getData();
     }
 
-    public List<Currency> saveCurrencies(List<Currency> currs) {
-        Objects.requireNonNull(currs);
+    public List<Currency> saveCurrencies(@NonNull List<Currency> currs) {
         Map<String, Currency> savedCurrencies = currs.stream().collect(Collectors.toMap(Currency::getIso, k -> k));
         Result<List<Currency>> listResult = currencyMonitor.saveAll(savedCurrencies);
         if (listResult.getErrorMessage() != null) {
@@ -85,7 +83,6 @@ public class SymbolConfigStorage implements Closeable {
     }
 
     public String removeCurrency(@NonNull String iso) {
-        Objects.requireNonNull(iso);
         Result<Object> result = currencyMonitor.delete(iso);
         if (result.getErrorMessage() != null) {
             throw new ConfigurationException("Cannot delete currency " + iso);

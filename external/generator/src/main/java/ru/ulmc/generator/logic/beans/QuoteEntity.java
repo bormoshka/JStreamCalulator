@@ -1,15 +1,19 @@
 package ru.ulmc.generator.logic.beans;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ru.ulmc.bank.bean.IBaseQuote;
 import ru.ulmc.bank.bean.IPrice;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 @NoArgsConstructor
 public class QuoteEntity implements IBaseQuote {
     private String symbol;
@@ -21,6 +25,6 @@ public class QuoteEntity implements IBaseQuote {
         this.symbol = symbol;
         prices.add(new PriceEntity(0, bid, offer));
         prices.add(new PriceEntity(1000, bid.multiply(BigDecimal.valueOf(1.00001)), offer.multiply(BigDecimal.valueOf(0.9999))));
-       // prices.add(new PriceEntity(10000, bid.multiply(BigDecimal.valueOf(1.00199)), offer.multiply(BigDecimal.valueOf(0.99995))));
+        // prices.add(new PriceEntity(10000, bid.multiply(BigDecimal.valueOf(1.00199)), offer.multiply(BigDecimal.valueOf(0.99995))));
     }
 }

@@ -1,16 +1,17 @@
 package ru.ulmc.bank.entities.persistent.financial;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ru.ulmc.bank.bean.IPrice;
 
-import javax.persistence.*;
-import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.math.BigDecimal;
 
-@Data
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
 @EqualsAndHashCode
 public abstract class Price implements IPrice {

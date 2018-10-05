@@ -12,7 +12,7 @@ import ru.ulmc.bank.entities.persistent.system.User;
 /**
  * Хранит общие параметры сессии пользователя.
  */
-@Data
+@Getter @Setter @ToString @EqualsAndHashCodes
 @Component
 @Scope(scopeName = "vaadin-session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class UserSession implements Serializable {

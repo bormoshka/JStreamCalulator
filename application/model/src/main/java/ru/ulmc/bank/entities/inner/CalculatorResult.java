@@ -1,9 +1,6 @@
 package ru.ulmc.bank.entities.inner;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -11,6 +8,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @ToString(includeFieldNames = false)
+@EqualsAndHashCode
 @NoArgsConstructor
 public class CalculatorResult implements Serializable {
     private BigDecimal resultForBid;

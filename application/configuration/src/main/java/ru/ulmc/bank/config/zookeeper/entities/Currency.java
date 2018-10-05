@@ -1,12 +1,13 @@
 package ru.ulmc.bank.config.zookeeper.entities;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 /**
  * Валюта.
  */
-@Data
+@Getter
+@Setter
+@ToString
 @EqualsAndHashCode(of = "iso")
 public class Currency {
 

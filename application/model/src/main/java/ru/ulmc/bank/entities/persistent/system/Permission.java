@@ -7,7 +7,7 @@ import javax.persistence.*;
 /**
  * Разрешение/права на выполнение действий.
  */
-@Data
+@Getter @Setter @ToString @EqualsAndHashCodes
 @Entity
 @Table(name = "SYS_PERMISSION",
         indexes = {@Index(name = "PERMISSION_ID_INDX", columnList = "ID", unique = true)})

@@ -1,18 +1,19 @@
 package ru.ulmc.bank.entities.persistent.financial;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import ru.ulmc.bank.bean.IBaseQuote;
-import ru.ulmc.bank.bean.IPrice;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 
-@Data
+@Getter
+@Setter
+@ToString
 @Entity
 @NoArgsConstructor
 @Cacheable
@@ -23,23 +24,6 @@ import java.util.*;
                 @Index(name = "BASE_QUOTE_SYMBOL_INDEX", columnList = "symbol")})
 public class BaseQuote implements IBaseQuote {
 
-    @Id
-    @Column(name = "ID")
-    private String id;
-
-    @Column(name = "DATETIME")
-    private LocalDateTime datetime;
-
-    @Column(name = "DATETIME_RECEIVE")
-    private LocalDateTime receiveTime;
-
-    @Column(name = "symbol")
-    private String symbol;
-
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "quote_id", nullable = false)
-    private List<BasePrice> prices = new ArrayList<>();
-
     public static final Comparator<BaseQuote> DATE_COMPARATOR = (o1, o2) -> {
         if (o1.getDatetime().isAfter(o2.getDatetime())) {
             return 1;
@@ -48,6 +32,18 @@ public class BaseQuote implements IBaseQuote {
         }
         return 0;
     };
+    @Id
+    @Column(name = "ID")
+    private String id;
+    @Column(name = "DATETIME")
+    private LocalDateTime datetime;
+    @Column(name = "DATETIME_RECEIVE")
+    private LocalDateTime receiveTime;
+    @Column(name = "symbol")
+    private String symbol;
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "quote_id", nullable = false)
+    private List<BasePrice> prices = new ArrayList<>();
 
     public BaseQuote(@NonNull String quoteId, @NonNull LocalDateTime datetime,
                      @NonNull String symbol, @NonNull Set<BasePrice> price) {

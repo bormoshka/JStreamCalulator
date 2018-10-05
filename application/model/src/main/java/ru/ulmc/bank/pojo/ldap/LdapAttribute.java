@@ -1,10 +1,13 @@
 package ru.ulmc.bank.pojo.ldap;
 
-import lombok.Data;
+import lombok.*;
 
 import java.io.Serializable;
 
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 public class LdapAttribute implements Serializable {
     private String id;
     private String value;

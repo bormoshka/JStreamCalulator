@@ -1,9 +1,6 @@
 package ru.ulmc.bank.entities.inner;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NonNull;
+import lombok.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -11,8 +8,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoField;
 
-@Data
-@EqualsAndHashCode(of = {"symbol", "date"})
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode(of = {"symbol", "order"})
 public class AverageQuote implements Serializable, Comparable<AverageQuote> {
     //private final String id;
     private final LocalDateTime order;

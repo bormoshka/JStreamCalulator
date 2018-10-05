@@ -1,6 +1,9 @@
 package ru.ulmc.bank.entities.persistent.system;
 
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -8,7 +11,10 @@ import java.util.Set;
 /**
  * Пользователь системы
  */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 @Entity
 @Table(name = "SYS_USER",
         indexes = {@Index(name = "USER_ID_LOGIN", columnList = "id, login", unique = true)})

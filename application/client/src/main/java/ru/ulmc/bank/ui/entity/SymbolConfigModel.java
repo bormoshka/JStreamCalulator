@@ -1,11 +1,9 @@
 package ru.ulmc.bank.ui.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import lombok.experimental.Delegate;
-import ru.ulmc.bank.core.common.exception.UserInputException;
 import ru.ulmc.bank.config.zookeeper.entities.SymbolConfig;
+import ru.ulmc.bank.core.common.exception.UserInputException;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -13,7 +11,9 @@ import java.util.UUID;
 
 import static ru.ulmc.bank.ui.entity.RowStatus.NOT_CHANGED;
 
-@Data
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 @EqualsAndHashCode(of = "inGridId", callSuper = false)
 public class SymbolConfigModel {
